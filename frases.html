@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Frases</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegacao principal">
+      <a href="index.html">Início</a>
+      <a href="escalas.html">Escalas</a>
+      <a href="frases.html" aria-current="page">Frases</a>
+    </nav>
+
+    <main class="app-shell">
+      <header class="app-header">
+        <h1>Frases</h1>
+        <p>Salve frases no Supabase, filtre por status e exporte as frases visíveis em JSONL.</p>
+      </header>
+
+      <section class="panel" aria-labelledby="login-title">
+        <h2 id="login-title">Acesso</h2>
+        <form id="login-form" class="auth-form">
+          <label class="field-label" for="email-input">E-mail</label>
+          <input id="email-input" type="email" autocomplete="email" required placeholder="seu@email.com">
+
+          <label class="field-label" for="password-input">Senha</label>
+          <input id="password-input" type="password" autocomplete="current-password" required>
+
+          <div class="actions compact-actions">
+            <button type="submit">Entrar</button>
+            <button type="button" id="signup-button" class="secondary">Criar conta</button>
+          </div>
+        </form>
+
+        <div id="user-panel" class="user-panel hidden">
+          <p id="user-email"></p>
+          <button type="button" id="logout-button" class="secondary">Sair</button>
+        </div>
+      </section>
+
+      <section id="phrase-editor" class="panel hidden" aria-labelledby="new-phrase-title">
+        <h2 id="new-phrase-title">Nova frase</h2>
+        <form id="phrase-form">
+          <label class="field-label" for="phrase-text">Frase</label>
+          <textarea id="phrase-text" rows="5" required></textarea>
+
+          <div class="form-grid">
+            <div>
+              <label class="field-label" for="phrase-tags">Tags separadas por vírgula</label>
+              <input id="phrase-tags" type="text" placeholder="tag1, tag2">
+            </div>
+            <div>
+              <label class="field-label" for="phrase-status">Status</label>
+              <select id="phrase-status">
+                <option value="new">new</option>
+                <option value="imported">imported</option>
+                <option value="archived">archived</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit">Salvar frase</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="phrases-panel" class="panel hidden" aria-labelledby="phrases-title">
+        <div class="section-heading">
+          <h2 id="phrases-title">Frases salvas</h2>
+          <button type="button" id="export-button" class="secondary">Exportar JSONL</button>
+        </div>
+
+        <div class="filter-row">
+          <label class="field-label" for="status-filter">Filtrar por status</label>
+          <select id="status-filter">
+            <option value="all">todas</option>
+            <option value="new">new</option>
+            <option value="imported">imported</option>
+            <option value="archived">archived</option>
+          </select>
+        </div>
+
+        <div id="phrases-list" class="phrases-list" aria-live="polite"></div>
+      </section>
+
+      <p id="message-area" class="message-area" aria-live="polite"></p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="frases.js"></script>
+  </body>
+</html>
