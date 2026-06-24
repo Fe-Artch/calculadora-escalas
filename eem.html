@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exame do Estado Mental</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegacao principal">
+      <a href="index.html">Início</a>
+      <a href="escalas.html">Escalas</a>
+      <a href="frases.html">Frases</a>
+      <a href="eem.html" aria-current="page">EEM</a>
+      <a href="diagnostic-criteria.html">Critérios Diagnósticos</a>
+    </nav>
+
+    <main class="app-shell eem-page">
+      <header class="app-header">
+        <h1>Exame do Estado Mental (EEM)</h1>
+        <p>Roteiro estruturado para registrar observações do exame psíquico e gerar uma linha ou texto para prontuário.</p>
+      </header>
+
+      <form id="eem-form" class="panel" novalidate>
+        <div class="eem-date-row">
+          <label class="field-label" for="eem-date">Data da avaliação</label>
+          <input id="eem-date" type="date" data-eem-field="date">
+        </div>
+
+        <div id="eem-sections"></div>
+
+        <div class="actions">
+          <button type="submit">Gerar EEM</button>
+          <button type="button" id="eem-clear-button" class="secondary">Limpar</button>
+        </div>
+      </form>
+
+      <section id="eem-result-area" class="panel result hidden" aria-live="polite" aria-labelledby="eem-result-title">
+        <h2 id="eem-result-title">Resultado</h2>
+
+        <div class="eem-result-box">
+          <h3>Linha resumida para prontuário</h3>
+          <p id="eem-summary-output"></p>
+          <div class="eem-copy-row">
+            <button type="button" data-output-type="summary">Copiar linha</button>
+          </div>
+        </div>
+
+        <div class="eem-result-box">
+          <h3>Texto completo para prontuário</h3>
+          <pre id="eem-full-output"></pre>
+          <div class="eem-copy-row">
+            <button type="button" data-output-type="full">Copiar texto completo</button>
+          </div>
+        </div>
+
+        <p id="eem-copy-feedback" class="copy-feedback" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="eem.js"></script>
+  </body>
+</html>

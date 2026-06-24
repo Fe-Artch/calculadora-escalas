@@ -752,7 +752,1490 @@ const panssQuestions = [
   { code: "G16", pt: "Esquiva social ativa", domain: "general" }
 ];
 
+function formatDateBR(date = new Date()) {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+function formatDivaDate(isoDate) {
+  if (!isoDate) {
+    return formatDateBR();
+  }
+
+  const [year, month, day] = isoDate.split("-");
+  if (!year || !month || !day) {
+    return formatDateBR();
+  }
+
+  return `${day}/${month}/${year}`;
+}
+
+function getDivaSeverityLabel(value) {
+  const labels = {
+    mild: "leve",
+    moderate: "moderada",
+    severe: "grave"
+  };
+
+  return labels[value] || "não informada";
+}
+
+function formatSignedNumber(value) {
+  if (value > 0) {
+    return `+${value}`;
+  }
+
+  return String(value);
+}
+
+function normalizeLinePart(text) {
+  return String(text).trim().replace(/\.$/, "");
+}
+
+function lowerFirst(text) {
+  const normalized = normalizeLinePart(text);
+  return normalized.charAt(0).toLowerCase() + normalized.slice(1);
+}
+
+function formatDecimalBR(value, digits = 1) {
+  return value.toFixed(digits).replace(".", ",");
+}
+
+function getPhq9ImpactLabel(value) {
+  const impactOption = phq9ImpactOptions.find((option) => option.value === value);
+
+  if (!impactOption) {
+    return String(value);
+  }
+
+  return impactOption.label.replace(/^\d+\s*-\s*/, "").toLowerCase();
+}
+
+function getWurs25ShortInterpretation(total) {
+  return total >= 36 ? "sugestivo de TDAH retrospectivo" : "abaixo do ponto de corte para TDAH retrospectivo";
+}
+
+function getWurs61ShortInterpretation(adhdSubscore) {
+  return adhdSubscore >= 36
+    ? "sugestivo de TDAH retrospectivo"
+    : "abaixo do ponto de corte para TDAH retrospectivo";
+}
+
+function getAsrs18ShortInterpretation(highestSubscale) {
+  return highestSubscale >= 21 ? "rastreio positivo para TDAH adulto" : "rastreio negativo para TDAH adulto";
+}
+
+function getAsrs6ShortInterpretation(scores) {
+  return scores.total >= 14 || scores.positiveSymptoms >= 4
+    ? "rastreio positivo para TDAH adulto"
+    : "rastreio negativo para TDAH adulto";
+}
+
+function getStatusLabel(value, cutoff) {
+  return value >= cutoff ? "positivo" : "negativo";
+}
+
+function buildProntuarioLine(scale, scores, interpretation, context = {}) {
+  const date = formatDateBR();
+
+  if (scale.id === "panss") {
+    return `${date} — PANSS: Positiva ${scores.positiveScore}/49; Negativa ${scores.negativeScore}/49; Psicopatologia geral ${scores.generalScore}/112; Total ${scores.totalScore}/210; Índice composto P-N: ${formatSignedNumber(scores.compositeScore)}.`;
+  }
+
+  if (scale.id === "cgi-sch") {
+    const domains = scores.domains.map((domain) => {
+      return `${domain.label.toLowerCase()} ${domain.value}/${domain.interpretation.toLowerCase()}`;
+    });
+
+    return `${date} — CGI-SCH: ${domains.join("; ")}; gravidade global ${scores.globalRating.value}/${scores.globalRating.interpretation.toLowerCase()}; média sintomática ${formatDecimalBR(scores.descriptiveMean)}.`;
+  }
+
+  if (scale.id === "bdi") {
+    const parts = [`${date} — BDI: ${scores.total}/63, ${lowerFirst(interpretation)}`];
+
+    if (scores.item9 > 0) {
+      parts.push("item 9 positivo");
+    }
+
+    if (scores.intentionalWeightLoss !== null) {
+      parts.push(`perda de peso intencional: ${scores.intentionalWeightLoss === 1 ? "sim" : "não"}`);
+    }
+
+    return `${parts.join("; ")}.`;
+  }
+
+  if (scale.id === "bai") {
+    return `${date} — BAI: ${scores.total}/63, ${lowerFirst(interpretation)}.`;
+  }
+
+  if (scale.id === "phq-9") {
+    const parts = [
+      `${date} — PHQ-9: ${scores.total}/27, ${lowerFirst(interpretation)}`,
+      scores.total >= 10 ? "rastreio positivo" : "rastreio negativo"
+    ];
+
+    if (scores.item9 > 0) {
+      parts.push("item 9 positivo");
+    }
+
+    if (scores.impact !== null) {
+      parts.push(`impacto funcional: ${getPhq9ImpactLabel(scores.impact)}`);
+    }
+
+    return `${parts.join("; ")}.`;
+  }
+
+  if (scale.id === "wurs-25") {
+    return `${date} — WURS-25: Total ${scores.total}/100; Fator 1 Impulsividade/Problemas comportamentais ${scores.impulsivityBehavior}/52; Fator 2 Desatenção/Problemas escolares ${scores.inattentionSchool}/28; Fator 3 Autoestima/Humor negativo ${scores.selfEsteemMood}/20; ${getWurs25ShortInterpretation(scores.total)}.`;
+  }
+
+  if (scale.id === "wurs-61") {
+    return `${date} — WURS-61: Total ${scores.total}/244; Subescore TDAH WURS-25 ${scores.adhdSubscore}/100; ${getWurs61ShortInterpretation(scores.adhdSubscore)}.`;
+  }
+
+  if (scale.id === "asrs-18") {
+    return `${date} — ASRS-18: Desatenção ${scores.inattention}/36; Hiperatividade-Impulsividade ${scores.hyperactivityImpulsivity}/36; maior escore ${scores.highestSubscale}/36; ${getAsrs18ShortInterpretation(scores.highestSubscale)}.`;
+  }
+
+  if (scale.id === "asrs-6") {
+    return `${date} — ASRS-6: Soma ${scores.total}/24; sintomas positivos ${scores.positiveSymptoms}/6; ${getAsrs6ShortInterpretation(scores)}.`;
+  }
+
+  if (scale.id === "snap-iv-26") {
+    const cutoffs = scale.cutoffs[context.profile];
+    const selectedProfile = scale.profiles.find((profile) => profile.id === context.profile);
+
+    return `${date} — SNAP-IV: perfil ${selectedProfile.label.toLowerCase()}; Desatenção ${scores.inattention}/9 ${getStatusLabel(scores.inattention, cutoffs.inattention)}; Hiperatividade/Impulsividade ${scores.hyperactivityImpulsivity}/9 ${getStatusLabel(scores.hyperactivityImpulsivity, cutoffs.hyperactivityImpulsivity)}; TOD ${scores.odd}/8 ${getStatusLabel(scores.odd, cutoffs.odd)}.`;
+  }
+
+  if (scale.id === "diva5") {
+    const formatBool = (value) => (value ? "sim" : "não");
+    const adultCodes = scores.adultPresentCodes.length ? scores.adultPresentCodes.join(", ") : "nenhum";
+    const childhoodCodes = scores.childhoodPresentCodes.length ? scores.childhoodPresentCodes.join(", ") : "nenhum";
+
+    return `DIVA-5 ${formatDivaDate(scores.interviewDate)}: sintomas atuais — desatenção ${scores.adultInattentionCount}/9, hiperatividade/impulsividade ${scores.adultHyperImpulsiveCount}/9; infância — desatenção ${scores.childhoodInattentionCount}/9, hiperatividade/impulsividade ${scores.childhoodHyperImpulsiveCount}/9; exemplos marcados — atual ${scores.exampleCounts.totalAdultExamplesChecked}, infância ${scores.exampleCounts.totalChildhoodExamplesChecked}, total ${scores.exampleCounts.totalExamplesChecked}; início antes dos 12 anos: ${formatBool(scores.childhoodSeveralSymptoms)}; prejuízo atual em 2+ contextos: ${formatBool(scores.adultImpairmentOk)}; prejuízo na infância em 2+ contextos: ${formatBool(scores.childhoodImpairmentOk)}; melhor explicado por outro transtorno: ${formatBool(scores.differentialValue === "yes")}; conclusão: ${scores.compatible ? "compatível" : "não compatível"} com TDAH pela DIVA-5/DSM-5; apresentação: ${scores.presentation}; gravidade: ${getDivaSeverityLabel(scores.severity)}; sintomas atuais identificados: ${adultCodes}; sintomas infantis identificados: ${childhoodCodes}.`;
+
+    const parts = [
+      `${date} — DIVA-5: sintomas atuais A ${scores.adultAttentionCount}/9, H/I ${scores.adultHyperImpCount}/9`,
+      `infância A ${scores.childhoodAttentionCount}/9, H/I ${scores.childhoodHyperImpCount}/9`,
+      `início antes dos 12 anos: ${scores.onsetCriteria ? "sim" : "não"}`,
+      `prejuízo em ≥2 contextos: ${scores.impairmentCriteria ? "sim" : "não"}`,
+      `diferencial: ${getDiva5DifferentialLine(scores)}`,
+      `conclusão: ${getDiva5ShortConclusion(scores)}`,
+      `apresentação: ${lowerFirst(scores.presentation)}`
+    ];
+
+    if (scores.severity && scores.severity !== "notDefined") {
+      parts.push(`gravidade: ${getDiva5SeverityLabel(scores.severity)}`);
+    }
+
+    return `${parts.join("; ")}.`;
+  }
+
+  return "";
+}
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "16px";
+  textarea.style.left = "16px";
+  textarea.style.zIndex = "9999";
+  textarea.style.width = "min(720px, calc(100% - 32px))";
+  textarea.style.height = "180px";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  const copied = document.execCommand("copy");
+
+  if (copied) {
+    textarea.remove();
+    return;
+  }
+
+  throw new Error("Texto selecionado para cópia manual.");
+}
+
+function renderProntuarioLine(line, fullSummary = "") {
+  if (!line) {
+    return null;
+  }
+
+  const section = document.createElement("section");
+  section.className = "prontuario-line-box";
+  section.setAttribute("aria-labelledby", "prontuario-line-title");
+
+  const title = document.createElement("h3");
+  title.id = "prontuario-line-title";
+  title.textContent = "Linha para prontuário";
+
+  const text = document.createElement("p");
+  text.className = "prontuario-line-text";
+  text.textContent = line;
+
+  const actions = document.createElement("div");
+  actions.className = "prontuario-line-actions";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.dataset.copyProntuario = "true";
+  button.dataset.copyTarget = "line";
+  button.textContent = "Copiar linha";
+
+  const fullButton = document.createElement("button");
+  fullButton.type = "button";
+  fullButton.className = "secondary";
+  fullButton.dataset.copyProntuario = "true";
+  fullButton.dataset.copyTarget = "full";
+  fullButton.textContent = "Copiar resumo completo";
+  fullButton.hidden = !fullSummary;
+
+  const fullText = document.createElement("textarea");
+  fullText.className = "prontuario-full-summary";
+  fullText.value = fullSummary;
+  fullText.readOnly = true;
+  fullText.hidden = true;
+
+  const feedback = document.createElement("span");
+  feedback.className = "copy-feedback";
+  feedback.setAttribute("aria-live", "polite");
+
+  actions.append(button, fullButton, feedback);
+  section.append(title, text, fullText, actions);
+
+  return section;
+}
+
+const diva5Items = [
+  {
+    code: "A1",
+    domain: "attention",
+    title: "Atenção a detalhes / erros por distração",
+    question:
+      "Você com frequência não presta atenção suficiente aos detalhes ou comete erros por distração, no trabalho ou em outras atividades? Como era durante sua infância, na escola ou durante outras atividades?",
+    adultExamples: [
+      "Comete erros por distração",
+      "Tem que trabalhar devagar para evitar erros",
+      "Não lê as instruções com atenção",
+      "Não é bom em trabalhos detalhados",
+      "Precisa de muito tempo para os detalhes",
+      "Perde-se nos detalhes",
+      "Trabalha muito rápido e, por isso, comete erros"
+    ],
+    childhoodExamples: [
+      "Cometia erros por distração nos trabalhos escolares",
+      "Cometia erros devido a uma leitura errada das perguntas",
+      "Deixava perguntas sem responder, por não as ter lido corretamente",
+      "Deixava sem responder as perguntas do verso da página nas provas",
+      "Os outros comentavam sobre o seu trabalho desleixado",
+      "Não revia as respostas dos trabalhos feitos em casa",
+      "Precisava de muito tempo para os trabalhos detalhados"
+    ]
+  },
+  {
+    code: "A2",
+    domain: "attention",
+    title: "Manter concentração em tarefas",
+    question:
+      "Você com frequência tem dificuldade em manter-se concentrado durante as tarefas? E era durante sua infância, em jogos ou atividades?",
+    adultExamples: [
+      "Não consegue manter a atenção nas tarefas durante muito tempo",
+      "Distrai-se facilmente com as próprias associações/pensamentos",
+      "Tem dificuldade em ver um filme ou ler um livro até o fim",
+      "Fica rapidamente entediado com os assuntos",
+      "Faz perguntas sobre assuntos que já foram discutidos"
+    ],
+    childhoodExamples: [
+      "Tinha dificuldade em prestar atenção nos trabalhos escolares",
+      "Tinha dificuldade em manter-se atento aos jogos",
+      "Distraía-se facilmente",
+      "Tinha dificuldade em concentrar-se",
+      "Precisava de um ambiente muito estruturado para não se distrair",
+      "Ficava rapidamente entediado com os assuntos"
+    ]
+  },
+  {
+    code: "A3",
+    domain: "attention",
+    title: "Parece não ouvir quando lhe dirigem a palavra",
+    question:
+      "Você com frequência parece não estar ouvindo, quando alguém lhe dirige diretamente a palavra? Como era durante sua infância?",
+    adultExamples: [
+      "Divaga ou parece ausente",
+      "Tem dificuldade de concentrar-se numa conversa",
+      "Não sabe do que se falou depois de uma conversa",
+      "Muda frequentemente o assunto de uma conversa",
+      "Os outros dizem que está com a cabeça em outro lugar"
+    ],
+    childhoodExamples: [
+      "Não se lembrava do que os pais/professores diziam",
+      "Estava frequentemente sonhando ou ausente",
+      "Ouvia apenas quando olhavam nos seus olhos ou levantavam a voz",
+      "Com frequência precisava ser chamado mais de uma vez",
+      "As perguntas precisavam ser repetidas"
+    ]
+  },
+  {
+    code: "A4",
+    domain: "attention",
+    title: "Não segue instruções / não termina tarefas",
+    question:
+      "Você com frequência não segue as instruções ou não consegue terminar as tarefas ou obrigações no trabalho? Como era durante sua infância, na escola?",
+    adultExamples: [
+      "Faz várias coisas ao mesmo tempo sem terminar nenhuma delas",
+      "Tem dificuldade para finalizar as tarefas quando já não são mais novidade",
+      "Necessita de prazos-limite para terminar as tarefas",
+      "Tem dificuldade em terminar tarefas administrativas",
+      "Tem dificuldade em seguir instruções de um manual"
+    ],
+    childhoodExamples: [
+      "Tinha dificuldade em estar pronto na hora",
+      "Quarto/mesa de trabalho ficavam desarrumados",
+      "Tinha dificuldade de brincar sozinho",
+      "Tinha dificuldade de planejar as tarefas ou o trabalho de casa",
+      "Fazia várias coisas ao mesmo tempo",
+      "Chegava com frequência atrasado",
+      "Tinha pouca noção do tempo",
+      "Tinha dificuldade em prestar atenção"
+    ]
+  },
+  {
+    code: "A5",
+    domain: "attention",
+    title: "Dificuldade para organizar tarefas e atividades",
+    question:
+      "Você com frequência tem dificuldade para organizar tarefas e atividades? Como era durante sua infância?",
+    adultExamples: [
+      "Dificuldade no planejamento de atividades da vida cotidiana",
+      "Dificuldade em gerenciar tarefas sequenciais",
+      "A casa e/ou o local de trabalho estão desorganizados",
+      "Dificuldade em manter materiais e pertences em ordem",
+      "Trabalha desarrumado e desorganizado",
+      "Planeja muitas tarefas ao mesmo tempo ou faz planejamento ineficiente",
+      "Regularmente reserva coisas que acontecerão ao mesmo tempo",
+      "Chega atrasado",
+      "Falha em cumprir prazos",
+      "Não consegue usar uma agenda ou diário consistentemente",
+      "Inflexível por causa da necessidade de manter os horários",
+      "Má percepção e gestão do tempo",
+      "Faz agendamentos, mas não os usa",
+      "Precisa de outras pessoas para estruturar suas coisas"
+    ],
+    childhoodExamples: [
+      "Dificilmente estava pronto a tempo",
+      "Quarto/mesa de trabalho ficavam desarrumados",
+      "Dificuldade em manter materiais e pertences em ordem",
+      "Dificuldade para brincar sozinho",
+      "Dificuldade em planejar tarefas ou lições de casa",
+      "Falha para cumprir prazos",
+      "Faz as coisas de um jeito confuso",
+      "Chega atrasado",
+      "Má percepção de tempo/horários",
+      "Dificuldade em manter-se entretido"
+    ]
+  },
+  {
+    code: "A6",
+    domain: "attention",
+    title: "Evita tarefas que exigem esforço mental continuado",
+    question:
+      "Você com frequência evita, tem aversão ou reluta em envolver-se em tarefas que requeiram um esforço mental continuado? Como era durante sua infância?",
+    adultExamples: [
+      "Faz primeiro o que é mais fácil ou divertido",
+      "Adia sucessivamente as tarefas entediantes ou árduas",
+      "Adia as tarefas e, em consequência, não cumpre prazos",
+      "Evita os trabalhos monótonos, como os de natureza administrativa",
+      "Evita preparar relatórios, preencher formulários ou rever textos longos",
+      "Não gosta de ler porque exige esforço mental",
+      "Evita coisas que exigem muita concentração"
+    ],
+    childhoodExamples: [
+      "Evitava ou detestava os trabalhos de casa",
+      "Lia poucos livros ou não gostava de ler por isso exigir esforço mental",
+      "Evitava coisas que exigiam muita concentração",
+      "Detestava disciplinas que exigiam muita concentração",
+      "Adiava sucessivamente tarefas entediantes ou árduas"
+    ]
+  },
+  {
+    code: "A7",
+    domain: "attention",
+    title: "Perde objetos necessários",
+    question:
+      "Você com frequência perde objetos necessários para as tarefas ou atividades? Como era durante sua infância?",
+    adultExamples: [
+      "Perde a carteira, as chaves ou a agenda",
+      "Deixa frequentemente coisas para trás",
+      "Perde papéis do trabalho",
+      "Perde muito tempo procurando as coisas",
+      "Entra em pânico quando os outros mudam as coisas de lugar",
+      "Arruma coisas no lugar errado",
+      "Perde listas, números de telefone, anotações"
+    ],
+    childhoodExamples: [
+      "Perdia a agenda, as canetas, equipamentos de ginástica ou outras coisas",
+      "Perdia roupa, brinquedos ou trabalhos de casa",
+      "Perdia muito tempo procurando as coisas",
+      "Entrava em pânico quando os outros mudavam as coisas de lugar",
+      "Recebia comentários dos pais/professores sobre o fato de perder as coisas"
+    ]
+  },
+  {
+    code: "A8",
+    domain: "attention",
+    title: "Distrai-se facilmente com estímulos externos",
+    question:
+      "Você com frequência se distrai facilmente com estímulos externos? Como era durante sua infância?",
+    adultExamples: [
+      "Tem dificuldade em ignorar estímulos externos",
+      "Depois de se distrair, tem dificuldade em voltar ao assunto",
+      "Distrai-se facilmente com barulhos ou com o que acontece à sua volta",
+      "Escuta as conversas dos outros",
+      "Tem dificuldade em filtrar/selecionar informação"
+    ],
+    childhoodExamples: [
+      "Durante as aulas olhava muitas vezes para fora da janela",
+      "Distraía-se facilmente com barulhos ou com o que acontecia à sua volta",
+      "Depois de se distrair, tinha dificuldade em voltar ao assunto"
+    ]
+  },
+  {
+    code: "A9",
+    domain: "attention",
+    title: "Esquece atividades do dia a dia",
+    question:
+      "Você com frequência se esquece das atividades do dia a dia? Como era durante sua infância?",
+    adultExamples: [
+      "Esquece de compromissos ou outras obrigações",
+      "Esquece as chaves, a agenda etc.",
+      "Precisa ser lembrado frequentemente de compromissos",
+      "Esquece de pagar contas ou retornar chamadas telefônicas",
+      "Precisa voltar a casa para buscar coisas esquecidas",
+      "Uso rígido de listas ou rotinas para garantir que as coisas não serão esquecidas",
+      "Esquece de manter a agenda diária ou olhá-la",
+      "Esquece de fazer tarefas ou dar recados"
+    ],
+    childhoodExamples: [
+      "Esquecia de compromissos ou instruções",
+      "Esquecia de fazer tarefas ou dar recados",
+      "Tinha que ser lembrado frequentemente de coisas",
+      "A meio caminho de uma tarefa, esquecia o que deveria ser feito",
+      "Esquecia de levar as coisas para a escola",
+      "Esquecia as coisas na escola ou nas casas dos amigos"
+    ]
+  },
+  {
+    code: "HI1",
+    domain: "hyperImp",
+    title: "Mexe mãos/pés ou remexe-se na cadeira",
+    question:
+      "Você com frequência mexe de forma irrequieta as mãos e os pés ou remexe-se na cadeira quando está sentado? Como era durante sua infância?",
+    adultExamples: [
+      "Tem dificuldade em ficar quieto/a sentado/a",
+      "Balança as pernas",
+      "Bate com a caneta ou brinca com qualquer coisa",
+      "Rói as unhas ou mexe no cabelo",
+      "Consegue controlar a inquietação motora, mas isso faz com que fique ainda mais tenso/a"
+    ],
+    childhoodExamples: [
+      "Os pais diziam muitas vezes para se sentar quieto/a ou algo parecido",
+      "Balançava as pernas",
+      "Batia com a caneta ou brincava com qualquer coisa",
+      "Roía as unhas ou mexia no cabelo",
+      "Não conseguia ficar sentado/a normalmente numa cadeira",
+      "Conseguia controlar a inquietação motora, mas isso o/a fazia ficar ainda mais tenso/a"
+    ]
+  },
+  {
+    code: "HI2",
+    domain: "hyperImp",
+    title: "Levanta-se quando deveria permanecer sentado",
+    question:
+      "Você com frequência se levanta do lugar em situações em que é esperado que permaneça sentado? Como era durante sua infância?",
+    adultExamples: [
+      "Deixa frequentemente o seu lugar no escritório ou no ambiente de trabalho",
+      "Evita simpósios, palestras, igreja etc.",
+      "Prefere andar em vez de ficar sentado",
+      "Nunca fica parado por muito tempo, sempre se movimentando",
+      "Estressado devido à dificuldade de ficar quieto",
+      "Usa desculpas para poder andar por aí"
+    ],
+    childhoodExamples: [
+      "Muitas vezes se levantava enquanto comia ou deixava seu lugar na sala de aula",
+      "Achava muito difícil permanecer sentado na escola ou durante refeições",
+      "Era chamado a atenção para permanecer sentado",
+      "Dava desculpas para andar por aí"
+    ]
+  },
+  {
+    code: "HI3",
+    domain: "hyperImp",
+    title: "Sente-se irrequieto / inquietação motora",
+    question:
+      "Você com frequência se sente irrequieto? Como era durante sua infância?",
+    adultExamples: [
+      "Sente-se irrequieto ou agitado por dentro",
+      "Tem a sensação de precisar estar ocupado",
+      "Tem dificuldade em relaxar"
+    ],
+    childhoodExamples: [
+      "Estava sempre correndo",
+      "Subia nos móveis ou saltava em cima dos bancos",
+      "Subia nas árvores",
+      "Sentia-se agitado por dentro"
+    ]
+  },
+  {
+    code: "HI4",
+    domain: "hyperImp",
+    title: "Dificuldade em fazer atividades de lazer sossegadamente",
+    question:
+      "Você com frequência tem dificuldade em dedicar-se sossegadamente a atividades de lazer? Como era durante sua infância nas atividades de lazer?",
+    adultExamples: [
+      "Fala durante atividades quando isto é inapropriado",
+      "Em público tende a ser arrogante ou chamar atenção",
+      "É barulhento em várias situações",
+      "Tem dificuldade em fazer atividades sossegadamente",
+      "Tem dificuldade em falar baixo"
+    ],
+    childhoodExamples: [
+      "Era barulhento durante os jogos ou durante as aulas",
+      "Não conseguia ver televisão ou filmes sossegadamente",
+      "Era repreendido para ficar mais quieto/sossegado",
+      "Em público tendia a destacar-se/chamar atenção"
+    ]
+  },
+  {
+    code: "HI5",
+    domain: "hyperImp",
+    title: "\"A mil por hora\" / \"ligado a um motor\"",
+    question:
+      "Você com frequência está a mil por hora ou age como se estivesse ligado a um motor? Como era durante sua infância?",
+    adultExamples: [
+      "Sempre ocupado fazendo algo",
+      "É desconfortável permanecer parado por tempo prolongado, por exemplo em restaurantes ou reuniões",
+      "Tem muita energia, sempre em movimento",
+      "Os outros consideram você inquieto ou difícil de acompanhar",
+      "Passa por cima dos próprios limites",
+      "Acha difícil deixar as coisas, energia em excesso"
+    ],
+    childhoodExamples: [
+      "Constantemente ocupado",
+      "Os outros consideravam você inquieto ou difícil de acompanhar",
+      "Era desconfortável permanecer parado por tempo prolongado",
+      "Excesso de atividade na escola e em casa",
+      "Tinha muita energia",
+      "Sempre em movimento, energia em excesso"
+    ]
+  },
+  {
+    code: "HI6",
+    domain: "hyperImp",
+    title: "Fala excessivamente",
+    question:
+      "Você com frequência fala excessivamente? Como era durante sua infância?",
+    adultExamples: [
+      "Fala de maneira tão agitada que os outros o acham cansativo",
+      "Tem fama de ser muito falador",
+      "Tem dificuldade em parar de falar",
+      "Tem a tendência de falar excessivamente",
+      "Não deixa os outros falarem numa conversa",
+      "Precisa de muitas palavras para dizer qualquer coisa"
+    ],
+    childhoodExamples: [
+      "Tinha fama de ser tagarela",
+      "Os professores e os pais mandavam-no frequentemente calar-se",
+      "Nos relatórios da escola tinha comentários acerca de falar demais",
+      "Era castigado por falar em demasia",
+      "Distraía os outros com conversas, quando faziam os trabalhos escolares",
+      "Não deixava os outros falarem durante as conversas"
+    ]
+  },
+  {
+    code: "HI7",
+    domain: "hyperImp",
+    title: "Responde antes da pergunta ser completada",
+    question:
+      "Você com frequência dá as respostas antes que as perguntas tenham sido completadas? Como era durante sua infância?",
+    adultExamples: [
+      "Fala impulsivamente, fala sem pensar",
+      "Diz o que lhe vem à cabeça",
+      "Responde sem deixar o outro acabar a frase",
+      "Completa as frases das outras pessoas",
+      "É indelicado, grosseiro, sem tato"
+    ],
+    childhoodExamples: [
+      "Era um tagarela, dizia coisas sem pensar primeiro",
+      "Queria ser o primeiro a responder a perguntas na escola",
+      "Dizia a primeira resposta que lhe vinha à cabeça, mesmo que estivesse errada",
+      "Interrompia os outros antes de acabarem de dizer a frase",
+      "Dificuldade em esperar sua vez durante as conversas",
+      "Era conhecido como sendo indelicado"
+    ]
+  },
+  {
+    code: "HI8",
+    domain: "hyperImp",
+    title: "Dificuldade em esperar a vez",
+    question:
+      "Você com frequência tem dificuldade em esperar pela sua vez? Como era durante sua infância?",
+    adultExamples: [
+      "Dificuldade em esperar em uma fila, furando a fila",
+      "Dificuldade em esperar pacientemente no trânsito ou no engarrafamento",
+      "É impaciente",
+      "Inicia subitamente relacionamentos e/ou empregos, ou os deixa de repente, por impaciência"
+    ],
+    childhoodExamples: [
+      "Dificuldade em esperar sua vez nas atividades de grupo",
+      "Dificuldade em aguardar sua vez na sala de aula",
+      "Queria ser sempre o primeiro a falar ou agir",
+      "Tornava-se impaciente com facilidade",
+      "Atravessava a rua sem olhar"
+    ]
+  },
+  {
+    code: "HI9",
+    domain: "hyperImp",
+    title: "Interrompe ou se intromete nas atividades dos outros",
+    question:
+      "Você com frequência interrompe ou se intromete nas atividades dos outros? Como era durante sua infância?",
+    adultExamples: [
+      "Intromete-se facilmente nos assuntos dos outros",
+      "Interrompe os outros",
+      "Interrompe as pessoas nas suas atividades sem pedir licença",
+      "Os outros comentam sobre ser intrometido",
+      "Tem dificuldade em respeitar os limites dos outros",
+      "Tem uma opinião sobre tudo e a expressa imediatamente"
+    ],
+    childhoodExamples: [
+      "Intrometia-se nos jogos dos outros",
+      "Interrompia as conversas dos outros",
+      "Reagia a tudo",
+      "Não era capaz de esperar"
+    ]
+  }
+];
+
+const diva5ImpairmentAreas = {
+  adult: [
+    {
+      id: "workEducation",
+      label: "Trabalho / educação",
+      examples: [
+        "Não concluiu a educação/formação necessária para o trabalho",
+        "Trabalha abaixo do nível de educação/formação",
+        "Fica rapidamente farto de um cargo ou função no trabalho",
+        "Padrão de muitos trabalhos de curta duração",
+        "Dificuldade com o trabalho administrativo / planejamento",
+        "Não consegue promoções",
+        "Rende abaixo de sua capacidade de trabalho",
+        "Sai do emprego ou é despedido por causa de uma discussão",
+        "Encontra-se em afastamento médico prolongado devido às incapacidades provocadas pelos sintomas",
+        "Prejuízo limitado por conseguir compensar com QI elevado",
+        "Prejuízo limitado por conseguir compensar com apoio de estrutura externa"
+      ]
+    },
+    {
+      id: "relationshipsFamily",
+      label: "Relacionamentos e/ou família",
+      examples: [
+        "Fica rapidamente aborrecido nos relacionamentos",
+        "Impulsivamente começa/termina relacionamentos",
+        "Relacionamentos desequilibrados devido aos sintomas",
+        "Problemas de relacionamento, muitas discussões, falta de intimidade",
+        "Divorciado devido aos sintomas",
+        "Problemas com a sexualidade devido aos sintomas",
+        "Dificuldade na educação dos filhos, resultante dos sintomas",
+        "Dificuldade nas tarefas domésticas e/ou administrativas",
+        "Problemas financeiros ou apostar em jogos de azar",
+        "Medo de começar um relacionamento"
+      ]
+    },
+    {
+      id: "socialContacts",
+      label: "Interação social",
+      examples: [
+        "Fica rapidamente entediado com os contatos sociais",
+        "Dificuldade em manter contatos sociais",
+        "Conflitos devido a problemas de comunicação",
+        "Dificuldade em iniciar contatos sociais",
+        "Comportamento pouco assertivo devido a experiências negativas",
+        "Não é atencioso, esquece de mandar postal, enviar pêsames, telefonar etc."
+      ]
+    },
+    {
+      id: "leisureHobbies",
+      label: "Tempo livre / hobbies",
+      examples: [
+        "Incapaz de relaxar adequadamente durante o tempo livre",
+        "Tem que praticar esportes intensamente para relaxar",
+        "Lesões resultantes da prática excessiva de esportes",
+        "Não consegue ler um livro ou assistir a um filme até o fim",
+        "Está sempre ativo e, por isso, sente-se exausto",
+        "Perde interesse rapidamente pelos hobbies",
+        "Acidentes ao dirigir e/ou perda da carteira de motorista como resultado de condução imprudente",
+        "Busca de adrenalina e/ou assume muitos riscos",
+        "Problemas com a polícia ou justiça",
+        "Come compulsivamente"
+      ]
+    },
+    {
+      id: "selfConfidenceImage",
+      label: "Autoconfiança / autoimagem",
+      examples: [
+        "É inseguro devido aos comentários negativos de outras pessoas",
+        "Autoimagem negativa devido aos erros frequentes",
+        "Medo de fracasso quando começa algo novo",
+        "Reação exagerada a críticas",
+        "Perfeccionismo",
+        "Sente-se triste devido aos sintomas do TDAH"
+      ]
+    }
+  ],
+  childhood: [
+    {
+      id: "academicLife",
+      label: "Vida acadêmica",
+      examples: [
+        "Nível educacional mais baixo do que seria de esperar pelo QI",
+        "Repetições de ano devido a problemas de concentração",
+        "Formação não concluída/desistiu da escola",
+        "Precisou de muito mais tempo do que o normal para terminar a formação escolar",
+        "Conseguiu uma formação compatível com o QI com muita dificuldade",
+        "Tinha dificuldade em fazer as lições de casa",
+        "Frequentou o ensino especial devido aos sintomas",
+        "Recebia comentários dos professores sobre seu comportamento ou sua concentração",
+        "Prejuízo limitado por conseguir compensar com um QI elevado",
+        "Prejuízo limitado por conseguir compensar com apoio de estrutura externa"
+      ]
+    },
+    {
+      id: "familyLife",
+      label: "Vida familiar",
+      examples: [
+        "Discutia frequentemente com os irmãos/irmãs",
+        "Era frequentemente castigado ou apanhava",
+        "Tinha pouco contato com a família devido a conflitos",
+        "Precisou ter a vida organizada pelos pais durante mais tempo do que o que seria normal"
+      ]
+    },
+    {
+      id: "socialContacts",
+      label: "Interação social",
+      examples: [
+        "Tinha dificuldade em manter contatos sociais",
+        "Teve conflitos devido a problemas de comunicação",
+        "Tinha dificuldades em iniciar contatos sociais",
+        "Tinha comportamento pouco assertivo como resultado de experiências negativas",
+        "Tinha poucos amigos",
+        "Era importunado",
+        "Era excluído ou não era admitido para fazer parte de grupos",
+        "Foi bully, praticava bullying"
+      ]
+    },
+    {
+      id: "leisureHobbies",
+      label: "Tempo livre / hobbies",
+      examples: [
+        "Não conseguia relaxar no tempo livre",
+        "Precisava praticar muito esporte para conseguir relaxar",
+        "Teve lesões resultantes da prática excessiva de esportes",
+        "Não conseguia ver um filme ou ler um livro até o fim",
+        "Estava sempre em ação e, por isso, andava exausto",
+        "Perdia rapidamente interesse pelos hobbies",
+        "Buscava sensações intensas/arriscava demais",
+        "Problemas com a polícia ou a justiça",
+        "Teve muitos acidentes"
+      ]
+    },
+    {
+      id: "selfConfidenceImage",
+      label: "Autoconfiança / autoimagem",
+      examples: [
+        "Era inseguro devido aos comentários negativos que recebia dos outros",
+        "Tinha baixa autoestima devido aos erros frequentes",
+        "Tinha medo de falhar quando começava algo novo",
+        "Reagia exageradamente a críticas",
+        "Era perfeccionista"
+      ]
+    }
+  ]
+};
+
+const diva5CollateralOptions = {
+  notAvailable: "ND - não disponível",
+  none: "0 - sem/pouca confirmação",
+  some: "1 - alguma confirmação",
+  clear: "2 - confirmação clara"
+};
+
+function createDiva5PeriodState() {
+  return {
+    present: null,
+    checkedExamples: [],
+    other: "",
+    note: ""
+  };
+}
+
+function createDiva5State() {
+  const criteria = {};
+
+  diva5Items.forEach((item) => {
+    criteria[item.code] = {
+      adult: createDiva5PeriodState(),
+      childhood: createDiva5PeriodState()
+    };
+  });
+
+  return {
+    criteria,
+    onset: {
+      severalSymptomsBefore12: null,
+      laterOnsetAge: ""
+    },
+    impairment: {
+      adult: {
+        workEducation: false,
+        familyRelationships: false,
+        socialContacts: false,
+        freeTimeHobbies: false,
+        selfConfidenceSelfImage: false,
+        other: "",
+        evidenceInTwoOrMoreContexts: null
+      },
+      childhood: {
+        school: false,
+        family: false,
+        socialContacts: false,
+        freeTimeHobbies: false,
+        selfConfidenceSelfImage: false,
+        other: "",
+        evidenceInTwoOrMoreContexts: null
+      }
+    },
+    differential: {
+      betterExplainedByAnotherDisorder: null,
+      explanation: ""
+    },
+    collateral: {
+      family: "ND",
+      parentsOrFamily: "notAvailable",
+      partnerOrFriend: "ND",
+      schoolReports: "ND",
+      notes: ""
+    },
+    severity: null,
+    interviewDate: new Date().toISOString().slice(0, 10)
+  };
+}
+
+function getDiva5State() {
+  if (!answers.diva5) {
+    answers.diva5 = createDiva5State();
+  }
+
+  return answers.diva5;
+}
+
+function getDiva5Domain(item) {
+  return item.domain === "attention" ? "inattention" : "hyperImpulsive";
+}
+
+function getDiva5DomainItems(domain) {
+  return diva5Items.filter((item) => getDiva5Domain(item) === domain);
+}
+
+function isDivaYes(value) {
+  return value === true || value === "yes";
+}
+
+function isDivaNo(value) {
+  return value === false || value === "no";
+}
+
+function countDiva5Symptoms(state, domain, period) {
+  return getDiva5DomainItems(domain).filter((item) => isDivaYes(state.criteria[item.code][period].present)).length;
+}
+
+function getDiva5PresentCodes(state, period) {
+  return diva5Items
+    .filter((item) => isDivaYes(state.criteria[item.code][period].present))
+    .map((item) => item.code);
+}
+
+function countDiva5ImpairmentAreas(state, period) {
+  return diva5ImpairmentAreas[period].filter((area) => {
+    return state.impairment[period][area.id].present === "yes";
+  }).length;
+}
+
+function getDiva5ImpairmentLabels(state, period) {
+  return diva5ImpairmentAreas[period]
+    .filter((area) => state.impairment[period][area.id].present === "yes")
+    .map((area) => area.label);
+}
+
+function getDiva5Presentation(adultAttentionCount, adultHyperImpCount) {
+  if (adultAttentionCount >= 5 && adultHyperImpCount >= 5) {
+    return "Apresentação combinada";
+  }
+
+  if (adultAttentionCount >= 5) {
+    return "Apresentação predominantemente desatenta";
+  }
+
+  if (adultHyperImpCount >= 5) {
+    return "Apresentação predominantemente hiperativa/impulsiva";
+  }
+
+  return "Critérios sintomáticos atuais insuficientes para apresentação DSM-5";
+}
+
+function countCheckedDivaExamples(periodState) {
+  return periodState.checkedExamples.length;
+}
+
+function getCheckedDivaExampleTexts(item, period, periodState) {
+  const examples = period === "adult" ? item.adultExamples : item.childhoodExamples;
+  return periodState.checkedExamples.map((index) => examples[Number(index)]).filter(Boolean);
+}
+
+function getDivaStructuredPresentation(adultInattentionCount, adultHyperImpulsiveCount, compatible) {
+  if (!compatible) {
+    return "não aplicável";
+  }
+
+  if (adultInattentionCount >= 5 && adultHyperImpulsiveCount >= 5) {
+    return "Apresentação combinada";
+  }
+
+  if (adultInattentionCount >= 5) {
+    return "Apresentação predominantemente desatenta";
+  }
+
+  if (adultHyperImpulsiveCount >= 5) {
+    return "Apresentação predominantemente hiperativa/impulsiva";
+  }
+
+  return "não aplicável";
+}
+
+function getDivaExampleCounts(state) {
+  const counts = {
+    byCriterion: {},
+    adultInattentionExamplesTotal: 0,
+    childhoodInattentionExamplesTotal: 0,
+    adultHyperImpulsiveExamplesTotal: 0,
+    childhoodHyperImpulsiveExamplesTotal: 0,
+    totalAdultExamplesChecked: 0,
+    totalChildhoodExamplesChecked: 0,
+    totalExamplesChecked: 0
+  };
+
+  diva5Items.forEach((item) => {
+    const adultCount = countCheckedDivaExamples(state.criteria[item.code].adult);
+    const childhoodCount = countCheckedDivaExamples(state.criteria[item.code].childhood);
+    const domain = getDiva5Domain(item);
+
+    counts.byCriterion[item.code] = {
+      adultCheckedExampleCount: adultCount,
+      childhoodCheckedExampleCount: childhoodCount,
+      totalCheckedExampleCount: adultCount + childhoodCount
+    };
+
+    counts.totalAdultExamplesChecked += adultCount;
+    counts.totalChildhoodExamplesChecked += childhoodCount;
+
+    if (domain === "inattention") {
+      counts.adultInattentionExamplesTotal += adultCount;
+      counts.childhoodInattentionExamplesTotal += childhoodCount;
+    } else {
+      counts.adultHyperImpulsiveExamplesTotal += adultCount;
+      counts.childhoodHyperImpulsiveExamplesTotal += childhoodCount;
+    }
+  });
+
+  counts.totalExamplesChecked = counts.totalAdultExamplesChecked + counts.totalChildhoodExamplesChecked;
+  return counts;
+}
+
+function getDivaIdentifiedSymptoms(state, period = null) {
+  const symptoms = [];
+
+  diva5Items.forEach((item) => {
+    ["adult", "childhood"].forEach((currentPeriod) => {
+      if (period && period !== currentPeriod) {
+        return;
+      }
+
+      const periodState = state.criteria[item.code][currentPeriod];
+
+      if (!isDivaYes(periodState.present)) {
+        return;
+      }
+
+      symptoms.push({
+        code: item.code,
+        label: item.title,
+        period: currentPeriod,
+        exampleCount: countCheckedDivaExamples(periodState),
+        checkedExamples: getCheckedDivaExampleTexts(item, currentPeriod, periodState),
+        other: periodState.other.trim(),
+        note: periodState.note.trim()
+      });
+    });
+  });
+
+  return symptoms;
+}
+
+function getDivaMarkedExamplesWithoutPresent(state) {
+  const items = [];
+
+  diva5Items.forEach((item) => {
+    ["adult", "childhood"].forEach((period) => {
+      const periodState = state.criteria[item.code][period];
+
+      if (countCheckedDivaExamples(periodState) > 0 && isDivaNo(periodState.present)) {
+        items.push({
+          code: item.code,
+          label: item.title,
+          period,
+          exampleCount: countCheckedDivaExamples(periodState),
+          checkedExamples: getCheckedDivaExampleTexts(item, period, periodState)
+        });
+      }
+    });
+  });
+
+  return items;
+}
+
+function calculateDiva5Legacy() {
+  const state = getDiva5State();
+  const adultAttentionCount = countDiva5Symptoms(state, "attention", "adult");
+  const adultHyperImpCount = countDiva5Symptoms(state, "hyperImp", "adult");
+  const childhoodAttentionCount = countDiva5Symptoms(state, "attention", "childhood");
+  const childhoodHyperImpCount = countDiva5Symptoms(state, "hyperImp", "childhood");
+  const adultImpairmentCount = countDiva5ImpairmentAreas(state, "adult");
+  const childhoodImpairmentCount = countDiva5ImpairmentAreas(state, "childhood");
+  const adultSymptomCriteria = adultAttentionCount >= 5 || adultHyperImpCount >= 5;
+  const childhoodSymptomCriteria = childhoodAttentionCount >= 5 || childhoodHyperImpCount >= 5;
+  const onsetCriteria = state.onset.severalBefore12 === "yes";
+  const impairmentCriteria = adultImpairmentCount >= 2 || childhoodImpairmentCount >= 2;
+  const differentialValue = state.differential.betterExplainedByAnotherDisorder;
+  const differentialCriteria = differentialValue === "no";
+  const differentialPending = differentialValue === "yes" || differentialValue === "uncertain";
+  const presentation = getDiva5Presentation(adultAttentionCount, adultHyperImpCount);
+
+  let compatibility = "Critérios não preenchidos pela DIVA-5";
+
+  if (differentialPending) {
+    compatibility = "Conclusão pendente por diagnóstico diferencial";
+  } else if (
+    adultSymptomCriteria &&
+    childhoodSymptomCriteria &&
+    onsetCriteria &&
+    impairmentCriteria &&
+    differentialCriteria
+  ) {
+    compatibility = "Critérios compatíveis com TDAH pela DIVA-5";
+  }
+
+  return {
+    type: "diva5",
+    adultAttentionCount,
+    adultHyperImpCount,
+    childhoodAttentionCount,
+    childhoodHyperImpCount,
+    adultAttentionCriteria: adultAttentionCount >= 5,
+    adultHyperImpCriteria: adultHyperImpCount >= 5,
+    childhoodAttentionCriteria: childhoodAttentionCount >= 5,
+    childhoodHyperImpCriteria: childhoodHyperImpCount >= 5,
+    adultSymptomCriteria,
+    childhoodSymptomCriteria,
+    onsetCriteria,
+    autoSeveralBefore12: childhoodAttentionCount >= 3 || childhoodHyperImpCount >= 3,
+    adultImpairmentCount,
+    childhoodImpairmentCount,
+    adultImpairmentCriteria: adultImpairmentCount >= 2,
+    childhoodImpairmentCriteria: childhoodImpairmentCount >= 2,
+    impairmentCriteria,
+    differentialValue,
+    differentialCriteria,
+    differentialPending,
+    presentation,
+    compatibility,
+    adultPresentCodes: getDiva5PresentCodes(state, "adult"),
+    childhoodPresentCodes: getDiva5PresentCodes(state, "childhood"),
+    adultImpairmentLabels: getDiva5ImpairmentLabels(state, "adult"),
+    childhoodImpairmentLabels: getDiva5ImpairmentLabels(state, "childhood"),
+    differentialExplanation: state.differential.explanation,
+    collateral: state.collateral,
+    severity: state.severity
+  };
+}
+
+function interpretDiva5(scores) {
+  return scores.conclusion;
+}
+
+function calculateDiva5() {
+  const state = getDiva5State();
+  const adultInattentionCount = countDiva5Symptoms(state, "inattention", "adult");
+  const adultHyperImpulsiveCount = countDiva5Symptoms(state, "hyperImpulsive", "adult");
+  const childhoodInattentionCount = countDiva5Symptoms(state, "inattention", "childhood");
+  const childhoodHyperImpulsiveCount = countDiva5Symptoms(state, "hyperImpulsive", "childhood");
+  const adultInattentionPositive = adultInattentionCount >= 5;
+  const adultHyperImpulsivePositive = adultHyperImpulsiveCount >= 5;
+  const adultAnyDomainPositive = adultInattentionPositive || adultHyperImpulsivePositive;
+  const childhoodSeveralSymptoms = isDivaYes(state.onset.severalSymptomsBefore12);
+  const adultImpairmentOk = isDivaYes(state.impairment.adult.evidenceInTwoOrMoreContexts);
+  const childhoodImpairmentOk = isDivaYes(state.impairment.childhood.evidenceInTwoOrMoreContexts);
+  const differentialOk = isDivaNo(state.differential.betterExplainedByAnotherDisorder);
+  const compatible =
+    adultAnyDomainPositive && childhoodSeveralSymptoms && adultImpairmentOk && childhoodImpairmentOk && differentialOk;
+  const exampleCounts = getDivaExampleCounts(state);
+  const adultIdentifiedSymptoms = getDivaIdentifiedSymptoms(state, "adult");
+  const childhoodIdentifiedSymptoms = getDivaIdentifiedSymptoms(state, "childhood");
+  const examplesWithoutPresent = getDivaMarkedExamplesWithoutPresent(state);
+  const onsetConflict =
+    isDivaNo(state.onset.severalSymptomsBefore12) &&
+    (childhoodInattentionCount >= 3 || childhoodHyperImpulsiveCount >= 3);
+
+  return {
+    type: "diva5",
+    adultInattentionCount,
+    adultHyperImpulsiveCount,
+    childhoodInattentionCount,
+    childhoodHyperImpulsiveCount,
+    adultInattentionPositive,
+    adultHyperImpulsivePositive,
+    adultAnyDomainPositive,
+    childhoodSeveralSymptoms,
+    differentialOk,
+    adultImpairmentOk,
+    childhoodImpairmentOk,
+    compatible,
+    conclusion: compatible ? "compatível com TDAH pela DIVA-5/DSM-5" : "não compatível com TDAH pela DIVA-5/DSM-5",
+    presentation: getDivaStructuredPresentation(adultInattentionCount, adultHyperImpulsiveCount, compatible),
+    adultPresentCodes: getDiva5PresentCodes(state, "adult"),
+    childhoodPresentCodes: getDiva5PresentCodes(state, "childhood"),
+    exampleCounts,
+    adultIdentifiedSymptoms,
+    childhoodIdentifiedSymptoms,
+    examplesWithoutPresent,
+    onsetConflict,
+    differentialValue: state.differential.betterExplainedByAnotherDisorder,
+    differentialExplanation: state.differential.explanation,
+    collateral: state.collateral,
+    severity: state.severity,
+    interviewDate: state.interviewDate,
+    state
+  };
+}
+
+function buildDivaFullSummary(scores) {
+  const formatSymptoms = (symptoms) => {
+    if (!symptoms.length) {
+      return "Nenhum";
+    }
+
+    return symptoms
+      .map((symptom) => {
+        const details = [
+          `${symptom.code} - ${symptom.label}`,
+          `Exemplos marcados: ${symptom.exampleCount}`
+        ];
+
+        if (symptom.checkedExamples.length) {
+          details.push(`Exemplos: ${symptom.checkedExamples.join("; ")}`);
+        }
+
+        if (symptom.other) {
+          details.push(`Outros exemplos: ${symptom.other}`);
+        }
+
+        if (symptom.note) {
+          details.push(`Nota clínica: ${symptom.note}`);
+        }
+
+        return details.join("\n");
+      })
+      .join("\n\n");
+  };
+
+  return [
+    `DIVA-5 ${formatDivaDate(scores.interviewDate)}`,
+    `Conclusão: ${scores.conclusion}`,
+    `Apresentação: ${scores.presentation}`,
+    `Gravidade: ${getDivaSeverityLabel(scores.severity)}`,
+    `Sintomas atuais: desatenção ${scores.adultInattentionCount}/9; hiperatividade/impulsividade ${scores.adultHyperImpulsiveCount}/9`,
+    `Sintomas na infância: desatenção ${scores.childhoodInattentionCount}/9; hiperatividade/impulsividade ${scores.childhoodHyperImpulsiveCount}/9`,
+    `Exemplos: atual ${scores.exampleCounts.totalAdultExamplesChecked}; infância ${scores.exampleCounts.totalChildhoodExamplesChecked}; total ${scores.exampleCounts.totalExamplesChecked}`,
+    `Critérios adicionais: início antes dos 12 anos ${yesNo(scores.childhoodSeveralSymptoms)}; prejuízo atual em 2+ contextos ${yesNo(scores.adultImpairmentOk)}; prejuízo na infância em 2+ contextos ${yesNo(scores.childhoodImpairmentOk)}; melhor explicado por outro transtorno ${yesNo(scores.differentialValue)}`,
+    `Sintomas atuais identificados:\n${formatSymptoms(scores.adultIdentifiedSymptoms)}`,
+    `Sintomas infantis identificados:\n${formatSymptoms(scores.childhoodIdentifiedSymptoms)}`
+  ].join("\n\n");
+}
+
+function yesNo(value) {
+  if (value === true || value === "yes") {
+    return "Sim";
+  }
+
+  if (value === false || value === "no") {
+    return "Não";
+  }
+
+  if (value === "uncertain") {
+    return "Incerto";
+  }
+
+  return "Não respondido";
+}
+
+function getDiva5SeverityLabel(value) {
+  const labels = {
+    mild: "leve",
+    moderate: "moderada",
+    severe: "grave",
+    notDefined: "não definida"
+  };
+
+  return labels[value] || "não definida";
+}
+
+function getDiva5DifferentialLine(scores) {
+  if (scores.differentialValue === "no") {
+    return "não melhor explicado por outro transtorno";
+  }
+
+  return "pendente";
+}
+
+function getDiva5ShortConclusion(scores) {
+  if (scores.differentialPending) {
+    return "pendente";
+  }
+
+  if (!scores.adultSymptomCriteria) {
+    return "critérios sintomáticos atuais insuficientes";
+  }
+
+  if (scores.compatibility === "Critérios compatíveis com TDAH pela DIVA-5") {
+    return "compatível com TDAH";
+  }
+
+  return "não compatível";
+}
+
+function formatCodes(codes) {
+  return codes.length ? codes.join(", ") : "Nenhum";
+}
+
 const scales = [
+  {
+    id: "diva5",
+    name: "DIVA-5 - Entrevista Diagnóstica para TDAH em Adultos",
+    type: "structuredInterview",
+    renderer: "diva5",
+    description:
+      "Entrevista diagnóstica estruturada para TDAH em adultos, baseada nos critérios do DSM-5. Deve ser preenchida por julgamento clínico, usando os exemplos como apoio.",
+    calculate: calculateDiva5,
+    interpret: interpretDiva5,
+    getResultRows(scores, interpretation) {
+      {
+      const symptomLine = (symptom) => {
+        const periodLabel = symptom.period === "adult" ? "Atual" : "Infância";
+        const parts = [
+          `${symptom.code} - ${symptom.label}: ${periodLabel}; exemplos marcados ${symptom.exampleCount}`
+        ];
+
+        if (symptom.checkedExamples.length) {
+          parts.push(`Exemplos: ${symptom.checkedExamples.join("; ")}`);
+        }
+
+        if (symptom.other) {
+          parts.push(`Outros exemplos: ${symptom.other}`);
+        }
+
+        if (symptom.note) {
+          parts.push(`Nota clínica: ${symptom.note}`);
+        }
+
+        return parts.join("\n");
+      };
+      const rows = [
+        {
+          label: "Resultado diagnóstico",
+          value: scores.compatible
+            ? "Compatível com TDAH pela DIVA-5/DSM-5."
+            : "Não compatível com TDAH pela DIVA-5/DSM-5.",
+          className: scores.compatible ? "result-highlight" : ""
+        },
+        { label: "Apresentação", value: scores.presentation },
+        { label: "Gravidade", value: getDivaSeverityLabel(scores.severity) },
+        {
+          label: "Contagem de sintomas",
+          value: [
+            `Desatenção atual: ${scores.adultInattentionCount}/9`,
+            `Hiperatividade/impulsividade atual: ${scores.adultHyperImpulsiveCount}/9`,
+            `Desatenção na infância: ${scores.childhoodInattentionCount}/9`,
+            `Hiperatividade/impulsividade na infância: ${scores.childhoodHyperImpulsiveCount}/9`
+          ].join("\n")
+        },
+        {
+          label: "Critérios adicionais",
+          value: [
+            `Vários sintomas antes dos 12 anos: ${yesNo(scores.childhoodSeveralSymptoms)}`,
+            `Prejuízo atual em 2+ contextos: ${yesNo(scores.adultImpairmentOk)}`,
+            `Prejuízo na infância em 2+ contextos: ${yesNo(scores.childhoodImpairmentOk)}`,
+            `Melhor explicado por outro transtorno: ${yesNo(scores.differentialValue)}`
+          ].join("\n")
+        },
+        {
+          label: "Contagem de exemplos",
+          value: [
+            `Exemplos marcados na idade adulta: ${scores.exampleCounts.totalAdultExamplesChecked}`,
+            `Exemplos marcados na infância: ${scores.exampleCounts.totalChildhoodExamplesChecked}`,
+            `Exemplos marcados no total: ${scores.exampleCounts.totalExamplesChecked}`,
+            `Desatenção atual: ${scores.exampleCounts.adultInattentionExamplesTotal}`,
+            `Desatenção infância: ${scores.exampleCounts.childhoodInattentionExamplesTotal}`,
+            `Hiperatividade/impulsividade atual: ${scores.exampleCounts.adultHyperImpulsiveExamplesTotal}`,
+            `Hiperatividade/impulsividade infância: ${scores.exampleCounts.childhoodHyperImpulsiveExamplesTotal}`
+          ].join("\n")
+        },
+        {
+          label: "Sintomas atuais identificados",
+          value: scores.adultIdentifiedSymptoms.length
+            ? scores.adultIdentifiedSymptoms.map(symptomLine).join("\n\n")
+            : "Nenhum"
+        },
+        {
+          label: "Sintomas na infância identificados",
+          value: scores.childhoodIdentifiedSymptoms.length
+            ? scores.childhoodIdentifiedSymptoms.map(symptomLine).join("\n\n")
+            : "Nenhum"
+        }
+      ];
+
+      if (scores.examplesWithoutPresent.length) {
+        rows.push({
+          label: "Exemplos marcados sem sintoma presente",
+          value: scores.examplesWithoutPresent
+            .map((item) => {
+              const periodLabel = item.period === "adult" ? "Atual" : "Infância";
+              const examples = item.checkedExamples.length ? `\nExemplos: ${item.checkedExamples.join("; ")}` : "";
+              return `${item.code} - ${item.label}: ${periodLabel}; exemplos marcados ${item.exampleCount}.${examples}`;
+            })
+            .join("\n\n"),
+          className: "result-alert"
+        });
+      }
+
+      if (scores.onsetConflict) {
+        rows.push({
+          label: "Alerta de início",
+          value:
+            "Há 3 ou mais sintomas infantis em pelo menos um domínio, mas o início antes dos 12 anos foi marcado como Não. Revise a entrevista.",
+          className: "result-alert"
+        });
+      }
+
+      rows.push({
+        label: "Resumo completo para cópia",
+        value: buildDivaFullSummary(scores),
+        className: "diva-full-summary"
+      });
+
+      return rows;
+      }
+
+      const symptomSummary = [
+        "Domínio | Idade adulta | Infância | Critério adulto >=5 | Critério infância >=5",
+        `Déficit de Atenção | Adulto ${scores.adultAttentionCount}/9 | Infância ${scores.childhoodAttentionCount}/9 | ${yesNo(scores.adultAttentionCriteria)} | ${yesNo(scores.childhoodAttentionCriteria)}`,
+        `Hiperatividade/Impulsividade | Adulto ${scores.adultHyperImpCount}/9 | Infância ${scores.childhoodHyperImpCount}/9 | ${yesNo(scores.adultHyperImpCriteria)} | ${yesNo(scores.childhoodHyperImpCriteria)}`
+      ].join("\n");
+      const diagnosticCriteria = [
+        `Sintomas atuais suficientes: ${yesNo(scores.adultSymptomCriteria)}`,
+        `Sintomas na infância suficientes: ${yesNo(scores.childhoodSymptomCriteria)}`,
+        `Vários sintomas antes dos 12 anos: ${yesNo(scores.onsetCriteria)}`,
+        `Sugestão automática pelo preenchimento para início antes dos 12 anos: ${yesNo(scores.autoSeveralBefore12)}`,
+        `Prejuízo em 2 ou mais contextos: ${yesNo(scores.impairmentCriteria)}`,
+        `Não melhor explicado por outro transtorno mental: ${
+          scores.differentialValue === "no" ? "Sim" : scores.differentialValue === "uncertain" ? "Incerto" : "Não"
+        }`,
+        `Compatibilidade final: ${interpretation}`
+      ].join("\n");
+      const impairmentRows = [
+        `Idade adulta: ${scores.adultImpairmentCount}/5 áreas com prejuízo`,
+        `Infância/adolescência: ${scores.childhoodImpairmentCount}/5 áreas com prejuízo`,
+        `Evidência em 2 ou mais contextos na idade adulta: ${yesNo(scores.adultImpairmentCriteria)}`,
+        `Evidência em 2 ou mais contextos na infância: ${yesNo(scores.childhoodImpairmentCriteria)}`,
+        `Áreas adultas marcadas: ${scores.adultImpairmentLabels.length ? scores.adultImpairmentLabels.join(", ") : "Nenhuma"}`,
+        `Áreas infância/adolescência marcadas: ${
+          scores.childhoodImpairmentLabels.length ? scores.childhoodImpairmentLabels.join(", ") : "Nenhuma"
+        }`
+      ].join("\n");
+      const collateralEntries = [
+        scores.collateral.parentsOrFamily !== "notAvailable"
+          ? `Pais/irmão/familiar/outros: ${diva5CollateralOptions[scores.collateral.parentsOrFamily]}`
+          : "",
+        scores.collateral.partnerOrFriend !== "notAvailable"
+          ? `Parceiro(a)/bom amigo/outros: ${diva5CollateralOptions[scores.collateral.partnerOrFriend]}`
+          : "",
+        scores.collateral.schoolReports !== "notAvailable"
+          ? `Relatórios escolares: ${diva5CollateralOptions[scores.collateral.schoolReports]}`
+          : "",
+        scores.collateral.notes.trim() ? `Notas: ${scores.collateral.notes.trim()}` : ""
+      ].filter(Boolean);
+      const rows = [
+        { label: "Resumo dos sintomas", value: symptomSummary, className: "result-highlight" },
+        { label: "Critérios diagnósticos", value: diagnosticCriteria },
+        { label: "Apresentação clínica atual", value: scores.presentation },
+        {
+          label: "Sintomas presentes",
+          value: `Idade adulta: ${formatCodes(scores.adultPresentCodes)}.\nInfância: ${formatCodes(scores.childhoodPresentCodes)}.`
+        },
+        { label: "Prejuízos", value: impairmentRows },
+        {
+          label: "Diagnóstico diferencial",
+          value:
+            scores.differentialValue === "no"
+              ? "Sintomas não são mais bem explicados por outro transtorno mental."
+              : `Conclusão pendente/limitada por diagnóstico diferencial.${
+                  scores.differentialExplanation.trim()
+                    ? `\nHipótese/comorbidades relevantes: ${scores.differentialExplanation.trim()}`
+                    : ""
+                }`,
+          className: scores.differentialPending ? "diva-warning" : ""
+        },
+        { label: "Gravidade", value: getDiva5SeverityLabel(scores.severity) },
+        { label: "Observação clínica curta", value: this.clinicalNote }
+      ];
+
+      if (collateralEntries.length) {
+        rows.splice(6, 0, { label: "Confirmação por informantes", value: collateralEntries.join("\n") });
+      }
+
+      return rows;
+    },
+    clinicalNote:
+      "A DIVA-5 é uma entrevista diagnóstica estruturada baseada nos critérios do DSM-5. A conclusão final depende do julgamento clínico, da avaliação de prejuízo, curso longitudinal, informações colaterais e diagnóstico diferencial."
+  },
   {
     id: "panss",
     name: "PANSS — Esquizofrenia",
@@ -1449,6 +2932,7 @@ let answers = {};
 let scaleContext = {};
 let viewMode = "cards";
 let incompleteQuestionIndexes = new Set();
+let diva5IncompleteKeys = new Set();
 
 function getSelectedScale() {
   return scales.find((scale) => scale.id === scaleSelect.value);
@@ -1603,6 +3087,559 @@ function renderViewControls(scale) {
   controls.appendChild(switcher);
   questionsArea.appendChild(controls);
   updateProgress(scale);
+}
+
+function appendDiva5RadioGroup(wrapper, name, value, options, dataset, legendText) {
+  const group = document.createElement("fieldset");
+  group.className = "diva-present-radio";
+
+  const legend = document.createElement("legend");
+  legend.textContent = legendText;
+  group.appendChild(legend);
+
+  options.forEach((option) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = name;
+    input.value = option.value;
+    input.checked = value === option.value;
+
+    Object.keys(dataset).forEach((key) => {
+      input.dataset[key] = dataset[key];
+    });
+
+    label.append(input, document.createTextNode(option.label));
+    group.appendChild(label);
+  });
+
+  wrapper.appendChild(group);
+}
+
+function renderDiva5Examples(wrapper, examples, checkedExamples, datasetPrefix) {
+  const list = document.createElement("div");
+  list.className = "diva-examples-list";
+
+  if (!examples.length) {
+    const empty = document.createElement("p");
+    empty.className = "diva-empty-examples";
+    empty.textContent = "Exemplos oficiais não cadastrados. Cole os exemplos licenciados no array deste critério.";
+    list.appendChild(empty);
+    wrapper.appendChild(list);
+    return;
+  }
+
+  examples.forEach((example, exampleIndex) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = checkedExamples.includes(exampleIndex);
+
+    Object.keys(datasetPrefix).forEach((key) => {
+      input.dataset[key] = datasetPrefix[key];
+    });
+
+    input.dataset.exampleIndex = String(exampleIndex);
+    label.append(input, document.createTextNode(example));
+    list.appendChild(label);
+  });
+
+  wrapper.appendChild(list);
+}
+
+function renderDiva5SymptomPeriod(item, period, labelText, state) {
+  const periodState = state.criteria[item.code][period];
+  const block = document.createElement("div");
+  const incomplete = diva5IncompleteKeys.has(`criterion:${item.code}:${period}`);
+  block.className = `diva-period-block${incomplete ? " diva-incomplete" : ""}`;
+
+  const heading = document.createElement("h4");
+  heading.textContent = labelText;
+  block.appendChild(heading);
+
+  const question = document.createElement("p");
+  question.className = "diva-question";
+  question.textContent =
+    period === "adult"
+      ? item.adultQuestion || item.question
+      : item.childhoodQuestion || "Como era durante sua infância, na escola ou durante outras atividades?";
+  block.appendChild(question);
+
+  renderDiva5Examples(block, period === "adult" ? item.adultExamples : item.childhoodExamples, periodState.checkedExamples, {
+    divaField: "symptomExample",
+    divaCode: item.code,
+    divaPeriod: period
+  });
+
+  const otherLabel = document.createElement("label");
+  otherLabel.className = "field-label";
+  otherLabel.textContent = "Outros exemplos";
+  const otherInput = document.createElement("textarea");
+  otherInput.value = periodState.other;
+  otherInput.dataset.divaField = "symptomOther";
+  otherInput.dataset.divaCode = item.code;
+  otherInput.dataset.divaPeriod = period;
+  otherLabel.appendChild(otherInput);
+  block.appendChild(otherLabel);
+
+  const noteLabel = document.createElement("label");
+  noteLabel.className = "field-label";
+  noteLabel.textContent = "Nota clínica";
+  const noteInput = document.createElement("textarea");
+  noteInput.value = periodState.note;
+  noteInput.dataset.divaField = "symptomNote";
+  noteInput.dataset.divaCode = item.code;
+  noteInput.dataset.divaPeriod = period;
+  noteLabel.appendChild(noteInput);
+  block.appendChild(noteLabel);
+
+  appendDiva5RadioGroup(
+    block,
+    `diva-${item.code}-${period}-present`,
+    periodState.present,
+    [
+      { value: "yes", label: "Sim" },
+      { value: "no", label: "Não" }
+    ],
+    {
+      divaField: "symptomPresent",
+      divaCode: item.code,
+      divaPeriod: period
+    },
+    `Sintoma presente na ${period === "adult" ? "idade adulta" : "infância"}?`
+  );
+
+  return block;
+}
+
+function renderDiva5Item(item, state) {
+  const card = document.createElement("article");
+  const incomplete =
+    diva5IncompleteKeys.has(`criterion:${item.code}:adult`) ||
+    diva5IncompleteKeys.has(`criterion:${item.code}:childhood`);
+  card.className = `diva-item-card${incomplete ? " diva-incomplete" : ""}`;
+
+  const header = document.createElement("div");
+  header.className = "diva-item-header";
+
+  const badge = document.createElement("span");
+  badge.className = "diva-code-badge";
+  badge.textContent = item.code;
+
+  const title = document.createElement("h3");
+  title.textContent = item.title;
+  header.append(badge, title);
+
+  const question = document.createElement("p");
+  question.className = "diva-question";
+  question.textContent = item.question;
+
+  const columns = document.createElement("div");
+  columns.className = "diva-two-columns";
+  columns.append(
+    renderDiva5SymptomPeriod(item, "adult", "Idade adulta", state),
+    renderDiva5SymptomPeriod(item, "childhood", "Infância", state)
+  );
+
+  card.append(header, question, columns);
+  return card;
+}
+
+function renderDiva5Progress(state) {
+  {
+  const adultAnswered = diva5Items.filter((item) => state.criteria[item.code].adult.present !== null).length;
+  const childhoodAnswered = diva5Items.filter((item) => state.criteria[item.code].childhood.present !== null).length;
+  const additionalAnswered = [
+    state.onset.severalSymptomsBefore12,
+    state.impairment.adult.evidenceInTwoOrMoreContexts,
+    state.impairment.childhood.evidenceInTwoOrMoreContexts,
+    state.differential.betterExplainedByAnotherDisorder
+  ].filter((value) => value !== null).length;
+
+  return `Respondidas ${adultAnswered + childhoodAnswered + additionalAnswered} / 40`;
+  }
+
+  const adultAnswered = diva5Items.filter((item) => state.symptoms[item.code].adult.present !== null).length;
+  const childhoodAnswered = diva5Items.filter((item) => state.symptoms[item.code].childhood.present !== null).length;
+  const impairmentAnswered = ["adult", "childhood"].reduce((total, period) => {
+    return (
+      total +
+      diva5ImpairmentAreas[period].filter((area) => state.impairment[period][area.id].present !== null).length
+    );
+  }, 0);
+  const part3Complete =
+    state.onset.severalBefore12 !== null &&
+    impairmentAnswered === 10 &&
+    state.differential.betterExplainedByAnotherDisorder !== null;
+
+  return `Sintomas adulto: ${adultAnswered}/18 respondidos. Sintomas infância: ${childhoodAnswered}/18 respondidos. Prejuízos: ${impairmentAnswered}/10 áreas respondidas. Parte 3: ${
+    part3Complete ? "completa" : "incompleta"
+  }.`;
+}
+
+function updateDiva5Progress() {
+  const progress = document.querySelector("#diva5-progress-counter");
+
+  if (progress) {
+    progress.textContent = renderDiva5Progress(getDiva5State());
+  }
+}
+
+function createDiva5Section(title, className = "") {
+  const details = document.createElement("details");
+  details.className = `diva-section${className ? ` ${className}` : ""}`;
+  details.open = true;
+
+  const summary = document.createElement("summary");
+  summary.textContent = title;
+  details.appendChild(summary);
+
+  return details;
+}
+
+function renderDiva5DomainSection(title, domain, state) {
+  const section = createDiva5Section(title);
+
+  diva5Items
+    .filter((item) => item.domain === domain)
+    .forEach((item) => {
+      section.appendChild(renderDiva5Item(item, state));
+    });
+
+  questionsArea.appendChild(section);
+}
+
+function renderDiva5Onset(state) {
+  const onsetBlock = document.createElement("div");
+  onsetBlock.className = `diva-item-card${diva5IncompleteKeys.has("onset:severalBefore12") ? " diva-incomplete" : ""}`;
+
+  const suggestion = document.createElement("p");
+  suggestion.className = "diva-warning";
+  suggestion.textContent = `Sugestão automática pelo preenchimento: ${
+    countDiva5Symptoms(state, "inattention", "childhood") >= 3 ||
+    countDiva5Symptoms(state, "hyperImpulsive", "childhood") >= 3
+      ? "Sim"
+      : "Não"
+  }`;
+
+  appendDiva5RadioGroup(
+    onsetBlock,
+    "diva-onset-before-12",
+    state.onset.severalSymptomsBefore12,
+    [
+      { value: "yes", label: "Sim" },
+      { value: "no", label: "Não" }
+    ],
+    { divaField: "onsetBefore12" },
+    "Vários sintomas estavam presentes antes dos 12 anos?"
+  );
+
+  const ageWrapper = document.createElement("label");
+  ageWrapper.className = `field-label${state.onset.severalSymptomsBefore12 === "no" ? "" : " hidden"}`;
+  ageWrapper.dataset.divaToggle = "laterOnsetAge";
+  ageWrapper.textContent = "Se não, idade aproximada de início dos sintomas";
+  const ageInput = document.createElement("input");
+  ageInput.type = "number";
+  ageInput.min = "0";
+  ageInput.value = state.onset.laterOnsetAge;
+  ageInput.dataset.divaField = "laterOnsetAge";
+  ageWrapper.appendChild(ageInput);
+
+  onsetBlock.append(suggestion, ageWrapper);
+  return onsetBlock;
+}
+
+function renderDiva5ImpairmentArea(period, area, state) {
+  const areaState = state.impairment[period][area.id];
+  const card = document.createElement("article");
+  card.className = `diva-impairment-area${
+    diva5IncompleteKeys.has(`impairment:${period}:${area.id}`) ? " diva-incomplete" : ""
+  }`;
+
+  const title = document.createElement("h4");
+  title.textContent = area.label;
+  card.appendChild(title);
+
+  renderDiva5Examples(card, area.examples, areaState.examples, {
+    divaField: "impairmentExample",
+    divaPeriod: period,
+    divaArea: area.id
+  });
+
+  const otherLabel = document.createElement("label");
+  otherLabel.className = "field-label";
+  otherLabel.textContent = "Outros";
+  const otherInput = document.createElement("textarea");
+  otherInput.value = areaState.other;
+  otherInput.dataset.divaField = "impairmentOther";
+  otherInput.dataset.divaPeriod = period;
+  otherInput.dataset.divaArea = area.id;
+  otherLabel.appendChild(otherInput);
+  card.appendChild(otherLabel);
+
+  appendDiva5RadioGroup(
+    card,
+    `diva-impairment-${period}-${area.id}`,
+    areaState.present,
+    [
+      { value: "yes", label: "Sim" },
+      { value: "no", label: "Não" }
+    ],
+    {
+      divaField: "impairmentPresent",
+      divaPeriod: period,
+      divaArea: area.id
+    },
+    "Há prejuízo clinicamente relevante nesta área?"
+  );
+
+  return card;
+}
+
+function renderDiva5Impairment(state) {
+  {
+    const wrapper = document.createElement("div");
+    wrapper.className = "diva-two-columns";
+    const groups = [
+      {
+        period: "adult",
+        title: "Idade adulta",
+        contexts: [
+          ["workEducation", "Trabalho / educação"],
+          ["familyRelationships", "Família / relacionamentos"],
+          ["socialContacts", "Contatos sociais"],
+          ["freeTimeHobbies", "Tempo livre / hobbies"],
+          ["selfConfidenceSelfImage", "Autoconfiança / autoimagem"]
+        ]
+      },
+      {
+        period: "childhood",
+        title: "Infância",
+        contexts: [
+          ["school", "Escola"],
+          ["family", "Família"],
+          ["socialContacts", "Contatos sociais"],
+          ["freeTimeHobbies", "Tempo livre / hobbies"],
+          ["selfConfidenceSelfImage", "Autoconfiança / autoimagem"]
+        ]
+      }
+    ];
+
+    groups.forEach((group) => {
+      const column = document.createElement("div");
+      column.className = `diva-period-block${
+        diva5IncompleteKeys.has(`impairment:${group.period}:evidence`) ? " diva-incomplete" : ""
+      }`;
+      const title = document.createElement("h3");
+      title.textContent = group.title;
+      column.appendChild(title);
+
+      const list = document.createElement("div");
+      list.className = "diva-examples-list";
+
+      group.contexts.forEach(([field, labelText]) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = state.impairment[group.period][field];
+        input.dataset.divaField = "impairmentExample";
+        input.dataset.divaPeriod = group.period;
+        input.dataset.divaArea = field;
+        label.append(input, document.createTextNode(labelText));
+        list.appendChild(label);
+      });
+
+      column.appendChild(list);
+
+      const otherLabel = document.createElement("label");
+      otherLabel.className = "field-label";
+      otherLabel.textContent = "Outro contexto / observação";
+      const otherInput = document.createElement("textarea");
+      otherInput.value = state.impairment[group.period].other;
+      otherInput.dataset.divaField = "impairmentOther";
+      otherInput.dataset.divaPeriod = group.period;
+      otherLabel.appendChild(otherInput);
+      column.appendChild(otherLabel);
+
+      appendDiva5RadioGroup(
+        column,
+        `diva-impairment-${group.period}-evidence`,
+        state.impairment[group.period].evidenceInTwoOrMoreContexts,
+        [
+          { value: "yes", label: "Sim" },
+          { value: "no", label: "Não" }
+        ],
+        {
+          divaField: "impairmentPresent",
+          divaPeriod: group.period
+        },
+        "Há prejuízo em 2 ou mais contextos?"
+      );
+
+      wrapper.appendChild(column);
+    });
+
+    return wrapper;
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "diva-two-columns";
+
+  [
+    { period: "adult", title: "Idade adulta" },
+    { period: "childhood", title: "Infância/adolescência" }
+  ].forEach((group) => {
+    const column = document.createElement("div");
+    column.className = "diva-period-block";
+    const title = document.createElement("h3");
+    title.textContent = group.title;
+    column.appendChild(title);
+
+    diva5ImpairmentAreas[group.period].forEach((area) => {
+      column.appendChild(renderDiva5ImpairmentArea(group.period, area, state));
+    });
+
+    wrapper.appendChild(column);
+  });
+
+  return wrapper;
+}
+
+function renderDiva5Differential(state) {
+  const block = document.createElement("div");
+  block.className = `diva-item-card${diva5IncompleteKeys.has("differential:betterExplained") ? " diva-incomplete" : ""}`;
+
+  appendDiva5RadioGroup(
+    block,
+    "diva-differential",
+    state.differential.betterExplainedByAnotherDisorder,
+    [
+      { value: "no", label: "Não" },
+      { value: "yes", label: "Sim" }
+    ],
+    { divaField: "differential" },
+    "Sintomas são mais bem explicados por outro transtorno mental?"
+  );
+
+  const explanationLabel = document.createElement("label");
+  explanationLabel.className = `field-label${
+    state.differential.betterExplainedByAnotherDisorder === "yes" ||
+    state.differential.betterExplainedByAnotherDisorder === "uncertain"
+      ? ""
+      : " hidden"
+  }`;
+  explanationLabel.dataset.divaToggle = "differentialExplanation";
+  explanationLabel.textContent = "Descrever hipótese diferencial/comorbidades relevantes";
+  const explanation = document.createElement("textarea");
+  explanation.value = state.differential.explanation;
+  explanation.dataset.divaField = "differentialExplanation";
+  explanationLabel.appendChild(explanation);
+  block.appendChild(explanationLabel);
+
+  return block;
+}
+
+function renderDiva5Collateral(state) {
+  const block = document.createElement("div");
+  block.className = "diva-item-card";
+
+  [
+    ["parentsOrFamily", "Pais/irmão/familiar/outros"],
+    ["partnerOrFriend", "Parceiro(a)/bom amigo/outros"],
+    ["schoolReports", "Relatórios escolares"]
+  ].forEach(([field, labelText]) => {
+    const label = document.createElement("label");
+    label.className = "field-label";
+    label.textContent = labelText;
+
+    const select = document.createElement("select");
+    select.dataset.divaField = "collateral";
+    select.dataset.divaCollateral = field;
+
+    Object.keys(diva5CollateralOptions).forEach((optionValue) => {
+      const option = document.createElement("option");
+      option.value = optionValue;
+      option.textContent = diva5CollateralOptions[optionValue];
+      option.selected = state.collateral[field] === optionValue;
+      select.appendChild(option);
+    });
+
+    label.appendChild(select);
+    block.appendChild(label);
+  });
+
+  const notesLabel = document.createElement("label");
+  notesLabel.className = "field-label";
+  notesLabel.textContent = "Notas";
+  const notes = document.createElement("textarea");
+  notes.value = state.collateral.notes;
+  notes.dataset.divaField = "collateralNotes";
+  notesLabel.appendChild(notes);
+  block.appendChild(notesLabel);
+
+  const severityLabel = document.createElement("label");
+  severityLabel.className = "field-label";
+  severityLabel.textContent = "Gravidade";
+  const severity = document.createElement("select");
+  severity.dataset.divaField = "severity";
+
+  [
+    ["notDefined", "Não definida"],
+    ["mild", "Leve"],
+    ["moderate", "Moderada"],
+    ["severe", "Grave"]
+  ].forEach(([value, text]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = text;
+    option.selected = state.severity === value;
+    severity.appendChild(option);
+  });
+
+  severityLabel.appendChild(severity);
+  block.appendChild(severityLabel);
+
+  return block;
+}
+
+function renderDiva5(scale) {
+  const state = getDiva5State();
+  questionsArea.innerHTML = "";
+
+  const settings = document.createElement("section");
+  settings.className = "scale-settings";
+  const description = document.createElement("p");
+  description.className = "question-title";
+  description.textContent =
+    "Os exemplos são apoio para a entrevista. A presença do sintoma e do prejuízo deve ser marcada manualmente pelo clínico.";
+  const progress = document.createElement("p");
+  progress.id = "diva5-progress-counter";
+  progress.className = "progress-counter";
+  progress.textContent = renderDiva5Progress(state);
+  const dateLabel = document.createElement("label");
+  dateLabel.className = "field-label";
+  dateLabel.textContent = "Data da entrevista/aplicação";
+  const dateInput = document.createElement("input");
+  dateInput.type = "date";
+  dateInput.value = state.interviewDate;
+  dateInput.dataset.divaField = "interviewDate";
+  dateLabel.appendChild(dateInput);
+  settings.append(description, dateLabel, progress);
+  questionsArea.appendChild(settings);
+
+  renderDiva5DomainSection("Parte 1: Déficit de Atenção", "attention", state);
+  renderDiva5DomainSection("Parte 2: Hiperatividade/Impulsividade", "hyperImp", state);
+
+  const part3 = createDiva5Section("Parte 3: Início e prejuízos");
+  part3.appendChild(renderDiva5Onset(state));
+  const impairmentTitle = document.createElement("h3");
+  impairmentTitle.textContent = "Prejuízos devido aos sintomas";
+  part3.append(impairmentTitle, renderDiva5Impairment(state));
+  questionsArea.appendChild(part3);
+
+  const finalSection = createDiva5Section("Parte 4: Resumo/Folha de pontuação");
+  finalSection.append(renderDiva5Differential(state), renderDiva5Collateral(state));
+  questionsArea.appendChild(finalSection);
 }
 
 function createOptionInput(questionIndex, option) {
@@ -1782,6 +3819,12 @@ function renderTableQuestions(scale) {
 
 function renderQuestions(scale) {
   questionsArea.innerHTML = "";
+
+  if (scale.id === "diva5") {
+    renderDiva5(scale);
+    return;
+  }
+
   renderScaleSettings(scale);
   renderViewControls(scale);
 
@@ -1823,6 +3866,12 @@ function updateIncompleteHighlight(questionIndex) {
 }
 
 function resetResult() {
+  const prontuarioLine = resultArea.querySelector(".prontuario-line-box");
+
+  if (prontuarioLine) {
+    prontuarioLine.remove();
+  }
+
   resultList.innerHTML = "";
   resultArea.classList.add("hidden");
 }
@@ -1831,6 +3880,7 @@ function clearAnswers() {
   answers = {};
   scaleContext = {};
   incompleteQuestionIndexes.clear();
+  diva5IncompleteKeys.clear();
   scaleForm.reset();
   resetResult();
 
@@ -1858,6 +3908,12 @@ function appendResultRow(label, value, className = "") {
 }
 
 function showIncompleteResult(incompleteQuestions) {
+  const prontuarioLine = resultArea.querySelector(".prontuario-line-box");
+
+  if (prontuarioLine) {
+    prontuarioLine.remove();
+  }
+
   resultList.innerHTML = "";
   appendResultRow("Pendências", `Complete: ${incompleteQuestions.join(", ")}.`);
   appendResultRow("Observação clínica curta", "Complete todos os itens obrigatórios antes de interpretar o resultado.");
@@ -1865,7 +3921,19 @@ function showIncompleteResult(incompleteQuestions) {
 }
 
 function showResult(scale, scores, interpretation, incompleteQuestions, context) {
+  const existingProntuarioLine = resultArea.querySelector(".prontuario-line-box");
+
+  if (existingProntuarioLine) {
+    existingProntuarioLine.remove();
+  }
+
   resultList.innerHTML = "";
+
+  const prontuarioLine = renderProntuarioLine(scores.prontuarioLine, scores.fullSummary || "");
+
+  if (prontuarioLine) {
+    resultArea.insertBefore(prontuarioLine, resultList);
+  }
 
   scale.getResultRows(scores, interpretation, incompleteQuestions, context).forEach((row) => {
     appendResultRow(row.label, row.value, row.className);
@@ -1913,11 +3981,212 @@ function collectContext(scale) {
   return { context, incompleteSettings };
 }
 
+function updateDiva5StateFromInput(target) {
+  if (!target.dataset.divaField) {
+    return false;
+  }
+
+  const state = getDiva5State();
+  const field = target.dataset.divaField;
+
+  if (field === "symptomPresent") {
+    state.criteria[target.dataset.divaCode][target.dataset.divaPeriod].present = target.value;
+    diva5IncompleteKeys.delete(`criterion:${target.dataset.divaCode}:${target.dataset.divaPeriod}`);
+  }
+
+  if (field === "symptomExample") {
+    const checkedExamples = state.criteria[target.dataset.divaCode][target.dataset.divaPeriod].checkedExamples;
+    const exampleIndex = Number(target.dataset.exampleIndex);
+
+    if (target.checked && !checkedExamples.includes(exampleIndex)) {
+      checkedExamples.push(exampleIndex);
+    }
+
+    if (!target.checked) {
+      state.criteria[target.dataset.divaCode][target.dataset.divaPeriod].checkedExamples = checkedExamples.filter(
+        (index) => index !== exampleIndex
+      );
+    }
+  }
+
+  if (field === "symptomOther") {
+    state.criteria[target.dataset.divaCode][target.dataset.divaPeriod].other = target.value;
+  }
+
+  if (field === "symptomNote") {
+    state.criteria[target.dataset.divaCode][target.dataset.divaPeriod].note = target.value;
+  }
+
+  if (field === "onsetBefore12") {
+    state.onset.severalSymptomsBefore12 = target.value;
+    diva5IncompleteKeys.delete("onset:severalBefore12");
+
+    const laterOnset = questionsArea.querySelector('[data-diva-toggle="laterOnsetAge"]');
+    if (laterOnset) {
+      laterOnset.classList.toggle("hidden", target.value !== "no");
+    }
+  }
+
+  if (field === "laterOnsetAge") {
+    state.onset.laterOnsetAge = target.value;
+  }
+
+  if (field === "interviewDate") {
+    state.interviewDate = target.value;
+  }
+
+  if (field === "impairmentPresent") {
+    state.impairment[target.dataset.divaPeriod].evidenceInTwoOrMoreContexts = target.value;
+    diva5IncompleteKeys.delete(`impairment:${target.dataset.divaPeriod}:evidence`);
+  }
+
+  if (field === "impairmentExample") {
+    state.impairment[target.dataset.divaPeriod][target.dataset.divaArea] = target.checked;
+  }
+
+  if (field === "impairmentOther") {
+    state.impairment[target.dataset.divaPeriod].other = target.value;
+  }
+
+  if (field === "differential") {
+    state.differential.betterExplainedByAnotherDisorder = target.value;
+    diva5IncompleteKeys.delete("differential:betterExplained");
+
+    const explanation = questionsArea.querySelector('[data-diva-toggle="differentialExplanation"]');
+    if (explanation) {
+      explanation.classList.toggle("hidden", target.value !== "yes" && target.value !== "uncertain");
+    }
+  }
+
+  if (field === "differentialExplanation") {
+    state.differential.explanation = target.value;
+  }
+
+  if (field === "collateral") {
+    state.collateral[target.dataset.divaCollateral] = target.value;
+  }
+
+  if (field === "collateralNotes") {
+    state.collateral.notes = target.value;
+  }
+
+  if (field === "severity") {
+    state.severity = target.value;
+  }
+
+  updateDiva5Progress();
+  return true;
+}
+
+function collectDiva5IncompleteItems() {
+  {
+    const state = getDiva5State();
+    const incompleteItems = [];
+    const incompleteKeys = new Set();
+
+    diva5Items.forEach((item) => {
+      if (state.criteria[item.code].adult.present === null) {
+        incompleteItems.push(`${item.code} idade adulta`);
+        incompleteKeys.add(`criterion:${item.code}:adult`);
+      }
+
+      if (state.criteria[item.code].childhood.present === null) {
+        incompleteItems.push(`${item.code} infância`);
+        incompleteKeys.add(`criterion:${item.code}:childhood`);
+      }
+    });
+
+    if (state.onset.severalSymptomsBefore12 === null) {
+      incompleteItems.push("início antes dos 12 anos");
+      incompleteKeys.add("onset:severalBefore12");
+    }
+
+    if (state.impairment.adult.evidenceInTwoOrMoreContexts === null) {
+      incompleteItems.push("prejuízo atual em 2+ contextos");
+      incompleteKeys.add("impairment:adult:evidence");
+    }
+
+    if (state.impairment.childhood.evidenceInTwoOrMoreContexts === null) {
+      incompleteItems.push("prejuízo na infância em 2+ contextos");
+      incompleteKeys.add("impairment:childhood:evidence");
+    }
+
+    if (state.differential.betterExplainedByAnotherDisorder === null) {
+      incompleteItems.push("diagnóstico diferencial");
+      incompleteKeys.add("differential:betterExplained");
+    }
+
+    return { incompleteItems, incompleteKeys };
+  }
+
+  const state = getDiva5State();
+  const incompleteItems = [];
+  const incompleteKeys = new Set();
+
+  diva5Items.forEach((item) => {
+    if (state.symptoms[item.code].adult.present === null) {
+      incompleteItems.push(`${item.code} idade adulta`);
+      incompleteKeys.add(`symptom:${item.code}:adult`);
+    }
+
+    if (state.symptoms[item.code].childhood.present === null) {
+      incompleteItems.push(`${item.code} infância`);
+      incompleteKeys.add(`symptom:${item.code}:childhood`);
+    }
+  });
+
+  if (state.onset.severalBefore12 === null) {
+    incompleteItems.push("idade de início antes dos 12 anos");
+    incompleteKeys.add("onset:severalBefore12");
+  }
+
+  ["adult", "childhood"].forEach((period) => {
+    diva5ImpairmentAreas[period].forEach((area) => {
+      if (state.impairment[period][area.id].present === null) {
+        incompleteItems.push(`${period === "adult" ? "prejuízo adulto" : "prejuízo infância"} - ${area.label}`);
+        incompleteKeys.add(`impairment:${period}:${area.id}`);
+      }
+    });
+  });
+
+  if (state.differential.betterExplainedByAnotherDisorder === null) {
+    incompleteItems.push("diagnóstico diferencial");
+    incompleteKeys.add("differential:betterExplained");
+  }
+
+  return { incompleteItems, incompleteKeys };
+}
+
+function handleDiva5Submit(selectedScale) {
+  const { incompleteItems, incompleteKeys } = collectDiva5IncompleteItems();
+
+  if (incompleteItems.length > 0) {
+    diva5IncompleteKeys = incompleteKeys;
+    renderQuestions(selectedScale);
+    showIncompleteResult(incompleteItems);
+    const firstIncomplete = questionsArea.querySelector(".diva-incomplete");
+    if (firstIncomplete) {
+      firstIncomplete.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return;
+  }
+
+  diva5IncompleteKeys.clear();
+  renderQuestions(selectedScale);
+  const scores = selectedScale.calculate();
+  const interpretation = selectedScale.interpret(scores);
+  scores.prontuarioLine = buildProntuarioLine(selectedScale, scores, interpretation, {});
+  scores.fullSummary = buildDivaFullSummary(scores);
+
+  showResult(selectedScale, scores, interpretation, [], {});
+}
+
 scaleSelect.addEventListener("change", () => {
   const selectedScale = getSelectedScale();
   answers = {};
   scaleContext = {};
   incompleteQuestionIndexes.clear();
+  diva5IncompleteKeys.clear();
   clearAnswers();
 
   if (!selectedScale) {
@@ -1941,6 +4210,11 @@ scaleForm.addEventListener("submit", (event) => {
     return;
   }
 
+  if (selectedScale.id === "diva5") {
+    handleDiva5Submit(selectedScale);
+    return;
+  }
+
   const { answers, incompleteQuestions, incompleteIndexes } = collectAnswers(selectedScale);
   const { context, incompleteSettings } = collectContext(selectedScale);
   const incompleteItems = [
@@ -1959,6 +4233,7 @@ scaleForm.addEventListener("submit", (event) => {
   renderQuestions(selectedScale);
   const scores = selectedScale.calculate(answers, context);
   const interpretation = selectedScale.interpret(scores, context);
+  scores.prontuarioLine = buildProntuarioLine(selectedScale, scores, interpretation, context);
 
   showResult(selectedScale, scores, interpretation, incompleteQuestions, context);
 });
@@ -1968,6 +4243,11 @@ questionsArea.addEventListener("change", (event) => {
   const selectedScale = getSelectedScale();
 
   if (!selectedScale) {
+    return;
+  }
+
+  if (selectedScale.id === "diva5") {
+    updateDiva5StateFromInput(target);
     return;
   }
 
@@ -1986,6 +4266,16 @@ questionsArea.addEventListener("change", (event) => {
   }
 });
 
+questionsArea.addEventListener("input", (event) => {
+  const selectedScale = getSelectedScale();
+
+  if (!selectedScale || selectedScale.id !== "diva5") {
+    return;
+  }
+
+  updateDiva5StateFromInput(event.target);
+});
+
 questionsArea.addEventListener("click", (event) => {
   const button = event.target.closest("[data-view-mode]");
 
@@ -1998,5 +4288,41 @@ questionsArea.addEventListener("click", (event) => {
 });
 
 clearButton.addEventListener("click", clearAnswers);
+
+resultArea.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-copy-prontuario]");
+
+  if (!button) {
+    return;
+  }
+
+  const box = button.closest(".prontuario-line-box");
+  const line = box ? box.querySelector(".prontuario-line-text") : null;
+  const fullSummary = box ? box.querySelector(".prontuario-full-summary") : null;
+  const feedback = box ? box.querySelector(".copy-feedback") : null;
+  const textToCopy = button.dataset.copyTarget === "full" && fullSummary ? fullSummary.value : line ? line.textContent : "";
+
+  if (!textToCopy) {
+    return;
+  }
+
+  try {
+    await copyTextToClipboard(textToCopy);
+
+    if (feedback) {
+      feedback.textContent = button.dataset.copyTarget === "full" ? "Resumo copiado." : "Linha copiada.";
+      window.setTimeout(() => {
+        feedback.textContent = "";
+      }, 2000);
+    }
+  } catch (error) {
+    if (feedback) {
+      feedback.textContent =
+        error.message === "Texto selecionado para cópia manual."
+          ? "Texto selecionado para cópia manual."
+          : "Não foi possível copiar.";
+    }
+  }
+});
 
 populateScaleSelect();

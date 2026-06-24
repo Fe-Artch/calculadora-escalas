@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Critérios Diagnósticos</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegacao principal">
+      <a href="index.html">Início</a>
+      <a href="escalas.html">Escalas</a>
+      <a href="frases.html">Frases</a>
+      <a href="eem.html">EEM</a>
+      <a href="diagnostic-criteria.html" aria-current="page">Critérios Diagnósticos</a>
+    </nav>
+
+    <main class="app-shell diagnostic-page">
+      <header class="app-header">
+        <h1>Critérios Diagnósticos</h1>
+        <p>Checklist estruturado de critérios diagnósticos com resultado e linha para prontuário.</p>
+      </header>
+
+      <section class="panel diagnostic-note">
+        <p>Ferramenta de apoio ao raciocínio diagnóstico. Não substitui avaliação clínica, diagnóstico diferencial, julgamento médico ou consulta ao manual oficial.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="diagnostic-controls-title">
+        <h2 id="diagnostic-controls-title">Seleção</h2>
+
+        <div class="diagnostic-controls">
+          <label class="field-label" for="diagnostic-date">Data da avaliação
+            <input id="diagnostic-date" type="date" data-diagnostic-field="date">
+          </label>
+
+          <label class="field-label" for="diagnostic-search">Buscar transtorno
+            <input id="diagnostic-search" type="search" placeholder="Buscar transtorno...">
+          </label>
+
+          <label class="field-label" for="diagnostic-category">Categoria
+            <select id="diagnostic-category">
+              <option value="Todos">Todos</option>
+              <option value="Neurodesenvolvimento">Neurodesenvolvimento</option>
+              <option value="Humor">Humor</option>
+              <option value="Ansiedade">Ansiedade</option>
+              <option value="Psicóticos">Psicóticos</option>
+              <option value="Obsessivo-compulsivos">Obsessivo-compulsivos</option>
+              <option value="Trauma/estresse">Trauma/estresse</option>
+              <option value="Uso de substâncias">Uso de substâncias</option>
+              <option value="Alimentares">Alimentares</option>
+              <option value="Personalidade">Personalidade</option>
+              <option value="Sono">Sono</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field-label" for="diagnostic-disorder">Transtorno / condição
+          <select id="diagnostic-disorder">
+            <option value="">Selecione um transtorno</option>
+          </select>
+        </label>
+      </section>
+
+      <form id="diagnostic-form" class="panel hidden" novalidate>
+        <div id="diagnostic-selected-header"></div>
+        <p id="diagnostic-progress" class="progress-counter"></p>
+        <div id="diagnostic-criteria-area"></div>
+
+        <label class="field-label diagnostic-clinical-notes" for="diagnostic-clinical-notes">Notas clínicas gerais
+          <textarea id="diagnostic-clinical-notes" data-diagnostic-field="clinicalNotes"></textarea>
+        </label>
+
+        <div class="actions">
+          <button type="submit">Avaliar critérios</button>
+          <button type="button" id="diagnostic-clear-button" class="secondary">Limpar</button>
+        </div>
+      </form>
+
+      <section id="diagnostic-result-area" class="panel result hidden" aria-live="polite" aria-labelledby="diagnostic-result-title">
+        <h2 id="diagnostic-result-title">Resultado</h2>
+        <dl id="diagnostic-result-list"></dl>
+
+        <section class="diagnostic-copy-box" aria-labelledby="diagnostic-line-title">
+          <h3 id="diagnostic-line-title">Linha para prontuário</h3>
+          <p id="diagnostic-line-output"></p>
+          <button type="button" data-diagnostic-copy="line">Copiar linha</button>
+        </section>
+
+        <section class="diagnostic-copy-box" aria-labelledby="diagnostic-full-title">
+          <h3 id="diagnostic-full-title">Resumo completo</h3>
+          <pre id="diagnostic-full-output"></pre>
+          <button type="button" data-diagnostic-copy="full">Copiar resumo completo</button>
+        </section>
+
+        <p id="diagnostic-copy-feedback" class="copy-feedback" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="diagnostic-criteria.js"></script>
+  </body>
+</html>
