@@ -1,352 +1,380 @@
 Fluxo atual do software
 
 Nome do app:
-Calculadora de Escalas
+Ferramentas clínicas
 
 Tipo de projeto:
-Site estatico simples, feito com HTML, CSS e JavaScript puro.
+Site estático simples, feito com HTML, CSS e JavaScript puro.
 
-Arquivos existentes:
-- index.html: estrutura da pagina e carregamento do CSS e JavaScript.
-- styles.css: estilos visuais, layout responsivo e organizacao da interface.
-- app.js: dados das escalas, renderizacao das perguntas, coleta das respostas e calculo do resultado.
+Arquivos principais:
+- index.html: página inicial com cards de acesso às áreas do site.
+- escalas.html: página da Calculadora de Escalas.
+- app.js: dados das escalas, renderização das perguntas, coleta em memória e cálculo dos resultados.
+- frases.html: página de Frases / quick capture.
+- frases.js: lógica da área de frases.
+- eem.html: página do Exame do Estado Mental.
+- eem.js: checklist estruturado do EEM, geração de linha e texto completo para prontuário.
+- diagnostic-criteria.html: página de Critérios Diagnósticos.
+- diagnostic-criteria.js: checklists diagnósticos, avaliadores e geração de linha/resumo para prontuário.
+- styles.css: estilos globais, layout responsivo e estilos específicos das áreas.
+- fluxo.txt: documentação resumida do fluxo atual.
 
-Regras atuais:
-- O app funciona abrindo o arquivo index.html diretamente no navegador.
-- Nao possui backend.
-- Nao possui banco de dados.
-- Nao possui login.
-- Nao usa cookies.
-- Nao usa localStorage.
-- Nao usa sessionStorage.
-- Nao envia dados para servidor.
-- Nao usa bibliotecas externas, CDN, frameworks, React, Vite ou npm.
-- Nao salva respostas.
-- Nao possui campos de identificacao do paciente, como nome, CPF, telefone ou prontuario.
+Navegação atual:
+- Todas as páginas possuem a navegação superior com:
+  - Início
+  - Escalas
+  - Frases
+  - EEM
+  - Critérios Diagnósticos
+- A página inicial mostra cards para:
+  - Escalas
+  - Frases
+  - EEM
+  - Critérios Diagnósticos
 
-Fluxo de uso:
-1. O usuario abre o arquivo index.html no navegador.
-2. A pagina mostra o titulo "Calculadora de Escalas".
-3. O usuario escolhe uma escala no seletor.
-4. Ao escolher a escala, o app mostra a descricao e as perguntas.
-5. Cada pergunta aparece em portugues, com a versao original em ingles logo abaixo.
-6. O usuario pode alternar entre visualizacao em cartoes e visualizacao em tabela.
-7. As respostas marcadas sao mantidas ao alternar entre cartoes e tabela.
-8. O app mostra um contador de progresso: Respondidas X / total.
-9. Cada pergunta tem opcoes em radio buttons.
-10. O usuario marca uma resposta para cada pergunta.
-11. O usuario clica em "Calcular resultado".
-12. Se alguma pergunta estiver sem resposta, o app informa quais itens estao incompletos, destaca os itens na tela e nao calcula a pontuacao.
-13. Se todas as perguntas estiverem respondidas, o app calcula os resultados.
-14. O app mostra os resultados especificos da escala selecionada, respostas incompletas e uma observacao clinica curta.
-15. O botao "Limpar" apaga o estado em memoria das respostas, desmarca as respostas na visualizacao atual, limpa o resultado e atualiza o contador.
-16. Ao trocar de escala, as respostas anteriores e o resultado sao limpos automaticamente.
+Regras gerais do projeto:
+- O site é estático e pode ser aberto diretamente pelo index.html.
+- Não usa React, Vite, npm ou framework frontend.
+- Escalas, EEM e Critérios Diagnósticos mantêm respostas clínicas apenas em memória.
+- Essas áreas não salvam respostas após recarregar a página.
+- Não há campos identificáveis de paciente nas áreas clínicas, como nome, CPF, telefone, prontuário ou data de nascimento.
+- Datas de avaliação podem existir nas ferramentas que geram texto para prontuário.
+- Textos oficiais extensos de instrumentos, DSM ou CID não devem ser copiados sem licença/autorização.
+- As ferramentas são apoio clínico e não substituem avaliação clínica, julgamento médico, diagnóstico diferencial ou consulta a manuais oficiais.
 
-Visualizacoes das perguntas:
-- Modo cartoes: visualizacao vertical compacta, com pergunta em portugues em destaque e original em ingles abaixo quando existir.
-- Modo tabela: uma linha por pergunta, coluna de item, coluna da pergunta e colunas para cada opcao de resposta.
-- O modo tabela permite rolagem horizontal em telas pequenas.
-- O cabecalho da tabela fica fixo dentro da area rolavel quando possivel.
-- Linhas ou cartoes incompletos ficam destacados depois que o usuario tenta calcular.
+Página inicial - index.html:
+1. O usuário abre index.html.
+2. A página mostra o título "Ferramentas clínicas".
+3. O usuário escolhe uma das áreas por card ou pela navegação superior.
+4. Cada card abre uma página independente.
 
-Estado em memoria:
-- As respostas da escala atual ficam em um objeto global em memoria chamado answers.
-- Cada resposta e salva pelo indice da pergunta.
-- A renderizacao dos radio buttons usa esse estado para remarcar respostas quando a tela e redesenhada.
-- O calculo dos resultados usa esse estado em memoria, nao os radio buttons existentes no DOM.
-- O estado e apagado ao limpar ou trocar de escala.
+Área Escalas - escalas.html + app.js:
+Objetivo:
+Calculadora local de escalas clínicas.
+
+Fluxo:
+1. O usuário abre "Escalas".
+2. A página mostra o seletor de escalas.
+3. Ao selecionar uma escala, a descrição aparece e o formulário é renderizado.
+4. Para escalas comuns, o usuário pode alternar entre visualização em cartões e tabela.
+5. O app mostra contador de progresso.
+6. O usuário responde aos itens.
+7. Ao clicar em "Calcular resultado":
+   - se houver item obrigatório em branco, o app lista pendências e destaca itens incompletos;
+   - se tudo estiver preenchido, calcula e exibe o resultado.
+8. O botão "Limpar" apaga respostas e resultado da escala atual.
+9. Trocar de escala limpa o estado anterior.
+
+Estado:
+- As respostas ficam no objeto global em memória answers.
+- Não há persistência local das respostas.
 
 Escalas existentes:
+- DIVA-5 - Entrevista Diagnóstica para TDAH em Adultos
 - PANSS - Esquizofrenia
 - CGI-SCH - Esquizofrenia
-- Inventario de Depressao de Beck (BDI)
+- Inventário de Depressão de Beck (BDI)
 - Beck Anxiety Inventory (BAI) - Ansiedade
-- Patient Health Questionnaire-9 (PHQ-9) - Depressao
+- Patient Health Questionnaire-9 (PHQ-9) - Depressão
 - Wender Utah Rating Scale-25 (WURS-25)
-- Wender Utah Rating Scale - versao completa (WURS-61)
+- Wender Utah Rating Scale - versão completa (WURS-61)
 - Adult ADHD Self-Report Scale v1.1 (ASRS-18)
 - Adult ADHD Self-Report Scale Screener v1.1 (ASRS-6)
-- SNAP-IV - versao de 26 itens
+- SNAP-IV - versão de 26 itens
 
-Detalhes da PANSS:
-- Escala clinica para avaliacao de sintomas positivos, sintomas negativos e psicopatologia geral na esquizofrenia.
-- Deve ser preenchida pelo clinico com base na entrevista, exame do estado mental e informacoes disponiveis.
-- Usa apenas nomes breves dos itens e estrutura de pontuacao.
-- A PANSS e instrumento protegido por direitos autorais/licenciamento; descricoes e ancoras oficiais longas devem ser usadas apenas com autorizacao/licenca adequada.
-- Possui 30 itens pontuados de 1 a 7.
-- Escala Positiva: 7 itens, minimo 7 e maximo 49.
-- Escala Negativa: 7 itens, minimo 7 e maximo 49.
-- Escala de Psicopatologia Geral: 16 itens, minimo 16 e maximo 112.
-- Total PANSS: minimo 30 e maximo 210.
-- Indice composto: Escala Positiva menos Escala Negativa, variando de -42 a +42.
-- O app impede o calculo se algum dos 30 itens estiver em branco.
+DIVA-5:
+- Implementada como entrevista estruturada especial, não como escala Likert.
+- Usa renderizador próprio quando selecionada.
+- Possui 18 critérios:
+  - A1-A9 de desatenção.
+  - HI1-HI9 de hiperatividade/impulsividade.
+- Cada critério tem idade adulta e infância.
+- Cada período tem exemplos checkáveis, campo de outros exemplos, nota clínica e radio "Sintoma presente? Sim/Não".
+- Exemplos marcados não contam automaticamente como sintomas.
+- O resultado conta sintomas atuais e infantis por domínio e exemplos por período/domínio.
+- Campos obrigatórios da DIVA: 40.
+- Gera linha para prontuário e resumo completo copiável.
 
-Resultados exibidos da PANSS:
-- Escore da Escala Positiva.
-- Escore da Escala Negativa.
-- Escore da Escala de Psicopatologia Geral.
-- Total PANSS.
-- Indice composto Positiva - Negativa.
-- Resumo dos itens marcados com codigo, item, pontuacao e rotulo.
-- Observacao clinica curta.
+Escalas Likert e estruturadas comuns:
+- PANSS: 30 itens de 1 a 7, com subescalas positiva, negativa, psicopatologia geral, total e índice composto.
+- CGI-SCH: 5 domínios de 1 a 7, sem soma total; média sintomática descritiva.
+- BDI: 21 itens de 0 a 3 e pergunta extra não pontuada sobre perda de peso intencional.
+- BAI: 21 itens de 0 a 3.
+- PHQ-9: 9 itens de 0 a 3 e pergunta extra opcional de impacto funcional.
+- WURS-25: escala retrospectiva com 25 itens e fatores.
+- WURS-61: escala retrospectiva completa com subescore TDAH WURS-25.
+- ASRS-18: 18 itens, subescalas desatenção e hiperatividade/impulsividade.
+- ASRS-6: 6 itens iniciais da ASRS para rastreio breve.
+- SNAP-IV-26: perfil criança/adolescente, subescalas desatenção, hiperatividade/impulsividade e TOD.
 
-Interpretacao atual da PANSS:
-- Nao ha faixas rigidas de gravidade por total.
-- A PANSS deve ser interpretada por subescalas e pelo padrao clinico dos itens, nao apenas pelo total.
-- Comparacoes longitudinais devem considerar metodo de aplicacao, treinamento do avaliador, adesao, risco, funcionamento, uso de substancias e efeitos adversos.
+Resultados das escalas:
+- A área de resultado exibe linhas específicas por escala.
+- Quando aplicável, mostra linha para prontuário.
+- Avisos de risco aparecem em escalas com itens de suicídio quando positivo.
+- Observações clínicas curtas reforçam que resultados não substituem avaliação clínica.
 
-Detalhes da CGI-SCH:
-- Escala de impressao clinica global especifica para esquizofrenia.
-- Deve ser preenchida pelo clinico com base na entrevista, exame do estado mental, evolucao e informacoes disponiveis.
-- Avalia sintomas positivos, sintomas negativos, sintomas depressivos, sintomas cognitivos e gravidade global da esquizofrenia.
-- Cada dominio e pontuado de 1 a 7.
-- A escala nao gera soma total.
-- O app impede o calculo se algum dos 5 dominios estiver em branco.
+Área Frases - frases.html + frases.js:
+Objetivo:
+Área para salvar, filtrar e exportar frases.
 
-Resultados exibidos da CGI-SCH:
-- Sintomas positivos: valor de 1 a 7 e rotulo correspondente.
-- Sintomas negativos: valor de 1 a 7 e rotulo correspondente.
-- Sintomas depressivos: valor de 1 a 7 e rotulo correspondente.
-- Sintomas cognitivos: valor de 1 a 7 e rotulo correspondente.
-- Gravidade global: valor de 1 a 7 e rotulo correspondente, com destaque visual.
-- Media descritiva dos quatro dominios sintomaticos.
-- Observacao clinica curta.
+Fluxo:
+1. O usuário abre "Frases".
+2. A página mostra uma área de acesso.
+3. Após autenticação, libera editor de frases.
+4. O usuário cadastra frase, tags e status.
+5. A lista de frases pode ser filtrada por status.
+6. Há botão de exportação JSONL das frases visíveis.
 
-Interpretacao atual da CGI-SCH:
-- 1: Normal / ausente.
-- 2: Limitrofe.
-- 3: Leve.
-- 4: Moderado.
-- 5: Marcado.
-- 6: Grave.
-- 7: Entre os mais graves / extremamente grave.
-- A media dos dominios e apenas descritiva e deve ser interpretada clinicamente.
+Observação:
+- Esta área é separada das ferramentas clínicas de resposta em memória.
+- Não deve interferir no estado de Escalas, EEM ou Critérios Diagnósticos.
 
-Detalhes do BDI:
-- Este arquivo corresponde ao BDI, nao ao BDI-II.
-- Inventario para avaliacao da intensidade de sintomas depressivos na ultima semana, incluindo hoje.
-- Deve ser usado conforme material/licenca adquirida.
-- Os textos oficiais sao protegidos por direitos autorais.
-- Possui 21 itens pontuados de 0 a 3.
-- Cada item possui alternativas proprias.
-- Possui uma pergunta extra nao pontuada vinculada ao item 19 sobre perda de peso intencional.
-- Pontuacao total minima: 0.
-- Pontuacao total maxima: 63.
-- O app impede o calculo se algum dos 21 itens pontuados estiver em branco.
-- A pergunta extra do item 19 nao entra na soma e nao bloqueia o calculo.
+Área EEM - eem.html + eem.js:
+Objetivo:
+Checklist estruturado e compacto para Exame do Estado Mental e geração de linha natural para prontuário.
 
-Resultados exibidos do BDI:
-- Pontuacao total BDI, de 0 a 63.
-- Classificacao de gravidade.
-- Respostas incompletas, quando houver.
-- Aviso do item 9, se o item 9 for maior que 0.
-- Perda de peso intencional, se a pergunta extra tiver sido respondida.
-- Observacao clinica curta.
+Fluxo:
+1. O usuário abre "EEM".
+2. A data da avaliação é preenchida automaticamente com a data atual.
+3. O usuário marca opções comuns nos cards compactos ou abre "+ específicas" em um domínio.
+4. Opções específicas selecionadas continuam visíveis no card compacto após recolher o painel.
+5. Cada domínio aceita campo "Outro" dentro do painel de específicas.
+6. Ao clicar em "Gerar linha para prontuário", o app cria texto iniciado por "EEM: ".
+7. O usuário pode copiar o texto com "Copiar para prontuário".
+8. Os botões rápidos permitem marcar EEM sem alterações grosseiras, limpar, expandir/recolher específicas e mostrar apenas alterados.
 
-Interpretacao atual do BDI:
-- 0 a 9: ausencia de depressao ou sintomas depressivos minimos.
-- 10 a 18: depressao leve a moderada.
-- 19 a 29: depressao moderada a severa.
-- 30 a 63: depressao severa.
-- O resultado mostra aviso de que o BDI e um instrumento padronizado, deve ser interpretado conforme manual/licenca e contexto clinico, e nao substitui avaliacao clinica.
-- Se o item 9 for maior que 0, o resultado mostra aviso destacado para avaliar risco suicida, plano, intencao, acesso a meios, fatores de protecao e necessidade de conduta imediata.
+Domínios do EEM:
+1. Aparência (autocuidado).
+2. Atitude e contato.
+3. Psicomotricidade.
+4. Volição.
+5. Consciência e vigilância.
+6. Atenção.
+7. Orientação.
+8. Memória.
+9. Linguagem e fala.
+10. Pensamento - forma e curso.
+11. Pensamento - conteúdo.
+12. Humor.
+13. Afeto.
+14. Sensopercepção.
+15. Juízo crítico.
+16. Insight.
+17. Risco.
 
-Detalhes do BAI:
-- Inventario para avaliacao da intensidade de sintomas ansiosos durante a ultima semana, incluindo hoje.
-- Deve ser usado conforme material/licenca adquirida.
-- Os textos oficiais sao protegidos por direitos autorais.
-- Possui 21 itens pontuados de 0 a 3.
-- Pontuacao total minima: 0.
-- Pontuacao total maxima: 63.
-- O app impede o calculo se algum dos 21 itens estiver em branco.
+Regras do EEM:
+- Não gera diagnóstico.
+- Usa linguagem descritiva e clinicamente cautelosa.
+- O texto do prontuário usa noteText, não o label curto do formulário.
+- O texto não usa numeração, barras ou lista artificial.
+- Conflitos óbvios entre opções são tratados por conflicts: [] no item.
+- Todo estado fica apenas em memória.
 
-Resultados exibidos do BAI:
-- Pontuacao total BAI, de 0 a 63.
-- Classificacao de gravidade.
-- Respostas incompletas, quando houver.
-- Observacao clinica curta.
+Área Critérios Diagnósticos - diagnostic-criteria.html + diagnostic-criteria.js:
+Objetivo:
+Checklist estruturado de critérios diagnósticos com resultado, critérios preenchidos/ausentes/não avaliados, linha para prontuário e resumo completo.
 
-Interpretacao atual do BAI:
-- 0 a 7: ansiedade minima.
-- 8 a 15: ansiedade leve.
-- 16 a 25: ansiedade moderada.
-- 26 a 63: ansiedade grave.
-- O resultado mostra aviso de que o BAI e um instrumento padronizado, deve ser interpretado conforme manual/licenca e contexto clinico, e nao substitui avaliacao clinica.
+Fluxo:
+1. O usuário abre "Critérios Diagnósticos".
+2. A página mostra nota de uso:
+   "Ferramenta de apoio ao raciocínio diagnóstico. Não substitui avaliação clínica, diagnóstico diferencial, julgamento médico ou consulta ao manual oficial."
+3. A data da avaliação é preenchida automaticamente.
+4. O usuário pode buscar transtorno por texto.
+5. O usuário pode filtrar por categoria.
+6. O usuário seleciona um transtorno.
+7. O app renderiza os critérios agrupados em seções recolhíveis.
+8. Cada critério tem radio buttons:
+   - Presente
+   - Ausente
+   - Não avaliado
+9. Cada critério tem nota opcional.
+10. O app mostra progresso: "Avaliados X / Y critérios obrigatórios".
+11. Grupos com contagem sintomática mostram contagens ao vivo e limiar necessário.
+12. Ao clicar em "Avaliar critérios", o app mostra:
+   - Resultado.
+   - Critérios preenchidos.
+   - Critérios ausentes.
+   - Critérios não avaliados.
+   - Contagens.
+   - Avisos.
+   - Linha para prontuário.
+   - Resumo completo.
+13. O usuário pode copiar a linha ou o resumo completo.
+14. O botão "Limpar" limpa os critérios, notas e resultados da página atual, mantendo o transtorno selecionado.
 
-Detalhes da PHQ-9:
-- Escala breve de rastreio e acompanhamento de sintomas depressivos nas ultimas 2 semanas.
-- Possui 9 itens pontuados de 0 a 3.
-- Possui uma pergunta extra de impacto funcional nao pontuada e opcional.
-- A instrucao aparece antes das perguntas em portugues e ingles.
-- Pontuacao total minima: 0.
-- Pontuacao total maxima: 27.
-- O app impede o calculo se algum dos 9 itens pontuados estiver em branco.
-- A pergunta de impacto funcional nao entra na soma.
+Categorias disponíveis:
+- Todos
+- Neurodesenvolvimento
+- Humor
+- Ansiedade
+- Psicóticos
+- Obsessivo-compulsivos
+- Trauma/estresse
+- Uso de substâncias
+- Alimentares
+- Personalidade
+- Sono
+- Outros
 
-Resultados exibidos da PHQ-9:
-- Pontuacao total PHQ-9, de 0 a 27.
-- Gravidade.
-- Mensagem de rastreio positivo ou negativo conforme ponto de corte 10.
-- Aviso do item 9, se o item 9 for maior que 0.
-- Impacto funcional, se respondido.
-- Observacao clinica curta.
+Transtornos iniciais em Critérios Diagnósticos:
+- TDAH
+- Episódio Depressivo Maior
+- Episódio Maníaco
+- Episódio Hipomaníaco
+- Transtorno de Ansiedade Generalizada
+- Transtorno de Pânico
+- TOC
+- TEPT
+- Esquizofrenia
+- Transtorno por Uso de Substâncias
 
-Interpretacao atual da PHQ-9:
-- 0 a 4: sintomas depressivos minimos ou ausentes.
-- 5 a 9: sintomas depressivos leves.
-- 10 a 14: sintomas depressivos moderados.
-- 15 a 19: sintomas depressivos moderadamente graves.
-- 20 a 27: sintomas depressivos graves.
-- Total maior ou igual a 10: acima do ponto de corte usual para rastreio positivo de depressao.
-- Total menor que 10: abaixo do ponto de corte usual para rastreio positivo, mas nao exclui depressao se houver suspeita clinica.
-- O resultado mostra aviso de que o PHQ-9 e instrumento de rastreio e acompanhamento e que o diagnostico final e clinico.
+Lógica refinada dos 5 principais:
 
-Detalhes da WURS-25:
-- Escala retrospectiva com a instrucao "Como eu era quando crianca".
-- O usuario deve avaliar o comportamento na infancia, idealmente ate os 7-12 anos.
-- Possui 25 perguntas bilingues, com texto em portugues em destaque e original em ingles abaixo.
-- Cada item usa pontuacao Likert de 0 a 4.
-- Pontuacao total minima: 0.
-- Pontuacao total maxima: 100.
-- A escala tambem calcula subtotais por tres fatores psicometricos.
+TDAH:
+- id: adhd_dsm5.
+- Categoria: Neurodesenvolvimento.
+- Fonte: DSM-5 / DSM-5-TR.
+- Faixa etária:
+  - Adulto, 17 anos ou mais.
+  - Criança/adolescente, até 16 anos.
+- Domínios:
+  - Desatenção A1-A9.
+  - Hiperatividade/Impulsividade HI1-HI9.
+- Adultos: limiar 5 sintomas em pelo menos um domínio.
+- Crianças/adolescentes: limiar 6 sintomas em pelo menos um domínio.
+- Critérios adicionais:
+  - Início antes dos 12 anos.
+  - 2 ou mais contextos.
+  - Prejuízo funcional.
+  - Diferencial/exclusão.
+- Se preenchido, calcula apresentação:
+  - Apresentação combinada.
+  - Apresentação predominantemente desatenta.
+  - Apresentação predominantemente hiperativa/impulsiva.
+- Se não preenchido, apresentação: Não aplicável.
 
-Fatores da WURS-25:
-- Fator 1: Impulsividade / Problemas Comportamentais, com 13 itens e pontuacao maxima de 52.
-- Fator 2: Desatencao / Problemas Escolares, com 7 itens e pontuacao maxima de 28.
-- Fator 3: Autoestima / Humor Negativo, com 5 itens e pontuacao maxima de 20.
+Episódio Depressivo Maior:
+- id: major_depressive_episode_dsm5.
+- Categoria: Humor.
+- Fonte: DSM-5 / DSM-5-TR.
+- Avalia episódio depressivo maior, não conclui automaticamente transtorno depressivo maior.
+- 9 sintomas D1-D9.
+- Exige pelo menos 5 sintomas.
+- Exige humor deprimido ou anedonia.
+- Exige duração de 2 semanas/mudança funcional.
+- Exige prejuízo/sofrimento.
+- Exige exclusões de substância/condição médica e diferencial psicótico.
+- Possui gravidade selecionada pelo clínico:
+  - Não informada.
+  - Leve.
+  - Moderada.
+  - Grave.
+  - Com características psicóticas.
+- Se D9 estiver presente, mostra alerta para avaliação de risco suicida.
+- Se história maníaca/hipomaníaca estiver presente, mostra alerta de espectro bipolar e não conclui transtorno depressivo maior automaticamente.
 
-Resultados exibidos da WURS-25:
-- Pontuacao total, de 0 a 100 pontos.
-- Pontuacao do Fator 1.
-- Pontuacao do Fator 2.
-- Pontuacao do Fator 3.
-- Interpretacao baseada na pontuacao total.
-- Respostas incompletas, quando houver.
-- Observacao clinica curta.
+Episódio Maníaco:
+- id: manic_episode_dsm5.
+- Categoria: Humor.
+- Fonte: DSM-5 / DSM-5-TR.
+- Critérios centrais:
+  - Humor elevado/expansivo/irritável.
+  - Energia/atividade aumentada.
+  - Duração de pelo menos 1 semana ou hospitalização em qualquer duração.
+- Se humor for "Irritável apenas", limiar de sintomas B é 4.
+- Caso contrário, limiar de sintomas B é 3.
+- Sintomas B: M1-M7.
+- Exige pelo menos um:
+  - Prejuízo funcional marcado.
+  - Hospitalização.
+  - Psicose.
+- Exige exclusão de substância/medicação/condição médica.
+- Se psicose estiver presente, mostra aviso de que favorece mania e não hipomania.
 
-Interpretacao atual da WURS-25:
-- Total menor que 36: abaixo dos pontos de corte informados para triagem retrospectiva de TDAH.
-- Total maior ou igual a 36: sugestivo de TDAH, com alta sensibilidade de 96% no estudo original de Ward et al.
-- Total maior ou igual a 39: ponto de corte ideal para distinguir TDAH de outros transtornos com sintomas similares, como bipolaridade ou borderline.
-- Total maior ou igual a 46: alta probabilidade de TDAH, com alta especificidade de 99%.
-- O resultado mostra aviso de que a escala e uma ferramenta de triagem retrospectiva e nao substitui diagnostico medico clinico.
+Episódio Hipomaníaco:
+- id: hypomanic_episode_dsm5.
+- Categoria: Humor.
+- Fonte: DSM-5 / DSM-5-TR.
+- Critérios centrais:
+  - Humor elevado/expansivo/irritável.
+  - Energia/atividade aumentada.
+  - Duração de pelo menos 4 dias.
+- Se humor for "Irritável apenas", limiar de sintomas B é 4.
+- Caso contrário, limiar de sintomas B é 3.
+- Sintomas B: HM1-HM7.
+- Exige:
+  - Mudança inequívoca no funcionamento.
+  - Alteração observável por terceiros.
+  - Sem prejuízo funcional marcado.
+  - Sem hospitalização.
+  - Sem psicose.
+  - Exclusão de substância/medicação/condição médica.
+- Se psicose, hospitalização ou prejuízo marcado forem indicados, mostra avisos para avaliar mania.
 
-Detalhes da WURS-61:
-- Escala retrospectiva com 61 itens.
-- O usuario deve responder pensando em como se comportava quando crianca.
-- Possui 61 perguntas bilingues, com texto em portugues em destaque e original em ingles abaixo.
-- Cada item usa pontuacao Likert de 0 a 4.
-- Pontuacao total minima: 0.
-- Pontuacao total maxima: 244.
-- A pontuacao total WURS-61 fornece um perfil clinico qualitativo.
-- O app impede o calculo se algum item estiver em branco.
+Transtorno de Ansiedade Generalizada:
+- id: gad_dsm5.
+- Categoria: Ansiedade.
+- Fonte: DSM-5 / DSM-5-TR.
+- Faixa etária:
+  - Adulto.
+  - Criança/adolescente.
+- Critérios centrais:
+  - Ansiedade/preocupação excessivas na maioria dos dias por pelo menos 6 meses.
+  - Dificuldade de controlar a preocupação.
+- Sintomas associados GAD_C1-GAD_C6.
+- Adulto: limiar 3 sintomas associados.
+- Criança/adolescente: limiar 1 sintoma associado.
+- Exige prejuízo/sofrimento.
+- Exige exclusão de substância/condição médica.
+- Exige diferencial.
+- Mostra avisos quando duração/frequência, controle ou diferencial não são compatíveis.
 
-Subescore TDAH WURS-25:
-- Dentro dos 61 itens, 25 itens estao marcados no app.js com adhdSubscore: true.
-- O subescore TDAH soma apenas esses 25 itens.
-- Pontuacao minima do subescore: 0.
-- Pontuacao maxima do subescore: 100.
-- A interpretacao de TDAH e baseada no subescore, nao na pontuacao total WURS-61.
+Estados de resultado em Critérios Diagnósticos:
+- Critérios preenchidos.
+- Critérios não preenchidos.
+- Avaliação insuficiente.
 
-Resultados exibidos:
-- Pontuacao total WURS-61, de 0 a 244 pontos.
-- Subescore TDAH WURS-25, de 0 a 100 pontos.
-- Interpretacao baseada no subescore TDAH.
-- Respostas incompletas, quando houver.
-- Observacao clinica curta.
+Regra geral de avaliação:
+- Critérios obrigatórios marcados como "Não avaliado" ou em branco tornam o resultado "Avaliação insuficiente", salvo itens opcionais.
+- Critérios positivos obrigatórios precisam estar presentes.
+- Critérios de exclusão são formulados como "não atribuível" ou "não melhor explicado" e passam quando marcados como presentes.
+- Critérios com contagem precisam atingir o limiar definido para faixa etária ou especificador.
 
-Interpretacao atual do subescore TDAH:
-- Subescore menor que 36: abaixo dos pontos de corte informados para triagem retrospectiva de TDAH.
-- Subescore maior ou igual a 36: alta sensibilidade para triagem inicial.
-- Subescore maior ou igual a 46: classificacao correta de 86% dos pacientes com TDAH, com 99% de especificidade.
-- O resultado mostra aviso de que a interpretacao nao substitui avaliacao clinica.
+Cópia de texto:
+- Escalas, DIVA-5, EEM e Critérios Diagnósticos usam navigator.clipboard.writeText quando disponível.
+- Se a API de clipboard não estiver disponível, o app cria/seleciona um textarea para cópia manual.
+- O feedback visual informa que o texto foi copiado ou selecionado para cópia manual.
 
-Detalhes da ASRS-18:
-- Escala de rastreio para sintomas de TDAH em adultos nos ultimos 6 meses.
-- Possui 18 perguntas bilingues, com texto em portugues em destaque e original em ingles abaixo.
-- Cada item usa pontuacao Likert de 0 a 4.
-- Itens 1 a 9 compoem a subescala de Desatencao.
-- Itens 10 a 18 compoem a subescala de Hiperatividade-Impulsividade.
-- Cada subescala tem pontuacao minima de 0 e maxima de 36.
-- O criterio de interpretacao usa o maior valor entre as duas subescalas.
-
-Resultados exibidos da ASRS-18:
-- Escore de Desatencao, de 0 a 36 pontos.
-- Escore de Hiperatividade-Impulsividade, de 0 a 36 pontos.
-- Maior escore entre as subescalas.
-- Interpretacao baseada no maior escore.
-- Respostas incompletas, quando houver.
-- Observacao clinica curta.
-
-Interpretacao atual da ASRS-18:
-- Maior escore menor que 21: baixa probabilidade de TDAH.
-- Maior escore maior ou igual a 21: alta probabilidade de TDAH, com sensibilidade de 92,2% e especificidade de 98,9%, conforme Leite, 2011.
-- O resultado mostra aviso de que a ASRS-18 e um instrumento de rastreio e que o diagnostico final e clinico.
-
-Detalhes da ASRS-6:
-- Escala breve de rastreio inicial para sintomas de TDAH em adultos nos ultimos 6 meses.
-- Usa as 6 primeiras perguntas da ASRS-18.
-- Possui perguntas bilingues, com texto em portugues em destaque e original em ingles abaixo.
-- Cada item usa pontuacao Likert de 0 a 4.
-- Pode ser usada como teste rapido, enquanto a ASRS-18 funciona como avaliacao mais detalhada.
-
-Resultados exibidos da ASRS-6:
-- Soma de pontos, de 0 a 24.
-- Contagem de sintomas positivos, de 0 a 6.
-- Resultado final do rastreio.
-- Respostas incompletas, quando houver.
-- Observacao clinica curta.
-
-Interpretacao atual da ASRS-6:
-- Metodo de soma: soma maior ou igual a 14 indica rastreio positivo.
-- Metodo de sintomas: respostas 3 ou 4 contam como sintomas positivos.
-- Quatro ou mais sintomas positivos indicam rastreio positivo.
-- Se qualquer um dos dois metodos for positivo, o resultado final informa alta probabilidade de TDAH e recomenda avaliacao clinica detalhada.
-- O resultado mostra aviso de que a escala e uma ferramenta de triagem inicial e nao substitui diagnostico medico.
-
-Detalhes do SNAP-IV:
-- Escala de 26 itens para pais, responsaveis ou professores avaliarem criancas ou adolescentes.
-- A instrucao inicial orienta responder de acordo com o comportamento da crianca nos ultimos 6 meses.
-- Se a crianca iniciou medicacao recentemente, a orientacao e responder com base no comportamento anterior ao uso do remedio.
-- Antes das perguntas, o app exige selecionar o perfil: Crianca ate 12 anos ou Adolescente de 13 a 17 anos.
-- Cada item usa pontuacao de 0 a 3.
-- Respostas 0 e 1 sao convertidas para 0 no metodo de sintomas clinicos.
-- Respostas 2 e 3 sao convertidas para 1 sintoma presente.
-
-Subescalas do SNAP-IV:
-- Desatencao: itens 1 a 9.
-- Hiperatividade e Impulsividade: itens 10 a 18.
-- Transtorno de Oposicao e Desafio - TOD: itens 19 a 26.
-
-Pontos de corte do SNAP-IV:
-- Criancas ate 12 anos: Desatencao positivo se maior ou igual a 6; Hiperatividade positivo se maior ou igual a 6; TOD positivo se maior ou igual a 4.
-- Adolescentes de 13 a 17 anos: Desatencao positivo se maior ou igual a 5; Hiperatividade positivo se maior ou igual a 5; TOD positivo se maior ou igual a 4.
-
-Resultados exibidos do SNAP-IV:
-- Perfil selecionado.
-- Escore de Desatencao, de 0 a 9 sintomas presentes.
-- Escore de Hiperatividade e Impulsividade, de 0 a 9 sintomas presentes.
-- Escore de TOD, de 0 a 8 sintomas presentes.
-- Indicacao se cada subescala atingiu criterio para mais sintomas que o esperado.
-- Observacao obrigatoria de que o SNAP-IV avalia apenas o Criterio A e nao fecha diagnostico isoladamente.
-
-Estrutura das escalas:
-As escalas ficam no array scales, dentro do arquivo app.js.
-Cada escala possui:
-- id
-- name
-- description
-- questions
-- options
-- calculate
-- interpret
+Estilo e responsividade:
+- O layout usa painéis, cards, botões e labels consistentes entre as páginas.
+- Em telas pequenas, grids passam para uma coluna.
+- Tabelas de escala permitem rolagem horizontal.
+- Critérios/itens incompletos recebem destaque visual em tom de aviso.
 
 Como adicionar novas escalas:
-Para adicionar uma nova escala, criar um novo objeto dentro do array scales em app.js.
-O restante do app reutiliza a mesma interface e a mesma logica de renderizacao.
+- Adicionar objeto ao array scales em app.js.
+- Para escala comum, definir questions, options, calculate, interpret e getResultRows quando necessário.
+- Para ferramenta com renderização especial, criar renderizador e fluxo próprios sem quebrar o seletor.
 
-Como alterar interpretacoes:
-Para alterar a interpretacao de uma escala, editar a funcao interpret(score) dentro do objeto da escala em app.js.
+Como adicionar novos critérios diagnósticos:
+- Adicionar objeto a diagnosticCriteriaData em diagnostic-criteria.js.
+- Usar labels curtos/parafraseados.
+- Manter officialText: "" disponível para texto licenciado futuro.
+- Definir categoria, fonte, grupos de critérios e evaluator.
+- Se necessário, criar avaliador específico que retorne resultado padronizado.
+
+Como adicionar seções ao EEM:
+- Editar o array eemDomains em eem.js.
+- Cada domínio possui opções com id, label, help, noteText, common e conflicts opcional.
+- Opções comuns ficam sempre visíveis; opções específicas ficam no painel local "+ específicas".
+- A geração de texto usa noteText e os dados selecionados em memória.
 
 Estado atual:
-Versao funcional com formulario PANSS, CGI-SCH, BDI, BAI, PHQ-9, WURS-25, WURS-61, ASRS-18, ASRS-6 e SNAP-IV pronta para uso local e futura hospedagem no GitHub Pages.
+Versão funcional com quatro áreas principais:
+- Home.
+- Escalas / Calculadora de Escalas.
+- Frases / quick capture.
+- EEM / Exame do Estado Mental.
+- Critérios Diagnósticos.
+
+As ferramentas clínicas principais funcionam localmente, em páginas separadas, com estado em memória e saída copiável para prontuário quando aplicável.

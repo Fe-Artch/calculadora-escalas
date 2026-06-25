@@ -752,72 +752,136 @@ button.danger:hover {
 
 .eem-date-row {
   max-width: 280px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
-.eem-section {
-  margin-top: 16px;
+.eem-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.eem-domain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.eem-domain-card {
   background: #fbfbfc;
   border: 1px solid var(--border);
   border-radius: 8px;
+  padding: 12px;
 }
 
-.eem-section-header {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.eem-group,
-.eem-note {
-  margin: 16px;
-}
-
-.eem-group h3 {
-  margin: 0 0 10px;
-  color: var(--muted);
-  font-size: 0.96rem;
-}
-
-.eem-options-grid {
+.eem-domain-header {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr auto;
   gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.eem-domain-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.eem-specific-toggle {
+  width: auto;
+  min-width: max-content;
+  padding: 6px 9px;
+  font-size: 0.82rem;
+}
+
+.eem-chip-row,
+.eem-specific-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.eem-specific-grid {
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 .eem-option {
-  display: flex;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
   gap: 8px;
-  align-items: flex-start;
-  min-height: 38px;
-  padding: 8px 10px;
+  align-items: start;
+  min-height: 32px;
+  padding: 6px 8px;
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
+  line-height: 1.25;
+  min-width: 0;
 }
 
 .eem-option:hover {
   border-color: var(--border-strong);
 }
 
+.eem-option.selected {
+  border-color: var(--button);
+  background: #eef6ff;
+  color: #123761;
+}
+
 .eem-option input {
   width: auto;
-  margin-top: 4px;
+  margin: 3px 0 0;
+}
+
+.eem-option-body {
+  min-width: 0;
+}
+
+.eem-option-label {
+  display: block;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.eem-option-help {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.eem-specific-panel {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f6f7f9;
+  border: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .eem-other {
   margin-top: 10px;
 }
 
-.eem-result-box {
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
+.eem-other input {
+  max-width: none;
+  margin-top: 6px;
 }
 
-.eem-result-box:last-of-type {
-  border-bottom: 0;
+.eem-empty-state {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.eem-result-box {
+  padding: 14px 0;
 }
 
 .eem-result-box h3 {
@@ -1004,7 +1068,12 @@ button.danger:hover {
   }
 
   .app-header h1 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
+    overflow-wrap: anywhere;
+  }
+
+  .app-header p {
+    overflow-wrap: anywhere;
   }
 
   .panel {
@@ -1036,8 +1105,21 @@ button.danger:hover {
     grid-template-columns: 1fr;
   }
 
-  .eem-options-grid {
+  .eem-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .eem-domain-grid {
     grid-template-columns: 1fr;
+  }
+
+  .eem-domain-header {
+    grid-template-columns: 1fr;
+  }
+
+  .eem-specific-toggle {
+    width: 100%;
   }
 
   .diagnostic-controls {

@@ -18,7 +18,7 @@
     <main class="app-shell eem-page">
       <header class="app-header">
         <h1>Exame do Estado Mental (EEM)</h1>
-        <p>Roteiro estruturado para registrar observações do exame psíquico e gerar uma linha ou texto para prontuário.</p>
+        <p>Roteiro estruturado para registrar observações do exame psíquico e gerar uma linha para prontuário.</p>
       </header>
 
       <form id="eem-form" class="panel" novalidate>
@@ -27,11 +27,18 @@
           <input id="eem-date" type="date" data-eem-field="date">
         </div>
 
-        <div id="eem-sections"></div>
+        <div class="eem-toolbar" aria-label="Ações rápidas do EEM">
+          <button type="button" id="eem-normal-button" class="secondary">Marcar EEM sem alterações grosseiras</button>
+          <button type="button" id="eem-expand-button" class="secondary">Expandir específicas</button>
+          <button type="button" id="eem-collapse-button" class="secondary">Recolher específicas</button>
+          <button type="button" id="eem-filter-button" class="secondary">Mostrar apenas alterados</button>
+        </div>
+
+        <div id="eem-sections" class="eem-domain-grid"></div>
 
         <div class="actions">
-          <button type="submit">Gerar EEM</button>
-          <button type="button" id="eem-clear-button" class="secondary">Limpar</button>
+          <button type="submit">Gerar linha para prontuário</button>
+          <button type="button" id="eem-clear-button" class="secondary">Limpar EEM</button>
         </div>
       </form>
 
@@ -39,18 +46,10 @@
         <h2 id="eem-result-title">Resultado</h2>
 
         <div class="eem-result-box">
-          <h3>Linha resumida para prontuário</h3>
+          <h3>Texto para prontuário</h3>
           <p id="eem-summary-output"></p>
           <div class="eem-copy-row">
-            <button type="button" data-output-type="summary">Copiar linha</button>
-          </div>
-        </div>
-
-        <div class="eem-result-box">
-          <h3>Texto completo para prontuário</h3>
-          <pre id="eem-full-output"></pre>
-          <div class="eem-copy-row">
-            <button type="button" data-output-type="full">Copiar texto completo</button>
+            <button type="button" data-output-type="summary">Copiar para prontuário</button>
           </div>
         </div>
 
