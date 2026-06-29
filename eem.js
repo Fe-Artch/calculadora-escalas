@@ -447,6 +447,7 @@ function updateEemState(event) {
 
   if (target.dataset.eemField === "date") {
     eemState.date = target.value;
+    refreshResultIfVisible();
     return;
   }
 
@@ -542,34 +543,14 @@ function getDomainNoteTexts(domain) {
 
   const otherText = (eemState.others[domain.id] || "").trim();
   if (otherText) {
-    items.push(`${domainTitleForNote(domain)}: ${otherText}`);
+    items.push(otherText);
   }
 
   return items;
 }
 
-function domainTitleForNote(domain) {
-  return domain.title.replace(/\s*\(.+\)\s*/g, "").toLowerCase();
-}
-
-function joinNatural(items) {
-  if (!items.length) {
-    return "";
-  }
-
-  if (items.length === 1) {
-    return items[0];
-  }
-
-  if (items.length === 2) {
-    return `${items[0]} e ${items[1]}`;
-  }
-
-  return `${items.slice(0, -1).join(", ")} e ${items[items.length - 1]}`;
-}
-
-function capitalize(text) {
-  return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+function domainTitleForOutput(domain) {
+  return domain.title.replace(/\s*\(.+\)\s*/g, "");
 }
 
 function compactNormalPhrases(items) {
@@ -594,7 +575,7 @@ function compactNormalPhrases(items) {
 }
 
 function generateEemSummary() {
-  const sentences = [];
+  const lines = [];
 
   eemDomains.forEach((domain) => {
     let items = getDomainNoteTexts(domain);
@@ -602,15 +583,27 @@ function generateEemSummary() {
       return;
     }
 
-    items = compactNormalPhrases(items);
-    sentences.push(`${capitalize(joinNatural(items))}.`);
+    lines.push(`${domainTitleForOutput(domain)}: ${items.join(", ")}.`);
   });
 
-  if (!sentences.length) {
-    return "Nenhum item do EEM selecionado.";
+  if (!lines.length) {
+    return "Nenhum domínio selecionado.";
   }
 
-  return `EEM: ${sentences.join(" ")}`;
+  return [`EEM (${formatDateForOutput(eemState.date)})`, "", ...lines].join("\n");
+}
+
+function formatDateForOutput(value) {
+  if (!value) {
+    return "";
+  }
+
+  const parts = value.split("-");
+  if (parts.length !== 3) {
+    return value;
+  }
+
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
 function generateEemOutputs() {
@@ -633,8 +626,12 @@ async function copyTextToClipboard(text) {
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    await navigator.clipboard.writeText(text);
-    return true;
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_error) {
+      // Continua para o fallback manual abaixo.
+    }
   }
 
   const textarea = document.createElement("textarea");
@@ -686,8 +683,8 @@ function initEemPage() {
     }
 
     try {
-      await copyTextToClipboard(eemSummaryOutput.textContent);
-      eemCopyFeedback.textContent = "Copiado.";
+      const copied = await copyTextToClipboard(eemSummaryOutput.textContent);
+      eemCopyFeedback.textContent = copied ? "Copiado." : "Não foi possível copiar automaticamente. Selecione e copie o texto manualmente.";
       window.setTimeout(() => {
         eemCopyFeedback.textContent = "";
       }, 2500);

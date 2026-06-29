@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contatos</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegacao principal">
+      <a href="index.html">Início</a>
+      <a href="escalas.html">Escalas</a>
+      <a href="frases.html">Frases</a>
+      <a href="contatos.html" aria-current="page">Contatos</a>
+      <a href="eem.html">EEM</a>
+      <a href="diagnostic-criteria.html">Critérios Diagnósticos</a>
+    </nav>
+
+    <main class="app-shell contacts-page">
+      <header class="app-header">
+        <h1>Contatos</h1>
+        <p>Cadastre contatos profissionais e serviços para indicação. Não armazene dados de pacientes nesta área.</p>
+      </header>
+
+      <section class="panel" aria-labelledby="login-title">
+        <h2 id="login-title">Acesso</h2>
+        <form id="login-form" class="auth-form">
+          <label class="field-label" for="email-input">E-mail</label>
+          <input id="email-input" type="email" autocomplete="email" required placeholder="seu@email.com">
+
+          <label class="field-label" for="password-input">Senha</label>
+          <input id="password-input" type="password" autocomplete="current-password" required>
+
+          <div class="actions compact-actions">
+            <button type="submit">Entrar</button>
+            <button type="button" id="signup-button" class="secondary">Criar conta</button>
+          </div>
+        </form>
+
+        <div id="user-panel" class="user-panel hidden">
+          <p id="user-email"></p>
+          <button type="button" id="logout-button" class="secondary">Sair</button>
+        </div>
+      </section>
+
+      <section id="contact-editor" class="panel hidden" aria-labelledby="contact-editor-title">
+        <div class="section-heading">
+          <h2 id="contact-editor-title">Novo contato</h2>
+          <button type="button" id="cancel-edit-button" class="secondary hidden">Cancelar edição</button>
+        </div>
+
+        <form id="contact-form">
+          <div class="form-grid contacts-main-grid">
+            <div>
+              <label class="field-label" for="contact-name">Nome do profissional/serviço</label>
+              <input id="contact-name" type="text" required>
+            </div>
+            <div>
+              <label class="field-label" for="contact-group">Grupo principal</label>
+              <select id="contact-group" required></select>
+            </div>
+          </div>
+
+          <label class="field-label contacts-spaced" for="contact-group-custom">Grupo personalizado opcional</label>
+          <input id="contact-group-custom" type="text" placeholder="Ex.: Educadores parentais, psicopedagogos">
+
+          <div class="form-grid contacts-three-grid">
+            <div>
+              <label class="field-label" for="contact-phone">Telefone/WhatsApp</label>
+              <input id="contact-phone" type="text" required placeholder="(00) 00000-0000">
+            </div>
+            <div>
+              <label class="field-label" for="contact-email">E-mail</label>
+              <input id="contact-email" type="email">
+            </div>
+            <div>
+              <label class="field-label" for="contact-location">Bairro/cidade/região</label>
+              <input id="contact-location" type="text">
+            </div>
+          </div>
+
+          <div class="form-grid contacts-three-grid">
+            <div>
+              <label class="field-label" for="contact-instagram">Instagram</label>
+              <input id="contact-instagram" type="text" placeholder="@perfil">
+            </div>
+            <div>
+              <label class="field-label" for="contact-site">Site</label>
+              <input id="contact-site" type="url" placeholder="https://...">
+            </div>
+            <div>
+              <label class="field-label" for="contact-status">Status</label>
+              <select id="contact-status">
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+                <option value="check">check</option>
+                <option value="do_not_recommend">do_not_recommend</option>
+              </select>
+            </div>
+          </div>
+
+          <fieldset class="contacts-choice-group">
+            <legend>Modalidade</legend>
+            <label><input type="checkbox" name="contact-modality" value="online"> online</label>
+            <label><input type="checkbox" name="contact-modality" value="presencial"> presencial</label>
+            <label><input type="checkbox" name="contact-modality" value="híbrido"> híbrido</label>
+            <label><input type="checkbox" name="contact-modality" value="domicílio"> domicílio</label>
+          </fieldset>
+
+          <fieldset class="contacts-choice-group">
+            <legend>Público</legend>
+            <label><input type="checkbox" name="contact-audience" value="adulto"> adulto</label>
+            <label><input type="checkbox" name="contact-audience" value="criança"> criança</label>
+            <label><input type="checkbox" name="contact-audience" value="adolescente"> adolescente</label>
+            <label><input type="checkbox" name="contact-audience" value="idoso"> idoso</label>
+            <label><input type="checkbox" name="contact-audience" value="casal"> casal</label>
+            <label><input type="checkbox" name="contact-audience" value="família"> família</label>
+          </fieldset>
+
+          <div class="form-grid">
+            <div>
+              <label class="field-label" for="contact-specialties">Especialidades separadas por vírgula</label>
+              <input id="contact-specialties" type="text" placeholder="TDAH, TEA, neuropsicologia">
+            </div>
+            <div>
+              <label class="field-label" for="contact-tags">Tags livres separadas por vírgula</label>
+              <input id="contact-tags" type="text" placeholder="zona sul, aceita convênio">
+            </div>
+          </div>
+
+          <label class="field-label contacts-spaced" for="contact-price-note">Preço, valor social, convênio e pagamento</label>
+          <input id="contact-price-note" type="text">
+
+          <label class="field-label contacts-spaced" for="contact-description">Descrição curta objetiva</label>
+          <textarea id="contact-description" rows="3"></textarea>
+
+          <label class="field-label contacts-spaced" for="contact-private-notes">Observações internas</label>
+          <textarea id="contact-private-notes" rows="5"></textarea>
+
+          <label class="field-label contacts-spaced" for="contact-indication-text">Texto opcional para enviar ao paciente</label>
+          <textarea id="contact-indication-text" rows="4"></textarea>
+
+          <div class="form-grid">
+            <label class="contacts-checkbox-line" for="contact-favorite">
+              <input id="contact-favorite" type="checkbox">
+              Favorito
+            </label>
+            <div>
+              <label class="field-label" for="contact-last-verified">Última confirmação de preço/disponibilidade</label>
+              <input id="contact-last-verified" type="date">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" id="save-contact-button">Salvar contato</button>
+            <button type="button" id="clear-contact-button" class="secondary">Limpar formulário</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="contacts-panel" class="panel hidden" aria-labelledby="contacts-title">
+        <div class="section-heading">
+          <h2 id="contacts-title">Contatos salvos</h2>
+          <div class="actions compact-actions contacts-export-actions">
+            <button type="button" id="export-json-button" class="secondary">Exportar JSON</button>
+            <button type="button" id="export-jsonl-button" class="secondary">Exportar JSONL</button>
+          </div>
+        </div>
+
+        <div class="contacts-filters">
+          <div>
+            <label class="field-label" for="contact-search">Busca geral</label>
+            <input id="contact-search" type="search" placeholder="Nome, telefone, tags, especialidades, local...">
+          </div>
+          <div>
+            <label class="field-label" for="group-filter">Grupo</label>
+            <select id="group-filter"></select>
+          </div>
+          <div>
+            <label class="field-label" for="status-filter">Status</label>
+            <select id="status-filter">
+              <option value="all">todos</option>
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
+              <option value="check">check</option>
+              <option value="do_not_recommend">do_not_recommend</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="tag-filter">Tag</label>
+            <select id="tag-filter">
+              <option value="all">todas</option>
+            </select>
+          </div>
+          <label class="contacts-checkbox-line contacts-filter-checkbox" for="favorites-filter">
+            <input id="favorites-filter" type="checkbox">
+            Apenas favoritos
+          </label>
+        </div>
+
+        <div class="contacts-selection-bar" aria-label="Seleção de contatos">
+          <p id="selected-count" class="progress-counter">0 contatos selecionados</p>
+          <div class="actions compact-actions contacts-selection-actions">
+            <button type="button" id="select-visible-button" class="secondary">Selecionar todos visíveis</button>
+            <button type="button" id="clear-selection-button" class="secondary">Limpar seleção</button>
+            <button type="button" id="generate-selected-button">Gerar contatos selecionados</button>
+          </div>
+        </div>
+
+        <div id="contacts-list" class="contacts-list" aria-live="polite"></div>
+
+        <section id="selected-contacts-result" class="contacts-selected-result hidden" aria-labelledby="selected-contacts-title">
+          <div class="section-heading">
+            <h3 id="selected-contacts-title">Contatos selecionados</h3>
+            <button type="button" id="copy-selected-button" class="secondary">Copiar lista</button>
+          </div>
+          <pre id="selected-contacts-output"></pre>
+        </section>
+      </section>
+
+      <p id="message-area" class="message-area" aria-live="polite"></p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="contatos.js"></script>
+  </body>
+</html>

@@ -12,23 +12,28 @@ Arquivos principais:
 - app.js: dados das escalas, renderização das perguntas, coleta em memória e cálculo dos resultados.
 - frases.html: página de Frases / quick capture.
 - frases.js: lógica da área de frases.
+- contatos.html: página de Contatos profissionais para indicação.
+- contatos.js: lógica da área de contatos, com autenticação Supabase, persistência própria, filtros, agrupamento e exportação.
 - eem.html: página do Exame do Estado Mental.
 - eem.js: checklist estruturado do EEM, geração de linha e texto completo para prontuário.
 - diagnostic-criteria.html: página de Critérios Diagnósticos.
 - diagnostic-criteria.js: checklists diagnósticos, avaliadores e geração de linha/resumo para prontuário.
+- supabase-contacts.sql: SQL da tabela contacts, índices e políticas RLS por user_id = auth.uid().
 - styles.css: estilos globais, layout responsivo e estilos específicos das áreas.
 - fluxo.txt: documentação resumida do fluxo atual.
 
-Navegação atual:
+Navegação atual e planejada:
 - Todas as páginas possuem a navegação superior com:
   - Início
   - Escalas
   - Frases
+  - Contatos
   - EEM
   - Critérios Diagnósticos
 - A página inicial mostra cards para:
   - Escalas
   - Frases
+  - Contatos
   - EEM
   - Critérios Diagnósticos
 
@@ -38,6 +43,7 @@ Regras gerais do projeto:
 - Escalas, EEM e Critérios Diagnósticos mantêm respostas clínicas apenas em memória.
 - Essas áreas não salvam respostas após recarregar a página.
 - Não há campos identificáveis de paciente nas áreas clínicas, como nome, CPF, telefone, prontuário ou data de nascimento.
+- A área Contatos pode armazenar dados identificáveis de profissionais/serviços, mas não deve armazenar dados de pacientes.
 - Datas de avaliação podem existir nas ferramentas que geram texto para prontuário.
 - Textos oficiais extensos de instrumentos, DSM ou CID não devem ser copiados sem licença/autorização.
 - As ferramentas são apoio clínico e não substituem avaliação clínica, julgamento médico, diagnóstico diferencial ou consulta a manuais oficiais.
@@ -129,9 +135,118 @@ Observação:
 - Esta área é separada das ferramentas clínicas de resposta em memória.
 - Não deve interferir no estado de Escalas, EEM ou Critérios Diagnósticos.
 
+Área Contatos - contatos.html + contatos.js:
+Objetivo:
+Área autenticada para cadastrar, organizar, buscar e consultar contatos profissionais ou serviços que possam ser indicados a pacientes.
+
+Status:
+- Implementada como aba/card próprio.
+- Reutiliza o padrão de login, permanência de sessão e liberação de conteúdo da área Frases.
+- Tem arquivos próprios para não misturar estado ou lógica com Frases, Escalas, EEM ou Critérios Diagnósticos.
+- Usa a tabela Supabase contacts, separada da tabela phrases.
+- Requer executar supabase-contacts.sql no projeto Supabase para criar tabela, índices e políticas RLS.
+
+Navegação esperada:
+1. "Contatos" aparece na navegação superior de todas as páginas.
+2. A página inicial possui card "Contatos".
+3. O card e a navegação abrem contatos.html.
+
+Fluxo esperado:
+1. O usuário abre "Contatos".
+2. A página mostra uma área de acesso igual à de Frases.
+3. Após autenticação, libera o gerenciador de contatos.
+4. O usuário cria ou escolhe um grupo de contatos.
+5. O usuário cadastra contato com:
+   - Nome.
+   - Grupo principal.
+   - Telefone/WhatsApp.
+   - E-mail opcional.
+   - Instagram opcional.
+   - Site opcional.
+   - Localização.
+   - Modalidade.
+   - Público.
+   - Especialidades.
+   - Descrição.
+   - Tags.
+   - Preço/convênio/formas de pagamento.
+   - Observações internas.
+   - Texto de indicação.
+   - Status.
+   - Favorito.
+   - Última confirmação de preço/disponibilidade.
+6. Os contatos são exibidos agrupados pelo grupo selecionado ou por todos os grupos.
+7. O usuário pode buscar por nome, telefone, descrição, tag ou grupo.
+8. O usuário pode filtrar por grupo e/ou tags.
+9. O usuário pode editar ou remover contatos já cadastrados.
+10. O usuário pode selecionar contatos por checkbox nos cards.
+11. A seleção permanece enquanto o usuário está na página, mesmo se o contato ficar oculto por busca/filtro.
+12. O usuário pode selecionar todos os contatos visíveis, limpar seleção e ver contador de contatos selecionados.
+13. Ao clicar em "Gerar contatos selecionados", o app gera uma lista copiável apenas com os contatos marcados.
+14. A lista copiável é agrupada por group_name e ordenada alfabeticamente por nome dentro de cada grupo.
+15. A lista copiável não inclui id, user_id, created_at, updated_at nem private_notes.
+16. A lista copiável usa preferencialmente name, phone, location, modality, price_note, description e indication_text.
+17. Deve haver opção de exportar os contatos visíveis em formato estruturado, preferencialmente JSONL ou JSON.
+
+Grupos iniciais sugeridos:
+- Psicólogos.
+- Neuropsicólogos.
+- Neurologistas.
+- Nutricionistas.
+- Psiquiatras.
+- Terapia ocupacional.
+- Fonoaudiologia.
+- Serviços / clínicas.
+- Outros.
+
+Modelo de dados sugerido:
+- id: identificador local único.
+- name: nome do profissional, serviço ou clínica.
+- phone: telefone em texto livre, preservando DDD, WhatsApp e observações úteis.
+- description: descrição curta, como área de atuação, público atendido, cidade, convênio, modalidade ou observações de indicação.
+- tags: lista de tags normalizadas para busca e filtro.
+- email: e-mail opcional.
+- instagram: perfil opcional.
+- site: site opcional.
+- location: bairro/cidade/região.
+- modality: lista de modalidades.
+- audience: lista de públicos atendidos.
+- specialties: lista de áreas de foco.
+- price_note: preço, valor social, convênio e formas de pagamento.
+- private_notes: observações internas.
+- indication_text: texto copiável para enviar ao paciente.
+- status: active, inactive, check ou do_not_recommend.
+- favorite: boolean.
+- last_verified_at: data da última confirmação de preço/disponibilidade.
+- groupId ou groupName: grupo ao qual o contato pertence.
+- Grupos iniciais ficam disponíveis no seletor, mas o formulário também aceita grupo personalizado.
+- createdAt: data/hora de criação.
+- updatedAt: data/hora da última edição.
+
+Regras da área Contatos:
+- Deve persistir dados no mesmo padrão usado por Frases.
+- Deve manter a sessão/permanência de acesso igual à área Frases.
+- Deve usar variáveis globais, client, estado e tabela próprios, sem reutilizar estado de frases.js.
+- As políticas RLS devem garantir que cada usuário autenticado acesse apenas contatos próprios por user_id = auth.uid().
+- Não deve salvar dados de pacientes, hipótese diagnóstica de paciente, relato clínico ou informações sensíveis de terceiros atendidos.
+- A descrição deve ser sobre o contato/profissional/serviço, não sobre um paciente específico.
+- O telefone deve ser tratado como dado do contato profissional cadastrado.
+- A busca deve ser local e funcionar sem servidor.
+- A organização por grupos deve ser visível na listagem, pois o uso principal é encontrar rapidamente um profissional para indicar.
+- O filtro de grupos deve incluir os grupos iniciais e os grupos personalizados já salvos.
+- A seleção de contatos é estado local de interface em selectedContactIds e não cria tabela nova no Supabase.
+- Contatos selecionados ocultos por filtro continuam selecionados.
+- O painel "Contatos selecionados" fica no fim da listagem e possui botão "Copiar lista".
+- A implementação deve continuar estática, com HTML, CSS e JavaScript puro.
+
+Observação:
+- Esta área é separada das ferramentas clínicas de resposta em memória.
+- Pode compartilhar padrão visual, autenticação e persistência com Frases, mas deve ter seu próprio estado e chave de armazenamento.
+- Não deve interferir no estado de Escalas, EEM, Critérios Diagnósticos ou Frases.
+
 Área EEM - eem.html + eem.js:
 Objetivo:
-Checklist estruturado e compacto para Exame do Estado Mental e geração de linha natural para prontuário.
+Checklist estruturado e compacto para Exame do Estado Mental e geração de texto em blocos para prontuário.
 
 Fluxo:
 1. O usuário abre "EEM".
@@ -139,9 +254,10 @@ Fluxo:
 3. O usuário marca opções comuns nos cards compactos ou abre "+ específicas" em um domínio.
 4. Opções específicas selecionadas continuam visíveis no card compacto após recolher o painel.
 5. Cada domínio aceita campo "Outro" dentro do painel de específicas.
-6. Ao clicar em "Gerar linha para prontuário", o app cria texto iniciado por "EEM: ".
-7. O usuário pode copiar o texto com "Copiar para prontuário".
-8. Os botões rápidos permitem marcar EEM sem alterações grosseiras, limpar, expandir/recolher específicas e mostrar apenas alterados.
+6. Ao clicar em "Gerar EEM", o app cria texto estruturado com cabeçalho "EEM (dd/mm/aaaa)".
+7. Cada domínio marcado aparece como uma linha no formato "Domínio: texto clínico.".
+8. O usuário pode copiar o texto completo com "Copiar para prontuário".
+9. Os botões rápidos permitem marcar EEM sem alterações grosseiras, limpar, expandir/recolher específicas e mostrar apenas alterados.
 
 Domínios do EEM:
 1. Aparência (autocuidado).
@@ -166,7 +282,13 @@ Regras do EEM:
 - Não gera diagnóstico.
 - Usa linguagem descritiva e clinicamente cautelosa.
 - O texto do prontuário usa noteText, não o label curto do formulário.
-- O texto não usa numeração, barras ou lista artificial.
+- O texto não usa saída corrida iniciada por "EEM: ".
+- O texto preserva quebras de linha.
+- Mostra apenas domínios com alguma opção marcada ou campo "Outro" preenchido.
+- Não exige preenchimento de todos os domínios e não mostra pendência por domínio não preenchido.
+- Múltiplas opções no mesmo domínio são unidas por vírgulas.
+- Campo "Outro" entra na linha do domínio correspondente.
+- Se nenhum domínio estiver selecionado, mostra "Nenhum domínio selecionado.".
 - Conflitos óbvios entre opções são tratados por conflicts: [] no item.
 - Todo estado fica apenas em memória.
 
@@ -341,7 +463,7 @@ Regra geral de avaliação:
 - Critérios com contagem precisam atingir o limiar definido para faixa etária ou especificador.
 
 Cópia de texto:
-- Escalas, DIVA-5, EEM e Critérios Diagnósticos usam navigator.clipboard.writeText quando disponível.
+- Escalas, DIVA-5, EEM, Critérios Diagnósticos e áreas com exportação/cópia usam navigator.clipboard.writeText quando disponível.
 - Se a API de clipboard não estiver disponível, o app cria/seleciona um textarea para cópia manual.
 - O feedback visual informa que o texto foi copiado ou selecionado para cópia manual.
 
@@ -369,12 +491,27 @@ Como adicionar seções ao EEM:
 - Opções comuns ficam sempre visíveis; opções específicas ficam no painel local "+ específicas".
 - A geração de texto usa noteText e os dados selecionados em memória.
 
+Manutenção da área Contatos:
+- contatos.html reaproveita a estrutura visual de frases.html, mas usa IDs próprios.
+- contatos.js usa login/permanência equivalentes aos de frases.js, com client e estado próprios.
+- A tabela usada é contacts, não phrases.
+- O SQL de criação/RLS está em supabase-contacts.sql.
+- A navegação superior de index.html, escalas.html, frases.html, contatos.html, eem.html e diagnostic-criteria.html inclui "Contatos".
+- O card de Contatos fica em index.html.
+- O formulário salva nome, grupo inicial ou personalizado, telefone, e-mail, Instagram, site, localização, modalidade, público, especialidades, tags, preço, descrição, notas internas, texto de indicação, status, favorito e data de última verificação.
+- A listagem agrupa por grupo, permite busca geral, filtro por grupo/status/tag, filtro de favoritos, expansão de detalhes, edição, remoção e cópia de telefone/texto de indicação.
+- Cada card possui checkbox de seleção e destaque visual discreto quando selecionado.
+- A lista de contatos selecionados é gerada localmente, agrupada por grupo, ordenada por nome e sem campos internos sensíveis.
+- A exportação dos contatos visíveis pode ser feita em JSON ou JSONL.
+- O escopo da área deve permanecer em contatos.js para não alterar respostas clínicas em memória nem frases salvas.
+
 Estado atual:
-Versão funcional com quatro áreas principais:
+Versão funcional com cinco áreas principais, além da Home:
 - Home.
 - Escalas / Calculadora de Escalas.
 - Frases / quick capture.
 - EEM / Exame do Estado Mental.
 - Critérios Diagnósticos.
+- Contatos / contatos profissionais para indicação.
 
 As ferramentas clínicas principais funcionam localmente, em páginas separadas, com estado em memória e saída copiável para prontuário quando aplicável.

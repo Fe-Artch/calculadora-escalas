@@ -26,6 +26,7 @@ body {
 
 .top-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
   padding: 12px 16px;
@@ -523,6 +524,207 @@ button.danger:hover {
 
 .compact-actions {
   margin-top: 12px;
+}
+
+.app-shell.contacts-page {
+  width: min(1180px, calc(100% - 32px));
+}
+
+.contacts-main-grid {
+  grid-template-columns: minmax(0, 1fr) 260px;
+}
+
+.contacts-three-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.contacts-spaced {
+  margin-top: 14px;
+}
+
+.contacts-choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 14px 0 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.contacts-choice-group legend {
+  padding: 0 4px;
+  font-weight: 700;
+}
+
+.contacts-choice-group label,
+.contacts-checkbox-line {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.contacts-choice-group input,
+.contacts-checkbox-line input {
+  width: auto;
+}
+
+.contacts-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 190px 170px 170px auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.contacts-filters select,
+.contacts-filters input {
+  max-width: none;
+}
+
+.contacts-filter-checkbox {
+  min-height: 42px;
+  padding-bottom: 2px;
+  font-weight: 700;
+}
+
+.contacts-selection-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f7f7f8;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.contacts-selection-actions {
+  margin-top: 0;
+}
+
+.contacts-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.contact-group-section {
+  display: grid;
+  gap: 10px;
+}
+
+.contact-group-section > h3 {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: #eeeeef;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.contact-card {
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.contact-card.selected {
+  background: #f2f7f4;
+  border-color: #6b947b;
+}
+
+.contact-card-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.contact-select {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding-top: 2px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.contact-select input {
+  width: auto;
+}
+
+.contact-card-header h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.contact-summary {
+  margin: 10px 0 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.contact-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.contact-chip {
+  padding: 3px 8px;
+  background: #f0f0f1;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.contact-details {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 12px;
+  background: #f7f7f8;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.contact-detail-row {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.contacts-export-actions {
+  margin-top: 0;
+}
+
+.contacts-selected-result {
+  margin-top: 18px;
+  padding: 14px;
+  background: #f7f7f8;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+}
+
+.contacts-selected-result h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.contacts-selected-result pre,
+.eem-result-box pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
 }
 
 .message-area {
@@ -1123,6 +1325,16 @@ button.danger:hover {
   }
 
   .diagnostic-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .contacts-main-grid,
+  .contacts-three-grid,
+  .contacts-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-card-header {
     grid-template-columns: 1fr;
   }
 
