@@ -2,7 +2,7 @@
 
 const SUPABASE_URL = "https://kstpsvgpmphqcliedjud.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_FNJLSzI1u8A4pgpQk5M3wQ_9nPjwdvj";
-const CONTACT_GROUPS = [
+const DEFAULT_CONTACT_GROUPS = [
   "Psicólogos",
   "Neuropsicólogos",
   "Psiquiatras",
@@ -13,7 +13,6 @@ const CONTACT_GROUPS = [
   "Serviços / clínicas",
   "Outros"
 ];
-const CONTACT_STATUS_OPTIONS = ["active", "inactive", "check", "do_not_recommend"];
 
 const contactsSupabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
@@ -28,91 +27,180 @@ const signupButton = document.querySelector("#signup-button");
 const userPanel = document.querySelector("#user-panel");
 const userEmail = document.querySelector("#user-email");
 const logoutButton = document.querySelector("#logout-button");
+const contactsWorkspace = document.querySelector("#contacts-workspace");
+const contactsSelectTab = document.querySelector("#contacts-select-tab");
+const contactsAddTab = document.querySelector("#contacts-add-tab");
+const contactsSelectPanel = document.querySelector("#contacts-select-panel");
+const contactsSelectionView = document.querySelector("#contacts-selection-view");
 const contactEditor = document.querySelector("#contact-editor");
 const contactEditorTitle = document.querySelector("#contact-editor-title");
 const contactForm = document.querySelector("#contact-form");
-const cancelEditButton = document.querySelector("#cancel-edit-button");
-const clearContactButton = document.querySelector("#clear-contact-button");
+const contactName = document.querySelector("#contact-name");
+const contactPhone = document.querySelector("#contact-phone");
+const contactGroup = document.querySelector("#contact-group");
+const newGroupButton = document.querySelector("#new-group-button");
+const newGroupControls = document.querySelector("#new-group-controls");
+const newGroupName = document.querySelector("#new-group-name");
+const addGroupButton = document.querySelector("#add-group-button");
+const cancelGroupButton = document.querySelector("#cancel-group-button");
+const newGroupFeedback = document.querySelector("#new-group-feedback");
+const contactDetails = document.querySelector("#contact-details");
+const cancelContactButton = document.querySelector("#cancel-contact-button");
 const saveContactButton = document.querySelector("#save-contact-button");
-const contactsPanel = document.querySelector("#contacts-panel");
+const addFirstContactButton = document.querySelector("#add-first-contact-button");
+const contactSearch = document.querySelector("#contact-search");
+const showSelectedOnlyInput = document.querySelector("#show-selected-only");
 const contactsList = document.querySelector("#contacts-list");
-const exportJsonButton = document.querySelector("#export-json-button");
-const exportJsonlButton = document.querySelector("#export-jsonl-button");
 const selectedCount = document.querySelector("#selected-count");
-const selectVisibleButton = document.querySelector("#select-visible-button");
 const clearSelectionButton = document.querySelector("#clear-selection-button");
 const generateSelectedButton = document.querySelector("#generate-selected-button");
-const selectedContactsResult = document.querySelector("#selected-contacts-result");
-const selectedContactsOutput = document.querySelector("#selected-contacts-output");
-const copySelectedButton = document.querySelector("#copy-selected-button");
+const patientListPreview = document.querySelector("#patient-list-preview");
+const patientListText = document.querySelector("#patient-list-text");
+const patientPrintContent = document.querySelector("#patient-print-content");
+const copyPatientListButton = document.querySelector("#copy-patient-list-button");
+const printPatientListButton = document.querySelector("#print-patient-list-button");
+const backToSelectionButton = document.querySelector("#back-to-selection-button");
+const patientListFeedback = document.querySelector("#patient-list-feedback");
 const messageArea = document.querySelector("#message-area");
 
-const contactName = document.querySelector("#contact-name");
-const contactGroup = document.querySelector("#contact-group");
-const contactGroupCustom = document.querySelector("#contact-group-custom");
-const contactPhone = document.querySelector("#contact-phone");
-const contactEmail = document.querySelector("#contact-email");
-const contactInstagram = document.querySelector("#contact-instagram");
-const contactSite = document.querySelector("#contact-site");
-const contactLocation = document.querySelector("#contact-location");
-const contactStatus = document.querySelector("#contact-status");
-const contactSpecialties = document.querySelector("#contact-specialties");
-const contactTags = document.querySelector("#contact-tags");
-const contactPriceNote = document.querySelector("#contact-price-note");
-const contactDescription = document.querySelector("#contact-description");
-const contactPrivateNotes = document.querySelector("#contact-private-notes");
-const contactIndicationText = document.querySelector("#contact-indication-text");
-const contactFavorite = document.querySelector("#contact-favorite");
-const contactLastVerified = document.querySelector("#contact-last-verified");
-
-const contactSearch = document.querySelector("#contact-search");
-const groupFilter = document.querySelector("#group-filter");
-const statusFilter = document.querySelector("#status-filter");
-const tagFilter = document.querySelector("#tag-filter");
-const favoritesFilter = document.querySelector("#favorites-filter");
-
 let currentUser = null;
+let currentMode = "select";
 let contacts = [];
+let selectedContactIds = new Set();
 let editingContactId = null;
+let searchTerm = "";
+let showSelectedOnly = false;
+let generatedText = "";
+let highlightedContactId = null;
 const expandedContactIds = new Set();
-const selectedContactIds = new Set();
+const sessionGroups = new Set();
 
 function showMessage(message, type = "info") {
   messageArea.textContent = message;
-  messageArea.className = `message-area ${type}`;
+  messageArea.className = `message-area${type ? ` ${type}` : ""}`;
 }
 
 function clearMessage() {
   showMessage("");
 }
 
-function parseList(value) {
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+function normalizeSearch(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/gu, "")
+    .toLocaleLowerCase("pt-BR")
+    .trim();
 }
 
-function formatList(value) {
-  return Array.isArray(value) ? value.join(", ") : "";
+function cleanString(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-function getCheckedValues(name) {
-  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map((input) => input.value);
+function formatLegacyList(value) {
+  if (Array.isArray(value)) {
+    return value.map(cleanString).filter(Boolean).join(", ");
+  }
+
+  return cleanString(value);
 }
 
-function setCheckedValues(name, values) {
-  const selectedValues = Array.isArray(values) ? values : [];
-  document.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
-    input.checked = selectedValues.includes(input.value);
+function firstNonEmpty(...values) {
+  return values.map(cleanString).find(Boolean) || "";
+}
+
+function buildLegacyDetails(record) {
+  const lines = [];
+  const seenValues = new Set();
+  const append = (label, value) => {
+    const text = formatLegacyList(value);
+    const normalized = normalizeSearch(text);
+
+    if (!text || seenValues.has(normalized)) {
+      return;
+    }
+
+    seenValues.add(normalized);
+    lines.push(`${label}: ${text}`);
+  };
+  const location = [
+    firstNonEmpty(record.location, record.localizacao),
+    firstNonEmpty(record.neighborhood, record.bairro),
+    firstNonEmpty(record.city, record.cidade),
+    firstNonEmpty(record.region, record.regiao)
+  ]
+    .filter(Boolean)
+    .filter((value, index, values) => values.indexOf(value) === index)
+    .join(", ");
+
+  append("Especialidades", record.specialties || record.especialidades);
+  append("Modalidade", record.modality || record.modalidade);
+  append("Público atendido", record.audience || record.publico);
+  append("Localização", location);
+  append("Preço/convênio", record.price_note || record.preco_convenio || record.price);
+  append("E-mail", record.email);
+  append("Instagram", record.instagram);
+  append("Site", record.site || record.website);
+  append("Tags", record.tags);
+  append("Descrição", record.description || record.descricao);
+  append("Observações", record.private_notes || record.notes || record.observacoes);
+  append("Texto de indicação", record.indication_text || record.texto_indicacao);
+
+  return lines.join("\n");
+}
+
+function normalizeContactRecord(record) {
+  const details = cleanString(record.details) || buildLegacyDetails(record);
+
+  return {
+    id: String(record.id || ""),
+    user_id: String(record.user_id || ""),
+    name: firstNonEmpty(record.name, record.nome, record.contact_name) || "Contato sem nome",
+    phone:
+      firstNonEmpty(record.phone, record.telefone, record.telephone, record.whatsapp) ||
+      "Não informado",
+    group_name:
+      firstNonEmpty(
+        record.group_name,
+        record.custom_group,
+        record.group_custom,
+        record.contact_group,
+        record.group,
+        record.grupo,
+        record.category
+      ) || "Outros",
+    details,
+    created_at: record.created_at || null,
+    updated_at: record.updated_at || null
+  };
+}
+
+function compareText(first, second) {
+  return String(first || "").localeCompare(String(second || ""), "pt-BR", {
+    sensitivity: "base",
+    numeric: true
   });
 }
 
-function normalizeSearch(value) {
-  return String(value || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+function isOtherGroup(groupName) {
+  return normalizeSearch(groupName) === "outros";
+}
+
+function compareGroups(first, second) {
+  if (isOtherGroup(first) !== isOtherGroup(second)) {
+    return isOtherGroup(first) ? 1 : -1;
+  }
+
+  return compareText(first, second);
+}
+
+function getAvailableGroups() {
+  return Array.from(
+    new Set([
+      ...DEFAULT_CONTACT_GROUPS,
+      ...contacts.map((contact) => contact.group_name).filter(Boolean),
+      ...sessionGroups
+    ])
+  ).sort(compareGroups);
 }
 
 function createOption(value, label = value) {
@@ -122,517 +210,833 @@ function createOption(value, label = value) {
   return option;
 }
 
-function populateStaticSelects() {
-  contactGroup.innerHTML = "";
-  groupFilter.innerHTML = "";
-  groupFilter.appendChild(createOption("all", "todos"));
-
-  CONTACT_GROUPS.forEach((group) => {
-    contactGroup.appendChild(createOption(group));
-    groupFilter.appendChild(createOption(group));
-  });
+function populateGroupOptions(selectedValue = contactGroup.value) {
+  const groups = getAvailableGroups();
+  contactGroup.replaceChildren(createOption("", "Selecione um grupo"));
+  groups.forEach((group) => contactGroup.appendChild(createOption(group)));
+  contactGroup.value = groups.includes(selectedValue) ? selectedValue : "";
 }
 
-function updateGroupFilterOptions() {
-  const currentValue = groupFilter.value;
-  const groups = Array.from(new Set([...CONTACT_GROUPS, ...contacts.map((contact) => contact.group_name).filter(Boolean)])).sort((a, b) =>
-    a.localeCompare(b, "pt-BR")
-  );
+function getFormValues() {
+  return {
+    name: contactName.value.trim(),
+    phone: contactPhone.value.trim(),
+    group_name: contactGroup.value.trim(),
+    details: contactDetails.value.trim()
+  };
+}
 
-  groupFilter.innerHTML = "";
-  groupFilter.appendChild(createOption("all", "todos"));
-  groups.forEach((group) => groupFilter.appendChild(createOption(group)));
-  groupFilter.value = groups.includes(currentValue) ? currentValue : "all";
+function isContactFormDirty() {
+  const values = getFormValues();
+  return Boolean(
+    editingContactId ||
+      values.name ||
+      values.phone ||
+      values.group_name ||
+      values.details ||
+      newGroupName.value.trim()
+  );
+}
+
+function resetContactForm() {
+  editingContactId = null;
+  contactForm.reset();
+  newGroupName.value = "";
+  newGroupControls.classList.add("hidden");
+  newGroupFeedback.textContent = "";
+  contactEditorTitle.textContent = "Adicionar contato";
+  saveContactButton.textContent = "Salvar contato";
+  cancelContactButton.textContent = "Cancelar";
+  [contactName, contactPhone, contactGroup, contactDetails].forEach((field) => {
+    field.removeAttribute("aria-invalid");
+  });
+  populateGroupOptions("");
+}
+
+function setContactsMode(mode, options = {}) {
+  currentMode = mode === "add" ? "add" : "select";
+  const selecting = currentMode === "select";
+
+  contactsSelectTab.classList.toggle("active", selecting);
+  contactsSelectTab.setAttribute("aria-selected", String(selecting));
+  contactsSelectTab.tabIndex = selecting ? 0 : -1;
+  contactsAddTab.classList.toggle("active", !selecting);
+  contactsAddTab.setAttribute("aria-selected", String(!selecting));
+  contactsAddTab.tabIndex = selecting ? -1 : 0;
+  contactsSelectPanel.classList.toggle("hidden", !selecting);
+  contactEditor.classList.toggle("hidden", selecting);
+
+  if (selecting && !options.keepPreview) {
+    showContactsSelection();
+  }
+}
+
+function requestContactsMode(mode) {
+  if (mode === currentMode) {
+    return;
+  }
+
+  if (
+    currentMode === "add" &&
+    isContactFormDirty() &&
+    !window.confirm("Descartar as alterações deste contato?")
+  ) {
+    return;
+  }
+
+  if (mode === "select") {
+    resetContactForm();
+  } else {
+    openContactEditor();
+    return;
+  }
+
+  setContactsMode(mode);
+}
+
+function showContactsSelection() {
+  generatedText = "";
+  patientListPreview.classList.add("hidden");
+  contactsSelectionView.classList.remove("hidden");
+  patientListText.textContent = "";
+  patientPrintContent.replaceChildren();
+  patientListFeedback.textContent = "";
+}
+
+function openContactEditor(contact = null) {
+  resetContactForm();
+
+  if (contact) {
+    editingContactId = contact.id;
+    populateGroupOptions(contact.group_name);
+    contactName.value = contact.name;
+    contactPhone.value = contact.phone;
+    contactGroup.value = contact.group_name;
+    contactDetails.value = contact.details;
+    contactEditorTitle.textContent = "Editar contato";
+    saveContactButton.textContent = "Salvar alterações";
+    cancelContactButton.textContent = "Cancelar edição";
+  }
+
+  setContactsMode("add");
+  window.setTimeout(() => contactName.focus(), 0);
 }
 
 function setAuthenticatedState(user) {
   currentUser = user;
-  const isAuthenticated = Boolean(user);
+  const authenticated = Boolean(user);
 
-  loginForm.classList.toggle("hidden", isAuthenticated);
-  userPanel.classList.toggle("hidden", !isAuthenticated);
-  contactEditor.classList.toggle("hidden", !isAuthenticated);
-  contactsPanel.classList.toggle("hidden", !isAuthenticated);
+  loginForm.classList.toggle("hidden", authenticated);
+  userPanel.classList.toggle("hidden", !authenticated);
+  contactsWorkspace.classList.toggle("hidden", !authenticated);
   userEmail.textContent = user ? `Logado como ${user.email}` : "";
-}
 
-function getContactPayload() {
-  const customGroup = contactGroupCustom.value.trim();
-
-  return {
-    user_id: currentUser.id,
-    name: contactName.value.trim(),
-    group_name: customGroup || contactGroup.value,
-    phone: contactPhone.value.trim(),
-    email: contactEmail.value.trim() || null,
-    instagram: contactInstagram.value.trim() || null,
-    site: contactSite.value.trim() || null,
-    location: contactLocation.value.trim() || null,
-    modality: getCheckedValues("contact-modality"),
-    audience: getCheckedValues("contact-audience"),
-    specialties: parseList(contactSpecialties.value),
-    tags: parseList(contactTags.value),
-    price_note: contactPriceNote.value.trim() || null,
-    description: contactDescription.value.trim() || null,
-    private_notes: contactPrivateNotes.value.trim() || null,
-    indication_text: contactIndicationText.value.trim() || null,
-    status: contactStatus.value,
-    favorite: contactFavorite.checked,
-    last_verified_at: contactLastVerified.value || null,
-    updated_at: new Date().toISOString()
-  };
-}
-
-function resetContactForm() {
-  contactForm.reset();
-  contactGroup.value = CONTACT_GROUPS[0];
-  contactGroupCustom.value = "";
-  contactStatus.value = "active";
-  setCheckedValues("contact-modality", []);
-  setCheckedValues("contact-audience", []);
-  editingContactId = null;
-  contactEditorTitle.textContent = "Novo contato";
-  saveContactButton.textContent = "Salvar contato";
-  cancelEditButton.classList.add("hidden");
-}
-
-function fillContactForm(contact) {
-  editingContactId = contact.id;
-  contactName.value = contact.name || "";
-  if (CONTACT_GROUPS.includes(contact.group_name)) {
-    contactGroup.value = contact.group_name;
-    contactGroupCustom.value = "";
-  } else {
-    contactGroup.value = "Outros";
-    contactGroupCustom.value = contact.group_name || "";
+  if (authenticated) {
+    resetContactForm();
+    setContactsMode("select");
   }
-  contactPhone.value = contact.phone || "";
-  contactEmail.value = contact.email || "";
-  contactInstagram.value = contact.instagram || "";
-  contactSite.value = contact.site || "";
-  contactLocation.value = contact.location || "";
-  contactStatus.value = CONTACT_STATUS_OPTIONS.includes(contact.status) ? contact.status : "active";
-  setCheckedValues("contact-modality", contact.modality);
-  setCheckedValues("contact-audience", contact.audience);
-  contactSpecialties.value = formatList(contact.specialties);
-  contactTags.value = formatList(contact.tags);
-  contactPriceNote.value = contact.price_note || "";
-  contactDescription.value = contact.description || "";
-  contactPrivateNotes.value = contact.private_notes || "";
-  contactIndicationText.value = contact.indication_text || "";
-  contactFavorite.checked = Boolean(contact.favorite);
-  contactLastVerified.value = contact.last_verified_at || "";
-  contactEditorTitle.textContent = "Editar contato";
-  saveContactButton.textContent = "Salvar edição";
-  cancelEditButton.classList.remove("hidden");
-  contactEditor.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function getSearchableText(contact) {
-  return [
-    contact.name,
-    contact.group_name,
-    contact.phone,
-    contact.email,
-    contact.instagram,
-    contact.site,
-    contact.location,
-    contact.price_note,
-    contact.description,
-    contact.private_notes,
-    contact.indication_text,
-    ...(contact.modality || []),
-    ...(contact.audience || []),
-    ...(contact.specialties || []),
-    ...(contact.tags || [])
-  ].join(" ");
+function getSearchableContactText(contact) {
+  return [contact.name, contact.phone, contact.group_name, contact.details].join(" ");
 }
 
 function getVisibleContacts() {
-  const search = normalizeSearch(contactSearch.value);
-  const selectedGroup = groupFilter.value;
-  const selectedStatus = statusFilter.value;
-  const selectedTag = tagFilter.value;
-  const onlyFavorites = favoritesFilter.checked;
-
-  return contacts.filter((contact) => {
-    const matchesSearch = !search || normalizeSearch(getSearchableText(contact)).includes(search);
-    const matchesGroup = selectedGroup === "all" || contact.group_name === selectedGroup;
-    const matchesStatus = selectedStatus === "all" || contact.status === selectedStatus;
-    const matchesTag = selectedTag === "all" || (Array.isArray(contact.tags) && contact.tags.includes(selectedTag));
-    const matchesFavorite = !onlyFavorites || Boolean(contact.favorite);
-    return matchesSearch && matchesGroup && matchesStatus && matchesTag && matchesFavorite;
-  });
+  return contacts
+    .filter((contact) => {
+      const matchesSearch =
+        !searchTerm || normalizeSearch(getSearchableContactText(contact)).includes(searchTerm);
+      const matchesSelection = !showSelectedOnly || selectedContactIds.has(contact.id);
+      return matchesSearch && matchesSelection;
+    })
+    .sort((first, second) => {
+      const groupComparison = compareGroups(first.group_name, second.group_name);
+      return groupComparison || compareText(first.name, second.name);
+    });
 }
 
-function updateSelectedCount() {
-  const count = selectedContactIds.size;
-  selectedCount.textContent = `${count} ${count === 1 ? "contato selecionado" : "contatos selecionados"}`;
-}
+function getGroupedContacts(contactList) {
+  const groups = new Map();
 
-function updateTagFilterOptions() {
-  const currentValue = tagFilter.value;
-  const tags = Array.from(new Set(contacts.flatMap((contact) => (Array.isArray(contact.tags) ? contact.tags : [])))).sort((a, b) =>
-    a.localeCompare(b, "pt-BR")
-  );
-
-  tagFilter.innerHTML = "";
-  tagFilter.appendChild(createOption("all", "todas"));
-  tags.forEach((tag) => tagFilter.appendChild(createOption(tag)));
-  tagFilter.value = tags.includes(currentValue) ? currentValue : "all";
-}
-
-function appendMeta(container, label, value) {
-  if (!value || (Array.isArray(value) && !value.length)) {
-    return;
-  }
-
-  const row = document.createElement("p");
-  row.className = "contact-detail-row";
-  const strong = document.createElement("strong");
-  strong.textContent = `${label}: `;
-  row.appendChild(strong);
-  row.append(Array.isArray(value) ? value.join(", ") : value);
-  container.appendChild(row);
-}
-
-function renderContactCard(contact) {
-  const article = document.createElement("article");
-  article.className = `contact-card${selectedContactIds.has(contact.id) ? " selected" : ""}`;
-  article.dataset.id = contact.id;
-
-  const header = document.createElement("div");
-  header.className = "contact-card-header";
-
-  const selectionLabel = document.createElement("label");
-  selectionLabel.className = "contact-select";
-  selectionLabel.setAttribute("for", `contact-select-${contact.id}`);
-  const selectionInput = document.createElement("input");
-  selectionInput.id = `contact-select-${contact.id}`;
-  selectionInput.type = "checkbox";
-  selectionInput.checked = selectedContactIds.has(contact.id);
-  selectionInput.dataset.action = "select-contact";
-  selectionInput.setAttribute("aria-label", `Selecionar ${contact.name}`);
-  selectionLabel.append(selectionInput, "Selecionar");
-
-  const titleWrap = document.createElement("div");
-  const title = document.createElement("h3");
-  title.textContent = `${contact.favorite ? "★ " : ""}${contact.name}`;
-  const meta = document.createElement("p");
-  meta.className = "phrase-meta";
-  meta.textContent = [contact.status, contact.phone, contact.location].filter(Boolean).join(" | ");
-  titleWrap.append(title, meta);
-
-  const expandButton = document.createElement("button");
-  expandButton.type = "button";
-  expandButton.className = "secondary";
-  expandButton.dataset.action = "toggle";
-  expandButton.textContent = expandedContactIds.has(contact.id) ? "Recolher" : "Detalhes";
-
-  header.append(selectionLabel, titleWrap, expandButton);
-
-  const summary = document.createElement("p");
-  summary.className = "contact-summary";
-  summary.textContent = contact.description || "Sem descrição.";
-
-  const chips = document.createElement("div");
-  chips.className = "contact-chip-row";
-  [...(contact.specialties || []), ...(contact.tags || [])].slice(0, 8).forEach((item) => {
-    const chip = document.createElement("span");
-    chip.className = "contact-chip";
-    chip.textContent = item;
-    chips.appendChild(chip);
-  });
-
-  const actions = document.createElement("div");
-  actions.className = "actions compact-actions";
-
-  [
-    ["edit", "Editar", "secondary"],
-    ["delete", "Remover", "danger"],
-    ["copy-phone", "Copiar telefone", "secondary"],
-    ["copy-indication", "Copiar indicação", "secondary"]
-  ].forEach(([action, label, className]) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.action = action;
-    button.className = className;
-    button.textContent = label;
-    actions.appendChild(button);
-  });
-
-  article.append(header, summary);
-  if (chips.children.length) {
-    article.appendChild(chips);
-  }
-
-  if (expandedContactIds.has(contact.id)) {
-    const details = document.createElement("div");
-    details.className = "contact-details";
-    appendMeta(details, "Grupo", contact.group_name);
-    appendMeta(details, "E-mail", contact.email);
-    appendMeta(details, "Instagram", contact.instagram);
-    appendMeta(details, "Site", contact.site);
-    appendMeta(details, "Modalidade", contact.modality);
-    appendMeta(details, "Público", contact.audience);
-    appendMeta(details, "Especialidades", contact.specialties);
-    appendMeta(details, "Tags", contact.tags);
-    appendMeta(details, "Preço/convênio", contact.price_note);
-    appendMeta(details, "Última confirmação", contact.last_verified_at);
-    appendMeta(details, "Observações internas", contact.private_notes);
-    appendMeta(details, "Texto de indicação", contact.indication_text);
-    article.appendChild(details);
-  }
-
-  article.appendChild(actions);
-  return article;
-}
-
-function renderContacts() {
-  updateGroupFilterOptions();
-  updateTagFilterOptions();
-  updateSelectedCount();
-  refreshSelectedContactsResultIfVisible();
-  const visibleContacts = getVisibleContacts();
-  contactsList.innerHTML = "";
-
-  if (!visibleContacts.length) {
-    const empty = document.createElement("p");
-    empty.className = "empty-state";
-    empty.textContent = "Nenhum contato encontrado.";
-    contactsList.appendChild(empty);
-    return;
-  }
-
-  const grouped = visibleContacts.reduce((groups, contact) => {
+  contactList.forEach((contact) => {
     const groupName = contact.group_name || "Outros";
     if (!groups.has(groupName)) {
       groups.set(groupName, []);
     }
     groups.get(groupName).push(contact);
-    return groups;
-  }, new Map());
+  });
 
-  grouped.forEach((groupContacts, groupName) => {
+  return Array.from(groups.entries()).sort(([first], [second]) => compareGroups(first, second));
+}
+
+function updateSelectionSummary() {
+  const validIds = new Set(contacts.map((contact) => contact.id));
+  selectedContactIds = new Set(
+    Array.from(selectedContactIds).filter((contactId) => validIds.has(contactId))
+  );
+  const count = selectedContactIds.size;
+  selectedCount.textContent = `Selecionados: ${count}`;
+  clearSelectionButton.disabled = count === 0;
+  generateSelectedButton.disabled = count === 0;
+}
+
+function createEmptyContactsState() {
+  const wrapper = document.createElement("div");
+  wrapper.className = "contacts-empty-state";
+  const title = document.createElement("h3");
+  title.className = "contacts-empty-title";
+  const description = document.createElement("p");
+
+  if (!contacts.length) {
+    title.textContent = "Nenhum contato cadastrado.";
+    description.textContent = "Adicione seu primeiro contato para começar.";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.action = "add-empty";
+    button.textContent = "Adicionar contato";
+    wrapper.append(title, description, button);
+    return wrapper;
+  }
+
+  if (showSelectedOnly && selectedContactIds.size === 0) {
+    title.textContent = "Nenhum contato selecionado.";
+    description.textContent = "Desative o filtro ou selecione contatos na lista.";
+  } else {
+    title.textContent = "Nenhum contato encontrado para esta busca.";
+    description.textContent = "Tente outro nome, telefone, grupo ou detalhe.";
+  }
+
+  wrapper.append(title, description);
+  return wrapper;
+}
+
+function createContactCard(contact) {
+  const article = document.createElement("article");
+  article.className = `contact-card${selectedContactIds.has(contact.id) ? " selected" : ""}${
+    highlightedContactId === contact.id ? " newly-saved" : ""
+  }`;
+  article.dataset.id = contact.id;
+
+  const main = document.createElement("label");
+  main.className = "contact-card-main";
+  main.setAttribute("for", `contact-checkbox-${contact.id}`);
+  const checkbox = document.createElement("input");
+  checkbox.id = `contact-checkbox-${contact.id}`;
+  checkbox.type = "checkbox";
+  checkbox.checked = selectedContactIds.has(contact.id);
+  checkbox.dataset.action = "select-contact";
+  checkbox.setAttribute("aria-label", `Selecionar ${contact.name}`);
+
+  const identity = document.createElement("span");
+  identity.className = "contact-card-identity";
+  const name = document.createElement("strong");
+  name.textContent = contact.name || "Sem nome";
+  const phone = document.createElement("span");
+  phone.textContent = contact.phone || "Sem telefone";
+  identity.append(name, phone);
+  main.append(checkbox, identity);
+
+  const actions = document.createElement("div");
+  actions.className = "contact-card-actions";
+
+  if (contact.details) {
+    const detailsButton = document.createElement("button");
+    detailsButton.type = "button";
+    detailsButton.className = "secondary contact-action-button";
+    detailsButton.dataset.action = "details";
+    detailsButton.setAttribute("aria-expanded", String(expandedContactIds.has(contact.id)));
+    detailsButton.setAttribute("aria-controls", `contact-details-${contact.id}`);
+    detailsButton.textContent = expandedContactIds.has(contact.id) ? "Ocultar detalhes" : "Ver detalhes";
+    actions.appendChild(detailsButton);
+  }
+
+  const editButton = document.createElement("button");
+  editButton.type = "button";
+  editButton.className = "secondary contact-action-button";
+  editButton.dataset.action = "edit";
+  editButton.textContent = "Editar";
+
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "secondary contact-action-button contact-delete-button";
+  deleteButton.dataset.action = "delete";
+  deleteButton.textContent = "Excluir";
+  actions.append(editButton, deleteButton);
+  article.append(main, actions);
+
+  if (contact.details && expandedContactIds.has(contact.id)) {
+    const details = document.createElement("div");
+    details.className = "contact-details";
+    details.id = `contact-details-${contact.id}`;
+    const label = document.createElement("strong");
+    label.textContent = "Detalhes internos";
+    const text = document.createElement("p");
+    text.textContent = contact.details;
+    details.append(label, text);
+    article.appendChild(details);
+  }
+
+  return article;
+}
+
+function renderContactGroups(visibleContacts) {
+  getGroupedContacts(visibleContacts).forEach(([groupName, groupContacts]) => {
     const section = document.createElement("section");
     section.className = "contact-group-section";
+    const header = document.createElement("div");
+    header.className = "contact-group-header";
+    const headingBlock = document.createElement("div");
     const heading = document.createElement("h3");
-    heading.textContent = `${groupName} (${groupContacts.length})`;
-    section.appendChild(heading);
-    groupContacts.forEach((contact) => section.appendChild(renderContactCard(contact)));
+    heading.textContent = groupName;
+    const selectedInGroup = groupContacts.filter((contact) =>
+      selectedContactIds.has(contact.id)
+    ).length;
+    const counter = document.createElement("p");
+    counter.textContent = selectedInGroup
+      ? `${selectedInGroup} selecionado${selectedInGroup === 1 ? "" : "s"} de ${groupContacts.length}`
+      : `${groupContacts.length} contato${groupContacts.length === 1 ? "" : "s"}`;
+    headingBlock.append(heading, counter);
+
+    const allSelected = groupContacts.every((contact) => selectedContactIds.has(contact.id));
+    const selectGroupButton = document.createElement("button");
+    selectGroupButton.type = "button";
+    selectGroupButton.className = "secondary contact-group-button";
+    selectGroupButton.dataset.action = "select-group";
+    selectGroupButton.dataset.group = groupName;
+    selectGroupButton.textContent = allSelected ? "Desmarcar grupo" : "Selecionar grupo";
+    header.append(headingBlock, selectGroupButton);
+    section.appendChild(header);
+
+    const cards = document.createElement("div");
+    cards.className = "contact-group-cards";
+    groupContacts.forEach((contact) => cards.appendChild(createContactCard(contact)));
+    section.appendChild(cards);
     contactsList.appendChild(section);
   });
+}
+
+function renderContacts() {
+  const visibleContacts = getVisibleContacts();
+  contactsList.replaceChildren();
+
+  if (!visibleContacts.length) {
+    contactsList.appendChild(createEmptyContactsState());
+  } else {
+    renderContactGroups(visibleContacts);
+  }
+
+  updateSelectionSummary();
+}
+
+function toggleContactSelection(contactId, selected) {
+  if (selected) {
+    selectedContactIds.add(contactId);
+  } else {
+    selectedContactIds.delete(contactId);
+  }
+  renderContacts();
+}
+
+function selectVisibleGroup(groupName) {
+  const groupContacts = getVisibleContacts().filter(
+    (contact) => contact.group_name === groupName
+  );
+  const allSelected = groupContacts.every((contact) => selectedContactIds.has(contact.id));
+
+  groupContacts.forEach((contact) => {
+    if (allSelected) {
+      selectedContactIds.delete(contact.id);
+    } else {
+      selectedContactIds.add(contact.id);
+    }
+  });
+  renderContacts();
+}
+
+function clearContactSelection() {
+  selectedContactIds.clear();
+  generatedText = "";
+  renderContacts();
 }
 
 function getSelectedContacts() {
   return contacts
     .filter((contact) => selectedContactIds.has(contact.id))
-    .sort((a, b) => {
-      const groupCompare = String(a.group_name || "Outros").localeCompare(String(b.group_name || "Outros"), "pt-BR");
-      if (groupCompare !== 0) {
-        return groupCompare;
-      }
-      return String(a.name || "").localeCompare(String(b.name || ""), "pt-BR");
+    .sort((first, second) => {
+      const groupComparison = compareGroups(first.group_name, second.group_name);
+      return groupComparison || compareText(first.name, second.name);
     });
 }
 
-function getContactLocationLine(contact) {
-  const parts = [];
-  if (contact.location) {
-    parts.push(contact.location);
-  }
-  if (Array.isArray(contact.modality) && contact.modality.length) {
-    parts.push(contact.modality.join(", "));
-  }
-  return parts.join(" / ");
+function generatePatientContactText(selectedContacts = getSelectedContacts()) {
+  const lines = ["CONTATOS INDICADOS"];
+
+  getGroupedContacts(selectedContacts).forEach(([groupName, groupContacts]) => {
+    lines.push("", "", groupName.toLocaleUpperCase("pt-BR"));
+    groupContacts.forEach((contact) => {
+      lines.push("", contact.name, `Telefone/WhatsApp: ${contact.phone}`);
+    });
+  });
+
+  return lines.join("\n").trimEnd();
 }
 
-function getContactObservationLine(contact) {
-  return [contact.description, contact.indication_text].filter(Boolean).join(" ");
+function renderPrintablePatientList(selectedContacts) {
+  patientPrintContent.replaceChildren();
+  const title = document.createElement("h1");
+  title.textContent = "CONTATOS INDICADOS";
+  patientPrintContent.appendChild(title);
+
+  getGroupedContacts(selectedContacts).forEach(([groupName, groupContacts]) => {
+    const section = document.createElement("section");
+    section.className = "patient-print-group";
+    const heading = document.createElement("h2");
+    heading.textContent = groupName.toLocaleUpperCase("pt-BR");
+    section.appendChild(heading);
+
+    groupContacts.forEach((contact) => {
+      const block = document.createElement("div");
+      block.className = "patient-print-contact";
+      const name = document.createElement("strong");
+      name.textContent = contact.name;
+      const phone = document.createElement("p");
+      phone.textContent = `Telefone/WhatsApp: ${contact.phone}`;
+      block.append(name, phone);
+      section.appendChild(block);
+    });
+
+    patientPrintContent.appendChild(section);
+  });
 }
 
-function generateSelectedContactsText() {
+function showGeneratedPreview() {
   const selectedContacts = getSelectedContacts();
 
   if (!selectedContacts.length) {
-    return "";
+    showMessage("Selecione ao menos um contato.", "error");
+    return;
   }
 
-  const lines = ["Contatos selecionados"];
-  let currentGroup = "";
+  generatedText = generatePatientContactText(selectedContacts);
+  patientListText.textContent = generatedText;
+  renderPrintablePatientList(selectedContacts);
+  contactsSelectionView.classList.add("hidden");
+  patientListPreview.classList.remove("hidden");
+  patientListFeedback.textContent = "";
+  clearMessage();
+  patientListPreview.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
-  selectedContacts.forEach((contact) => {
-    const groupName = contact.group_name || "Outros";
-    if (groupName !== currentGroup) {
-      currentGroup = groupName;
-      lines.push("", groupName);
-    }
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
 
-    lines.push("", `Nome: ${contact.name || ""}`);
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.readOnly = true;
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  return copied;
+}
 
-    if (contact.phone) {
-      lines.push(`Telefone/WhatsApp: ${contact.phone}`);
-    }
+async function copyGeneratedText() {
+  if (!generatedText) {
+    patientListFeedback.textContent = "Selecione ao menos um contato.";
+    return;
+  }
 
-    const locationLine = getContactLocationLine(contact);
-    if (locationLine) {
-      lines.push(`Local: ${locationLine}`);
-    }
+  try {
+    const copied = await copyText(generatedText);
+    patientListFeedback.textContent = copied ? "Texto copiado." : "Não foi possível copiar o texto.";
+  } catch (error) {
+    console.error("Falha ao copiar lista de contatos.", error);
+    patientListFeedback.textContent = "Não foi possível copiar o texto.";
+  }
+}
 
-    if (contact.price_note) {
-      lines.push(`Preço: ${contact.price_note}`);
-    }
-
-    const observationLine = getContactObservationLine(contact);
-    if (observationLine) {
-      lines.push(`Observação: ${observationLine}`);
-    }
+function validateContactPayload(payload) {
+  [contactName, contactPhone, contactGroup, contactDetails].forEach((field) => {
+    field.removeAttribute("aria-invalid");
   });
 
-  return lines.join("\n");
+  const missingFields = [];
+  if (!payload.name) {
+    missingFields.push(contactName);
+  }
+  if (!payload.phone) {
+    missingFields.push(contactPhone);
+  }
+  if (!payload.group_name) {
+    missingFields.push(contactGroup);
+  }
+
+  if (missingFields.length) {
+    missingFields.forEach((field) => field.setAttribute("aria-invalid", "true"));
+    missingFields[0].focus();
+    showMessage("Preencha nome, telefone e grupo.", "error");
+    return false;
+  }
+
+  if (
+    payload.name.length > 150 ||
+    payload.phone.length > 80 ||
+    payload.group_name.length > 100 ||
+    payload.details.length > 2000
+  ) {
+    showMessage("Revise o tamanho dos campos antes de salvar.", "error");
+    return false;
+  }
+
+  return true;
 }
 
-function renderSelectedContactsResult() {
+function isMissingDetailsColumn(error) {
+  const text = normalizeSearch(`${error && error.code ? error.code : ""} ${error && error.message ? error.message : ""}`);
+  return text.includes("pgrst204") || text.includes("42703") || text.includes("details");
+}
+
+async function executeContactSave(payload, contactId = null, legacyFallback = false) {
+  const databasePayload = legacyFallback
+    ? {
+        user_id: payload.user_id,
+        name: payload.name,
+        phone: payload.phone,
+        group_name: payload.group_name,
+        description: payload.details || null
+      }
+    : payload;
+  let query = contactId
+    ? contactsSupabaseClient
+        .from("contacts")
+        .update(databasePayload)
+        .eq("id", contactId)
+        .eq("user_id", currentUser.id)
+    : contactsSupabaseClient.from("contacts").insert(databasePayload);
+
+  query = query.select("*").single();
+  return query;
+}
+
+async function saveContact() {
   clearMessage();
-  const text = generateSelectedContactsText();
+  const formValues = getFormValues();
+  const payload = {
+    user_id: currentUser.id,
+    name: formValues.name,
+    phone: formValues.phone,
+    group_name: formValues.group_name,
+    details: formValues.details
+  };
 
-  if (!text) {
-    selectedContactsResult.classList.add("hidden");
-    selectedContactsOutput.textContent = "";
-    showMessage("Selecione ao menos um contato.", "info");
+  if (!validateContactPayload(payload)) {
     return;
   }
 
-  selectedContactsOutput.textContent = text;
-  selectedContactsResult.classList.remove("hidden");
-  selectedContactsResult.scrollIntoView({ behavior: "smooth", block: "start" });
+  saveContactButton.disabled = true;
+  const savedEditingId = editingContactId;
+  let result = await executeContactSave(payload, savedEditingId);
+
+  if (result.error && isMissingDetailsColumn(result.error)) {
+    console.info("Coluna details ainda não disponível; usando compatibilidade com o esquema antigo.");
+    result = await executeContactSave(payload, savedEditingId, true);
+  }
+
+  saveContactButton.disabled = false;
+
+  if (result.error || !result.data) {
+    console.error("Falha técnica ao salvar contato.", result.error);
+    showMessage("Não foi possível salvar o contato.", "error");
+    return;
+  }
+
+  const savedContact = normalizeContactRecord(result.data);
+  const existingIndex = contacts.findIndex((contact) => contact.id === savedContact.id);
+
+  if (existingIndex >= 0) {
+    contacts[existingIndex] = savedContact;
+  } else {
+    contacts.push(savedContact);
+  }
+
+  highlightedContactId = savedContact.id;
+  resetContactForm();
+  setContactsMode("select");
+  renderContacts();
+  showMessage(savedEditingId ? "Alterações salvas." : "Contato salvo com sucesso.", "success");
+
+  window.setTimeout(() => {
+    const savedCard = contactsList.querySelector(`[data-id="${savedContact.id}"]`);
+    if (savedCard) {
+      savedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, 0);
+  window.setTimeout(() => {
+    highlightedContactId = null;
+    const savedCard = contactsList.querySelector(`[data-id="${savedContact.id}"]`);
+    if (savedCard) {
+      savedCard.classList.remove("newly-saved");
+    }
+  }, 2400);
 }
 
-function refreshSelectedContactsResultIfVisible() {
-  if (selectedContactsResult.classList.contains("hidden")) {
+async function deleteContact(contact) {
+  const confirmed = window.confirm(
+    `Excluir “${contact.name}”?\n\nEssa ação removerá o contato do banco de dados.`
+  );
+
+  if (!confirmed) {
     return;
   }
 
-  const text = generateSelectedContactsText();
-  if (!text) {
-    selectedContactsResult.classList.add("hidden");
-    selectedContactsOutput.textContent = "";
+  clearMessage();
+  const { error } = await contactsSupabaseClient
+    .from("contacts")
+    .delete()
+    .eq("id", contact.id)
+    .eq("user_id", currentUser.id);
+
+  if (error) {
+    console.error("Falha técnica ao excluir contato.", error);
+    showMessage("Não foi possível excluir o contato.", "error");
     return;
   }
 
-  selectedContactsOutput.textContent = text;
+  contacts = contacts.filter((savedContact) => savedContact.id !== contact.id);
+  selectedContactIds.delete(contact.id);
+  expandedContactIds.delete(contact.id);
+  renderContacts();
+  showMessage("Contato excluído.", "success");
 }
 
 async function loadContacts() {
-  if (!currentUser) {
-    return;
-  }
-
-  const { data, error } = await contactsSupabaseClient
-    .from("contacts")
-    .select(
-      "id,user_id,name,group_name,phone,email,instagram,site,location,modality,audience,specialties,tags,price_note,description,private_notes,indication_text,status,favorite,last_verified_at,created_at,updated_at"
-    )
-    .eq("user_id", currentUser.id)
-    .order("favorite", { ascending: false })
-    .order("group_name", { ascending: true })
-    .order("name", { ascending: true });
+  clearMessage();
+  const { data, error } = await contactsSupabaseClient.from("contacts").select("*");
 
   if (error) {
-    showMessage(`Erro ao carregar contatos: ${error.message}`, "error");
+    console.error("Falha técnica ao carregar contatos.", error);
+    contacts = [];
+    selectedContactIds.clear();
+    renderContacts();
+    showMessage("Não foi possível carregar os contatos.", "error");
     return;
   }
 
-  contacts = data || [];
+  contacts = (data || []).map(normalizeContactRecord);
   const validIds = new Set(contacts.map((contact) => contact.id));
-  Array.from(selectedContactIds).forEach((id) => {
-    if (!validIds.has(id)) {
-      selectedContactIds.delete(id);
-    }
-  });
+  selectedContactIds = new Set(
+    Array.from(selectedContactIds).filter((contactId) => validIds.has(contactId))
+  );
+  populateGroupOptions();
   renderContacts();
 }
 
 async function refreshSession() {
   const { data, error } = await contactsSupabaseClient.auth.getSession();
 
-  if (error || !data.session || !data.session.user) {
+  if (error) {
+    console.error("Falha técnica ao recuperar sessão.", error);
     setAuthenticatedState(null);
-    contacts = [];
-    selectedContactIds.clear();
-    selectedContactsResult.classList.add("hidden");
-    selectedContactsOutput.textContent = "";
+    showMessage("Não foi possível verificar a sessão.", "error");
+    return;
+  }
+
+  const user = data.session ? data.session.user : null;
+  setAuthenticatedState(user);
+
+  if (user) {
+    await loadContacts();
+  } else {
     renderContacts();
-    return;
   }
-
-  setAuthenticatedState(data.session.user);
-  await loadContacts();
 }
 
-async function copyText(text, successMessage) {
-  clearMessage();
+function addNewGroup() {
+  const groupName = newGroupName.value.trim();
 
-  if (!text) {
-    showMessage("Não há texto para copiar.", "error");
+  if (!groupName) {
+    newGroupFeedback.textContent = "Informe o nome do grupo.";
+    newGroupName.focus();
     return;
   }
 
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      showMessage(successMessage, "success");
-      return;
-    } catch (_error) {
-      // Continua para o fallback manual abaixo.
+  const existingGroup = getAvailableGroups().find(
+    (group) => normalizeSearch(group) === normalizeSearch(groupName)
+  );
+
+  if (existingGroup) {
+    populateGroupOptions(existingGroup);
+    contactGroup.value = existingGroup;
+    newGroupFeedback.textContent = "Esse grupo já existia e foi selecionado.";
+  } else {
+    sessionGroups.add(groupName);
+    populateGroupOptions(groupName);
+    contactGroup.value = groupName;
+    newGroupFeedback.textContent = "Grupo adicionado e selecionado.";
+  }
+
+  newGroupName.value = "";
+  window.setTimeout(() => {
+    newGroupControls.classList.add("hidden");
+    newGroupFeedback.textContent = "";
+    contactGroup.focus();
+  }, 700);
+}
+
+contactsSelectTab.addEventListener("click", () => requestContactsMode("select"));
+contactsAddTab.addEventListener("click", () => requestContactsMode("add"));
+document.querySelector(".contacts-mode-tabs").addEventListener("keydown", (event) => {
+  const tabs = [contactsSelectTab, contactsAddTab];
+  const currentIndex = tabs.indexOf(document.activeElement);
+
+  if (currentIndex < 0 || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+    return;
+  }
+
+  event.preventDefault();
+  let nextIndex = currentIndex;
+  if (event.key === "ArrowLeft") {
+    nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+  }
+  if (event.key === "ArrowRight") {
+    nextIndex = (currentIndex + 1) % tabs.length;
+  }
+  if (event.key === "Home") {
+    nextIndex = 0;
+  }
+  if (event.key === "End") {
+    nextIndex = tabs.length - 1;
+  }
+  tabs[nextIndex].focus();
+  requestContactsMode(tabs[nextIndex].dataset.contactsMode);
+});
+
+addFirstContactButton.addEventListener("click", () => openContactEditor());
+newGroupButton.addEventListener("click", () => {
+  newGroupControls.classList.remove("hidden");
+  newGroupFeedback.textContent = "";
+  newGroupName.focus();
+});
+cancelGroupButton.addEventListener("click", () => {
+  newGroupName.value = "";
+  newGroupFeedback.textContent = "";
+  newGroupControls.classList.add("hidden");
+  contactGroup.focus();
+});
+addGroupButton.addEventListener("click", addNewGroup);
+newGroupName.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addNewGroup();
+  }
+});
+
+cancelContactButton.addEventListener("click", () => {
+  if (isContactFormDirty() && !window.confirm("Descartar as alterações deste contato?")) {
+    return;
+  }
+  resetContactForm();
+  setContactsMode("select");
+});
+contactForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  saveContact();
+});
+
+contactSearch.addEventListener("input", () => {
+  searchTerm = normalizeSearch(contactSearch.value);
+  renderContacts();
+});
+showSelectedOnlyInput.addEventListener("change", () => {
+  showSelectedOnly = showSelectedOnlyInput.checked;
+  renderContacts();
+});
+clearSelectionButton.addEventListener("click", clearContactSelection);
+generateSelectedButton.addEventListener("click", showGeneratedPreview);
+backToSelectionButton.addEventListener("click", showContactsSelection);
+copyPatientListButton.addEventListener("click", copyGeneratedText);
+printPatientListButton.addEventListener("click", () => window.print());
+
+contactsList.addEventListener("change", (event) => {
+  const checkbox = event.target.closest('input[data-action="select-contact"]');
+  if (!checkbox) {
+    return;
+  }
+  const card = checkbox.closest(".contact-card");
+  if (card) {
+    toggleContactSelection(card.dataset.id, checkbox.checked);
+  }
+});
+
+contactsList.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-action]");
+
+  if (!button) {
+    return;
+  }
+
+  if (button.dataset.action === "add-empty") {
+    openContactEditor();
+    return;
+  }
+
+  if (button.dataset.action === "select-group") {
+    selectVisibleGroup(button.dataset.group);
+    return;
+  }
+
+  const card = button.closest(".contact-card");
+  const contact = card
+    ? contacts.find((savedContact) => savedContact.id === card.dataset.id)
+    : null;
+
+  if (!contact) {
+    return;
+  }
+
+  if (button.dataset.action === "details") {
+    if (expandedContactIds.has(contact.id)) {
+      expandedContactIds.delete(contact.id);
+    } else {
+      expandedContactIds.add(contact.id);
     }
+    renderContacts();
   }
 
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.left = "-9999px";
-  document.body.appendChild(textarea);
-  textarea.select();
-  showMessage("Texto selecionado para cópia manual.", "success");
-}
+  if (button.dataset.action === "edit") {
+    openContactEditor(contact);
+  }
 
-function downloadText(filename, text, type) {
-  const blob = new Blob([text], { type });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
+  if (button.dataset.action === "delete") {
+    deleteContact(contact);
+  }
+});
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   clearMessage();
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
   const { error } = await contactsSupabaseClient.auth.signInWithPassword({
-    email,
-    password
+    email: emailInput.value.trim(),
+    password: passwordInput.value
   });
 
   if (error) {
-    showMessage(`Erro ao entrar: ${error.message}`, "error");
+    console.error("Falha técnica no login.", error);
+    showMessage("Não foi possível entrar. Verifique e-mail e senha.", "error");
     return;
   }
 
-  showMessage("Login realizado.", "success");
   loginForm.reset();
+  showMessage("Login realizado.", "success");
 });
 
 signupButton.addEventListener("click", async () => {
   clearMessage();
-
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
@@ -641,24 +1045,21 @@ signupButton.addEventListener("click", async () => {
     return;
   }
 
-  const { data, error } = await contactsSupabaseClient.auth.signUp({
-    email,
-    password
-  });
+  const { data, error } = await contactsSupabaseClient.auth.signUp({ email, password });
 
   if (error) {
-    showMessage(`Erro ao criar conta: ${error.message}`, "error");
+    console.error("Falha técnica ao criar conta.", error);
+    showMessage("Não foi possível criar a conta.", "error");
     return;
   }
 
-  if (data.session && data.user) {
-    showMessage("Conta criada e login realizado.", "success");
-    loginForm.reset();
-    return;
-  }
-
-  showMessage("Conta criada. Verifique o e-mail se a confirmação estiver habilitada.", "success");
   loginForm.reset();
+  showMessage(
+    data.session
+      ? "Conta criada e login realizado."
+      : "Conta criada. Verifique o e-mail se a confirmação estiver habilitada.",
+    "success"
+  );
 });
 
 logoutButton.addEventListener("click", async () => {
@@ -666,212 +1067,40 @@ logoutButton.addEventListener("click", async () => {
   const { error } = await contactsSupabaseClient.auth.signOut();
 
   if (error) {
-    showMessage(`Erro ao sair: ${error.message}`, "error");
+    console.error("Falha técnica ao sair.", error);
+    showMessage("Não foi possível sair.", "error");
     return;
   }
 
   contacts = [];
-  expandedContactIds.clear();
   selectedContactIds.clear();
-  selectedContactsResult.classList.add("hidden");
-  selectedContactsOutput.textContent = "";
+  expandedContactIds.clear();
+  sessionGroups.clear();
   resetContactForm();
+  showContactsSelection();
   setAuthenticatedState(null);
   renderContacts();
 });
 
-contactForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  clearMessage();
-
-  const payload = getContactPayload();
-
-  if (!payload.name || !payload.group_name || !payload.phone) {
-    showMessage("Informe nome, grupo e telefone antes de salvar.", "error");
-    return;
-  }
-
-  const query = editingContactId
-    ? contactsSupabaseClient.from("contacts").update(payload).eq("id", editingContactId).eq("user_id", currentUser.id)
-    : contactsSupabaseClient.from("contacts").insert(payload);
-
-  const { error } = await query;
-
-  if (error) {
-    showMessage(`Erro ao salvar contato: ${error.message}`, "error");
-    return;
-  }
-
-  showMessage(editingContactId ? "Edição salva." : "Contato salvo.", "success");
-  resetContactForm();
-  await loadContacts();
-});
-
-clearContactButton.addEventListener("click", () => {
-  clearMessage();
-  resetContactForm();
-});
-
-cancelEditButton.addEventListener("click", () => {
-  clearMessage();
-  resetContactForm();
-});
-
-contactsList.addEventListener("change", (event) => {
-  const input = event.target.closest('input[data-action="select-contact"]');
-
-  if (!input) {
-    return;
-  }
-
-  const item = input.closest(".contact-card");
-  const id = item ? item.dataset.id : "";
-
-  if (!id) {
-    return;
-  }
-
-  if (input.checked) {
-    selectedContactIds.add(id);
-  } else {
-    selectedContactIds.delete(id);
-  }
-
-  renderContacts();
-});
-
-contactsList.addEventListener("click", async (event) => {
-  const button = event.target.closest("button[data-action]");
-
-  if (!button) {
-    return;
-  }
-
-  const item = button.closest(".contact-card");
-  const id = item ? item.dataset.id : "";
-  const contact = contacts.find((savedContact) => savedContact.id === id);
-
-  if (!contact) {
-    return;
-  }
-
-  const action = button.dataset.action;
-
-  if (action === "toggle") {
-    if (expandedContactIds.has(id)) {
-      expandedContactIds.delete(id);
-    } else {
-      expandedContactIds.add(id);
-    }
-    renderContacts();
-    return;
-  }
-
-  if (action === "edit") {
-    clearMessage();
-    fillContactForm(contact);
-    return;
-  }
-
-  if (action === "delete") {
-    clearMessage();
-    const confirmed = window.confirm(`Remover o contato "${contact.name}"?`);
-
-    if (!confirmed) {
-      return;
-    }
-
-    const { error } = await contactsSupabaseClient.from("contacts").delete().eq("id", id).eq("user_id", currentUser.id);
-
-    if (error) {
-      showMessage(`Erro ao remover contato: ${error.message}`, "error");
-      return;
-    }
-
-    showMessage("Contato removido.", "success");
-    expandedContactIds.delete(id);
-    selectedContactIds.delete(id);
-    await loadContacts();
-    return;
-  }
-
-  if (action === "copy-phone") {
-    await copyText(contact.phone, "Telefone copiado.");
-    return;
-  }
-
-  if (action === "copy-indication") {
-    const indicationText =
-      contact.indication_text ||
-      [contact.name, contact.phone, contact.description, contact.location].filter(Boolean).join("\n");
-    await copyText(indicationText, "Texto de indicação copiado.");
-  }
-});
-
-[contactSearch, groupFilter, statusFilter, tagFilter, favoritesFilter].forEach((control) => {
-  control.addEventListener("input", renderContacts);
-  control.addEventListener("change", renderContacts);
-});
-
-selectVisibleButton.addEventListener("click", () => {
-  getVisibleContacts().forEach((contact) => selectedContactIds.add(contact.id));
-  renderContacts();
-});
-
-clearSelectionButton.addEventListener("click", () => {
-  selectedContactIds.clear();
-  selectedContactsResult.classList.add("hidden");
-  selectedContactsOutput.textContent = "";
-  renderContacts();
-});
-
-generateSelectedButton.addEventListener("click", renderSelectedContactsResult);
-
-copySelectedButton.addEventListener("click", async () => {
-  await copyText(selectedContactsOutput.textContent, "Lista copiada.");
-});
-
-exportJsonButton.addEventListener("click", () => {
-  clearMessage();
-  const visibleContacts = getVisibleContacts();
-
-  if (!visibleContacts.length) {
-    showMessage("Não há contatos visíveis para exportar.", "error");
-    return;
-  }
-
-  downloadText("contatos.json", `${JSON.stringify(visibleContacts, null, 2)}\n`, "application/json;charset=utf-8");
-});
-
-exportJsonlButton.addEventListener("click", () => {
-  clearMessage();
-  const jsonl = getVisibleContacts().map((contact) => JSON.stringify(contact)).join("\n");
-
-  if (!jsonl) {
-    showMessage("Não há contatos visíveis para exportar.", "error");
-    return;
-  }
-
-  downloadText("contatos.jsonl", `${jsonl}\n`, "application/jsonl;charset=utf-8");
-});
-
 contactsSupabaseClient.auth.onAuthStateChange((_event, session) => {
-  if (session && session.user) {
-    setAuthenticatedState(session.user);
+  const user = session ? session.user : null;
+
+  if (user && (!currentUser || currentUser.id !== user.id)) {
+    setAuthenticatedState(user);
     loadContacts();
     return;
   }
 
-  contacts = [];
-  expandedContactIds.clear();
-  selectedContactIds.clear();
-  selectedContactsResult.classList.add("hidden");
-  selectedContactsOutput.textContent = "";
-  resetContactForm();
-  setAuthenticatedState(null);
-  renderContacts();
+  if (!user) {
+    contacts = [];
+    selectedContactIds.clear();
+    expandedContactIds.clear();
+    setAuthenticatedState(null);
+    renderContacts();
+  }
 });
 
-populateStaticSelects();
+populateGroupOptions();
 resetContactForm();
+renderContacts();
 refreshSession();

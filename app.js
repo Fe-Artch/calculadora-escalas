@@ -752,6 +752,174 @@ const panssQuestions = [
   { code: "G16", pt: "Esquiva social ativa", domain: "general" }
 ];
 
+const binaryYesNoOptions = [
+  { value: 1, label: "Sim" },
+  { value: 0, label: "Não" }
+];
+
+const hcl32Questions = [
+  "Preciso de menos sono.",
+  "Eu me sinto com mais energia e mais ativo(a).",
+  "Fico mais autoconfiante.",
+  "Me entusiasmo mais com meu trabalho.",
+  "Fico mais sociável, faço mais ligações telefônicas, saio mais.",
+  "Quero viajar ou viajo mais.",
+  "Tenho tendência a dirigir mais rápido ou a me arriscar mais enquanto dirijo.",
+  "Gasto mais ou gasto dinheiro demais.",
+  "Me arrisco mais em minha vida diária, no trabalho e/ou em outras atividades.",
+  "Fico mais ativo(a) fisicamente, como em esportes.",
+  "Planejo mais atividades e projetos.",
+  "Tenho mais ideias e fico mais criativo(a).",
+  "Fico menos tímido(a) ou inibido(a).",
+  "Uso roupas ou maquiagem mais coloridas e extravagantes.",
+  "Quero me encontrar ou de fato me encontro com mais pessoas.",
+  "Fico mais interessado(a) em sexo e/ou tenho desejo sexual aumentado.",
+  "Paquero mais e/ou fico mais ativo(a) sexualmente.",
+  "Falo mais.",
+  "Penso mais rápido.",
+  "Faço mais piadas ou trocadilhos quando falo.",
+  "Eu me distraio com mais facilidade.",
+  "Eu me envolvo em muitas coisas novas.",
+  "Meus pensamentos pulam de assunto rapidamente.",
+  "Faço coisas mais rapidamente e/ou com maior facilidade.",
+  "Fico mais impaciente e/ou fico irritado(a) mais facilmente.",
+  "Posso ser cansativo(a) ou irritante para os outros.",
+  "Eu me envolvo em mais discussões e disputas.",
+  "Meu humor fica melhor, mais otimista.",
+  "Bebo mais café.",
+  "Fumo mais cigarros.",
+  "Bebo mais álcool.",
+  "Uso mais drogas, como sedativos, tranquilizantes, estimulantes, entre outros."
+];
+
+const hclCurrentStateOptions = [
+  ["much_worse", "Muito pior do que o normal"],
+  ["worse", "Pior que o normal"],
+  ["slightly_worse", "Um pouco pior que o normal"],
+  ["same", "Nem pior nem melhor que o normal"],
+  ["slightly_better", "Um pouco melhor que o normal"],
+  ["better", "Melhor que o normal"],
+  ["much_better", "Muito melhor que o normal"]
+];
+
+const hclUsualPatternOptions = [
+  ["stable", "Sempre são mais estáveis e equilibrados"],
+  ["higher", "Geralmente são maiores"],
+  ["lower", "Geralmente são menores"],
+  ["ups_downs", "Frequentemente passam por períodos de altos e baixos"]
+];
+
+const hclImpactOptions = [
+  ["both", "Positivo e negativo"],
+  ["positive", "Positivo"],
+  ["negative", "Negativo"],
+  ["none", "Nenhum impacto"]
+];
+
+const hclReactionOptions = [
+  ["positive", "Positivamente, encorajando ou apoiando"],
+  ["neutral", "Neutros"],
+  ["negative", "Negativamente, como preocupadas, aborrecidas, irritadas ou críticas"],
+  ["both", "Positivamente e negativamente"],
+  ["none", "Nenhuma reação"]
+];
+
+const hclDurationOptions = [
+  ["one_day", "1 dia"],
+  ["two_three_days", "2–3 dias"],
+  ["four_seven_days", "4–7 dias"],
+  ["over_week", "Mais de 1 semana"],
+  ["over_month", "Mais de 1 mês"],
+  ["unknown", "Não posso julgar / não sei"]
+];
+
+const bsdsNarrative =
+  'Alguns indivíduos notam que seu humor e/ou níveis de energia mudam drasticamente de tempo em tempo. Esses indivíduos notam que, algumas vezes, seu humor e/ou nível de energia está muito baixo e, noutras vezes, muito alto. Durante seus períodos de "baixa", esses indivíduos costumam sentir uma falta de energia; a necessidade de ficar na cama ou de dormir mais; e pouca ou nenhuma motivação para fazer as coisas que eles precisam fazer. Eles costumam engordar durante esses períodos. Durante suas fases de baixa, esses indivíduos costumam se sentir tristes o tempo todo, ou deprimidos. Algumas vezes, durante essas fases de baixa, eles se sentem sem esperanças ou até mesmo suicidas. Sua habilidade de funcionar no trabalho ou socialmente fica prejudicada. Tipicamente, esses períodos de baixa duram algumas semanas, mas às vezes duram apenas alguns dias. Indivíduos com esse tipo de padrão podem experienciar um período de humor "normal" entre as mudanças de humor, durante o qual seu humor e seu nível de energia aparentam estar "certos" e sua habilidade de funcionamento não sofre perturbação. Eles podem então notar uma mudança marcada ou uma "virada" na forma como se sentem. Sua energia aumenta acima do que é normal para eles, e eles costumam fazer muitas coisas que não normalmente não seriam capazes de fazer. Algumas vezes, durante esses períodos de "alta", esses indivíduos sentem como se eles tivessem muita energia ou se sentissem "hiper". Alguns indivíduos, durante esses períodos de alta, podem se sentir irritados, "no limite" ou agressivos. Alguns indivíduos, durante essas fases de alta, assumem muitas atividades ao mesmo tempo. Durante essas fases de alta, alguns indivíduos podem gastar dinheiro de maneiras que podem lhes causar problemas. Eles podem ficar mais falantes, extrovertidos ou sexuais durante esses períodos. Algumas vezes, o comportamento deles durante esses períodos de alta parece estranho ou irritante para os outros. Algumas vezes, esses indivíduos têm problemas com colegas de trabalho ou com a polícia durante essas fases de alta. Algumas vezes, eles aumentam seu uso de álcool ou outras drogas durante esses períodos de alta.';
+
+const bsdsNarrativeOptions = [
+  { value: 0, label: "Essa história não me descreve de forma alguma" },
+  {
+    value: 2,
+    label: "Essa história se encaixa em mim até certo ponto, mas não na maioria dos aspectos"
+  },
+  { value: 4, label: "Essa história se encaixa muito bem em mim" },
+  { value: 6, label: "Essa história se encaixa muito bem em mim, ou quase perfeitamente" }
+];
+
+const bsdsQuestions = [
+  "Alguns indivíduos notam que seu humor e/ou níveis de energia mudam drasticamente de tempo em tempo.",
+  "Esses indivíduos notam que, algumas vezes, seu humor e/ou nível de energia está muito baixo e, noutras vezes, muito alto.",
+  'Durante seus períodos de "baixa", esses indivíduos costumam sentir uma falta de energia; a necessidade de ficar na cama ou de dormir mais; e pouca ou nenhuma motivação para fazer as coisas que eles precisam fazer.',
+  "Eles costumam engordar durante esses períodos.",
+  "Durante suas fases de baixa, esses indivíduos costumam se sentir tristes o tempo todo, ou deprimidos.",
+  "Algumas vezes, durante essas fases de baixa, eles se sentem sem esperanças ou até mesmo suicidas.",
+  "Sua habilidade de funcionar no trabalho ou socialmente fica prejudicada.",
+  "Tipicamente, esses períodos de baixa duram algumas semanas, mas às vezes duram apenas alguns dias.",
+  'Indivíduos com esse tipo de padrão podem experienciar um período de humor "normal" entre as mudanças de humor, durante o qual seu humor e seu nível de energia aparentam estar "certos" e sua habilidade de funcionamento não sofre perturbação.',
+  'Eles podem então notar uma mudança marcada ou uma "virada" na forma como se sentem.',
+  "Sua energia aumenta acima do que é normal para eles, e eles costumam fazer muitas coisas que não normalmente não seriam capazes de fazer.",
+  'Algumas vezes, durante esses períodos de "alta", esses indivíduos sentem como se eles tivessem muita energia ou se sentissem "hiper".',
+  'Alguns indivíduos, durante esses períodos de alta, podem se sentir irritados, "no limite" ou agressivos.',
+  "Alguns indivíduos, durante essas fases de alta, assumem muitas atividades ao mesmo tempo.",
+  "Durante essas fases de alta, alguns indivíduos podem gastar dinheiro de maneiras que podem lhes causar problemas.",
+  "Eles podem ficar mais falantes, extrovertidos ou sexuais durante esses períodos.",
+  "Algumas vezes, o comportamento deles durante esses períodos de alta parece estranho ou irritante para os outros.",
+  "Algumas vezes, esses indivíduos têm problemas com colegas de trabalho ou com a polícia durante essas fases de alta.",
+  "Algumas vezes, eles aumentam seu uso de álcool ou outras drogas durante esses períodos de alta."
+];
+
+const mdqQuestions = [
+  {
+    pt: "Você se sentiu tão bem ou tão “para cima” que outras pessoas acharam que você não estava como de costume, ou ficou tão hiperativo(a) que teve problemas?",
+    en: "You felt so good or so hyper that other people thought you were not your normal self, or you were so hyper that you got into trouble?"
+  },
+  {
+    pt: "Você ficou tão irritável que gritou com pessoas ou iniciou brigas ou discussões?",
+    en: "You were so irritable that you shouted at people or started fights or arguments?"
+  },
+  {
+    pt: "Você se sentiu muito mais autoconfiante do que de costume?",
+    en: "You felt much more self-confident than usual?"
+  },
+  {
+    pt: "Você dormiu muito menos que o habitual e percebeu que realmente não sentia falta do sono?",
+    en: "You got much less sleep than usual and found that you did not really miss it?"
+  },
+  {
+    pt: "Você ficou muito mais falante ou falou mais rápido do que de costume?",
+    en: "You were more talkative or spoke much faster than usual?"
+  },
+  {
+    pt: "Os pensamentos passaram rapidamente pela sua cabeça ou você não conseguia desacelerar a mente?",
+    en: "Thoughts raced through your head or you could not slow your mind down?"
+  },
+  {
+    pt: "Você se distraía tão facilmente com as coisas ao redor que tinha dificuldade para se concentrar ou continuar uma atividade?",
+    en: "You were so easily distracted by things around you that you had trouble concentrating or staying on track?"
+  },
+  { pt: "Você tinha muito mais energia do que de costume?", en: "You had much more energy than usual?" },
+  {
+    pt: "Você ficou muito mais ativo(a) ou realizou muito mais coisas do que de costume?",
+    en: "You were much more active or did many more things than usual?"
+  },
+  {
+    pt: "Você ficou muito mais sociável ou expansivo(a) do que de costume, por exemplo, telefonando para amigos no meio da noite?",
+    en: "You were much more social or outgoing than usual, for example, you telephoned friends in the middle of the night?"
+  },
+  {
+    pt: "Você ficou muito mais interessado(a) em sexo do que de costume?",
+    en: "You were much more interested in sex than usual?"
+  },
+  {
+    pt: "Você fez coisas incomuns para você ou que outras pessoas poderiam considerar excessivas, imprudentes, tolas ou arriscadas?",
+    en: "You did things that were unusual for you or that other people might have thought were excessive, foolish or risky?"
+  },
+  {
+    pt: "Gastar dinheiro causou problemas para você ou sua família?",
+    en: "Spending money got you or your family in trouble?"
+  }
+];
+
 function formatDateBR(date = new Date()) {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -838,6 +1006,27 @@ function getStatusLabel(value, cutoff) {
   return value >= cutoff ? "positivo" : "negativo";
 }
 
+function getTupleOptionLabel(options, value, fallback = "Não informado") {
+  const option = options.find(([optionValue]) => optionValue === value);
+  return option ? option[1] : fallback;
+}
+
+function formatBinaryAnswer(value, notApplicable = "não aplicável") {
+  if (value === true || value === "yes") {
+    return "Sim";
+  }
+
+  if (value === false || value === "no") {
+    return "Não";
+  }
+
+  return notApplicable;
+}
+
+function getMdqImpairmentLabel(value) {
+  return ["Nenhum", "Leve", "Moderado", "Grave"][value] || "Não informado";
+}
+
 function buildProntuarioLine(scale, scores, interpretation, context = {}) {
   const date = formatDateBR();
 
@@ -886,6 +1075,27 @@ function buildProntuarioLine(scale, scores, interpretation, context = {}) {
     }
 
     return `${parts.join("; ")}.`;
+  }
+
+  if (scale.id === "hcl32") {
+    const impacts = [
+      `familiar ${scores.impactLabels.family.toLowerCase()}`,
+      `social ${scores.impactLabels.social.toLowerCase()}`,
+      `trabalho ${scores.impactLabels.work.toLowerCase()}`,
+      `recreação ${scores.impactLabels.recreation.toLowerCase()}`
+    ].join(", ");
+    const days =
+      scores.lastYear && scores.days !== null ? `; aproximadamente ${scores.days} dias no último ano` : "";
+
+    return `${date} — HCL-32 VB: ${scores.total}/32 itens positivos para características de períodos de elevação de energia/atividade/humor; estado atual comparado ao habitual: ${scores.currentStateLabel.toLowerCase()}; padrão habitual: ${scores.usualPatternLabel.toLowerCase()}; impacto referido: ${impacts}; duração média: ${scores.durationLabel.toLowerCase()}; períodos semelhantes no último ano: ${formatBinaryAnswer(scores.lastYear).toLowerCase()}${days}. Instrumento de rastreio, sem valor diagnóstico isolado.`;
+  }
+
+  if (scale.id === "bsds") {
+    return `${date} — BSDS: ${scores.total}/25 pontos, sendo ${scores.narrativeScore}/6 na identificação com a narrativa e ${scores.checklistScore}/19 nas afirmações específicas; ${lowerFirst(interpretation)}. Ponto de corte apresentado no instrumento: ≥13. Resultado de rastreio, sem valor diagnóstico isolado.`;
+  }
+
+  if (scale.id === "mdq") {
+    return `${date} — MDQ: ${scores.symptomScore}/13 sintomas assinalados; sintomas no mesmo período: ${formatBinaryAnswer(scores.simultaneous).toLowerCase()}; prejuízo associado: ${scores.impairmentLabel.toLowerCase()}. Instrumento de rastreio, sem valor diagnóstico isolado.`;
   }
 
   if (scale.id === "wurs-25") {
@@ -2046,9 +2256,174 @@ function formatCodes(codes) {
   return codes.length ? codes.join(", ") : "Nenhum";
 }
 
+function createHcl32State() {
+  return {
+    currentState: null,
+    usualPattern: null,
+    items: Array(hcl32Questions.length).fill(null),
+    impacts: {
+      family: null,
+      social: null,
+      work: null,
+      recreation: null
+    },
+    reactions: [],
+    duration: null,
+    lastYear: null,
+    days: null
+  };
+}
+
+function createBsdsState() {
+  return {
+    narrativeScore: null,
+    items: Array(bsdsQuestions.length).fill(null)
+  };
+}
+
+function createMdqState() {
+  return {
+    items: Array(mdqQuestions.length).fill(null),
+    simultaneous: null,
+    impairment: null
+  };
+}
+
+function createStructuredScaleState(scaleId) {
+  if (scaleId === "hcl32") {
+    return createHcl32State();
+  }
+
+  if (scaleId === "bsds") {
+    return createBsdsState();
+  }
+
+  return createMdqState();
+}
+
+function getStructuredScaleState(scaleId) {
+  if (!answers[scaleId]) {
+    answers[scaleId] = createStructuredScaleState(scaleId);
+  }
+
+  return answers[scaleId];
+}
+
+function calculateHcl32(state = getStructuredScaleState("hcl32")) {
+  const impactLabels = {};
+
+  Object.keys(state.impacts).forEach((field) => {
+    impactLabels[field] = getTupleOptionLabel(hclImpactOptions, state.impacts[field]);
+  });
+
+  return {
+    total: state.items.reduce((total, value) => total + Number(value), 0),
+    currentStateLabel: getTupleOptionLabel(hclCurrentStateOptions, state.currentState),
+    usualPatternLabel: getTupleOptionLabel(hclUsualPatternOptions, state.usualPattern),
+    impactLabels,
+    reactionLabels: state.reactions.map((value) => getTupleOptionLabel(hclReactionOptions, value)),
+    durationLabel: getTupleOptionLabel(hclDurationOptions, state.duration),
+    lastYear: state.lastYear,
+    days: state.lastYear ? state.days : null,
+    positiveItems: state.items
+      .map((value, index) => (value === 1 ? `${index + 1}. ${hcl32Questions[index]}` : null))
+      .filter(Boolean),
+    negativeItems: state.items
+      .map((value, index) => (value === 0 ? `${index + 1}. ${hcl32Questions[index]}` : null))
+      .filter(Boolean)
+  };
+}
+
+function buildHcl32FullSummary(scores) {
+  return [
+    "HCL-32 VB — Escala de Autoavaliação de Hipomania",
+    `Total: ${scores.total}/32 respostas positivas.`,
+    `Estado atual comparado ao normal: ${scores.currentStateLabel}.`,
+    `Padrão habitual de atividade, energia e humor: ${scores.usualPatternLabel}.`,
+    `Impactos: vida familiar — ${scores.impactLabels.family}; vida social — ${scores.impactLabels.social}; trabalho — ${scores.impactLabels.work}; recreação — ${scores.impactLabels.recreation}.`,
+    `Reações de outras pessoas: ${scores.reactionLabels.join("; ")}.`,
+    `Duração média: ${scores.durationLabel}.`,
+    `Períodos “altos” no último ano: ${formatBinaryAnswer(scores.lastYear)}${
+      scores.days !== null ? `; aproximadamente ${scores.days} dias` : ""
+    }.`,
+    `Itens Sim:\n${scores.positiveItems.length ? scores.positiveItems.join("\n") : "Nenhum."}`,
+    `Itens Não:\n${scores.negativeItems.length ? scores.negativeItems.join("\n") : "Nenhum."}`,
+    "A classificação por ponto de corte não foi incluída porque o documento fornecido não apresenta, nestas páginas, a regra de interpretação validada.",
+    "Instrumento de rastreio. O resultado não estabelece diagnóstico de transtorno bipolar ou episódio hipomaníaco e deve ser interpretado no contexto clínico.",
+    "Referência: HCL-32 VB — versão brasileira da Escala de Autoavaliação de Hipomania."
+  ].join("\n\n");
+}
+
+function calculateBsds(state = getStructuredScaleState("bsds")) {
+  const checklistScore = state.items.reduce((total, value) => total + Number(value), 0);
+  const narrativeScore = Number(state.narrativeScore);
+
+  return {
+    narrativeScore,
+    checklistScore,
+    total: narrativeScore + checklistScore,
+    positiveItems: state.items
+      .map((value, index) => (value === 1 ? `${index + 1}. ${bsdsQuestions[index]}` : null))
+      .filter(Boolean),
+    negativeItems: state.items
+      .map((value, index) => (value === 0 ? `${index + 1}. ${bsdsQuestions[index]}` : null))
+      .filter(Boolean)
+  };
+}
+
+function interpretBsds(scores) {
+  return scores.total >= 13
+    ? "Rastreio positivo/sugestivo de inserção no espectro bipolar"
+    : "Pontuação abaixo do ponto de corte sugestivo apresentado no instrumento";
+}
+
+function buildBsdsFullSummary(scores, interpretation) {
+  return [
+    "BSDS — Escala de Diagnóstico do Espectro Bipolar",
+    `Escala 1 — identificação com a narrativa: ${scores.narrativeScore}/6.`,
+    `Escala 2 — afirmações específicas: ${scores.checklistScore}/19.`,
+    `Total: ${scores.total}/25.`,
+    `Interpretação: ${interpretation}. Ponto de corte apresentado no instrumento: ≥13.`,
+    `Itens Sim:\n${scores.positiveItems.length ? scores.positiveItems.join("\n") : "Nenhum."}`,
+    `Itens Não:\n${scores.negativeItems.length ? scores.negativeItems.join("\n") : "Nenhum."}`,
+    "Resultado de rastreio. Não confirma nem exclui transtorno bipolar sem avaliação clínica. A marcação do item sobre desesperança ou suicídio não substitui avaliação clínica atual de risco suicida.",
+    "Referência: Castelo MS et al. Validity of the Brazilian Portuguese version of the Bipolar Spectrum Diagnostic Scale. Jornal Brasileiro de Psiquiatria. 2010;59(4):266–270."
+  ].join("\n\n");
+}
+
+function calculateMdq(state = getStructuredScaleState("mdq")) {
+  return {
+    symptomScore: state.items.reduce((total, value) => total + Number(value), 0),
+    simultaneous: state.simultaneous,
+    impairment: state.impairment,
+    impairmentLabel: getMdqImpairmentLabel(state.impairment),
+    positiveItems: state.items
+      .map((value, index) => (value === 1 ? `${index + 1}. ${mdqQuestions[index].pt}` : null))
+      .filter(Boolean),
+    negativeItems: state.items
+      .map((value, index) => (value === 0 ? `${index + 1}. ${mdqQuestions[index].pt}` : null))
+      .filter(Boolean)
+  };
+}
+
+function buildMdqFullSummary(scores) {
+  return [
+    "MDQ — Questionário de Transtornos do Humor",
+    `Sintomas assinalados: ${scores.symptomScore}/13.`,
+    `Ocorrência durante o mesmo período: ${formatBinaryAnswer(scores.simultaneous)}.`,
+    `Prejuízo associado: ${scores.impairmentLabel}.`,
+    `Itens Sim:\n${scores.positiveItems.length ? scores.positiveItems.join("\n") : "Nenhum."}`,
+    `Itens Não:\n${scores.negativeItems.length ? scores.negativeItems.join("\n") : "Nenhum."}`,
+    "O documento fornecido não apresenta nestas páginas a regra de classificação do rastreio. Interpretar em conjunto com a avaliação clínica e a versão validada adotada pelo serviço.",
+    "Instrumento de rastreio. Um resultado positivo não estabelece diagnóstico de transtorno bipolar.",
+    "Referência: Hirschfeld RMA et al. Development and validation of a screening instrument for bipolar spectrum disorder: the Mood Disorder Questionnaire. American Journal of Psychiatry. 2000;157(11):1873–1875."
+  ].join("\n\n");
+}
+
 const scales = [
   {
     id: "diva5",
+    responseCodeVersion: 1,
     name: "DIVA-5 - Entrevista Diagnóstica para TDAH em Adultos",
     type: "structuredInterview",
     renderer: "diva5",
@@ -2238,6 +2613,7 @@ const scales = [
   },
   {
     id: "panss",
+    responseCodeVersion: 1,
     name: "PANSS — Esquizofrenia",
     description:
       "Escala clínica para avaliação de sintomas positivos, sintomas negativos e psicopatologia geral na esquizofrenia. Deve ser preenchida pelo clínico com base na entrevista, exame do estado mental e informações disponíveis. O resultado não substitui avaliação clínica.",
@@ -2314,6 +2690,7 @@ const scales = [
   },
   {
     id: "cgi-sch",
+    responseCodeVersion: 1,
     name: "CGI-SCH — Esquizofrenia",
     description:
       "Escala de impressão clínica global específica para esquizofrenia. Avalia a gravidade atual dos sintomas positivos, negativos, depressivos, cognitivos e a gravidade global. Deve ser preenchida pelo clínico com base na entrevista, exame do estado mental, evolução e informações disponíveis. O resultado não substitui avaliação clínica.",
@@ -2389,6 +2766,7 @@ const scales = [
   },
   {
     id: "bdi",
+    responseCodeVersion: 1,
     name: "Inventário de Depressão de Beck (BDI)",
     description:
       "Inventário para avaliação da intensidade de sintomas depressivos na última semana, incluindo hoje. Usar conforme material/licença adquirida. O resultado não substitui avaliação clínica.",
@@ -2470,6 +2848,7 @@ const scales = [
   },
   {
     id: "bai",
+    responseCodeVersion: 1,
     name: "Beck Anxiety Inventory (BAI) - Ansiedade",
     description:
       "Inventário para avaliação da intensidade de sintomas ansiosos durante a última semana, incluindo hoje. Usar conforme material/licença adquirida. O resultado não substitui avaliação clínica.",
@@ -2514,6 +2893,7 @@ const scales = [
   },
   {
     id: "phq-9",
+    responseCodeVersion: 1,
     name: "Patient Health Questionnaire-9 (PHQ-9) - Depressão",
     description:
       "Escala breve de rastreio e acompanhamento de sintomas depressivos nas últimas 2 semanas.",
@@ -2602,7 +2982,134 @@ const scales = [
       "O PHQ-9 é instrumento de rastreio e acompanhamento. O diagnóstico final é clínico."
   },
   {
+    id: "bsds",
+    responseCodeVersion: 1,
+    name: "BSDS — Escala de Diagnóstico do Espectro Bipolar",
+    type: "structuredScreener",
+    renderer: "bsds",
+    category: "Transtorno bipolar / Humor",
+    description:
+      "Instrumento de rastreio do espectro bipolar composto por uma narrativa geral e uma lista de 19 afirmações binárias. Resultado de rastreio: não confirma nem exclui transtorno bipolar sem avaliação clínica.",
+    reference:
+      "Castelo MS et al. Validity of the Brazilian Portuguese version of the Bipolar Spectrum Diagnostic Scale. Jornal Brasileiro de Psiquiatria. 2010;59(4):266–270.",
+    questions: bsdsQuestions,
+    options: binaryYesNoOptions,
+    calculate: calculateBsds,
+    interpret: interpretBsds,
+    getResultRows(scores, interpretation) {
+      return [
+        { label: "Escala 1 — identificação com a narrativa", value: `${scores.narrativeScore} / 6` },
+        { label: "Escala 2 — afirmações específicas", value: `${scores.checklistScore} / 19` },
+        { label: "Pontuação total BSDS", value: `${scores.total} / 25`, className: "result-highlight" },
+        { label: "Interpretação", value: `${interpretation}. Ponto de corte apresentado no instrumento: ≥13.` },
+        {
+          label: "Itens assinalados Sim",
+          value: scores.positiveItems.length ? scores.positiveItems.join("\n") : "Nenhum."
+        },
+        {
+          label: "Itens assinalados Não",
+          value: scores.negativeItems.length ? scores.negativeItems.join("\n") : "Nenhum."
+        },
+        {
+          label: "Observação clínica curta",
+          value:
+            "Resultado sugestivo em instrumento de rastreio, sem valor diagnóstico isolado. A marcação do item sobre desesperança ou suicídio não substitui avaliação clínica atual de risco suicida."
+        },
+        { label: "Referência", value: this.reference }
+      ];
+    }
+  },
+  {
+    id: "hcl32",
+    responseCodeVersion: 1,
+    name: "HCL-32 VB — Escala de Autoavaliação de Hipomania",
+    type: "structuredScreener",
+    renderer: "hcl32",
+    category: "Transtorno bipolar / Humor",
+    description:
+      "Instrumento de autoavaliação destinado a investigar características de períodos de elevação de energia, atividade e humor ao longo da vida. O resultado não estabelece diagnóstico de transtorno bipolar ou episódio hipomaníaco.",
+    reference: "HCL-32 VB — versão brasileira da Escala de Autoavaliação de Hipomania.",
+    questions: hcl32Questions,
+    options: binaryYesNoOptions,
+    calculate: calculateHcl32,
+    interpret(scores) {
+      return `Quantidade de características de períodos “para cima” referidas: ${scores.total} de 32.`;
+    },
+    getResultRows(scores, interpretation) {
+      const daysText = scores.days !== null ? ` Aproximadamente ${scores.days} dias no último ano.` : "";
+
+      return [
+        { label: "Total HCL-32", value: `${scores.total} / 32 respostas positivas`, className: "result-highlight" },
+        { label: "Interpretação descritiva", value: interpretation },
+        { label: "Estado atual comparado ao normal", value: scores.currentStateLabel },
+        { label: "Padrão habitual de atividade, energia e humor", value: scores.usualPatternLabel },
+        {
+          label: "Impacto dos períodos “altos”",
+          value: [
+            `Vida familiar: ${scores.impactLabels.family}`,
+            `Vida social: ${scores.impactLabels.social}`,
+            `Trabalho: ${scores.impactLabels.work}`,
+            `Recreação: ${scores.impactLabels.recreation}`
+          ].join("\n")
+        },
+        {
+          label: "Reações ou comentários de outras pessoas",
+          value: scores.reactionLabels.join("\n")
+        },
+        { label: "Duração média", value: scores.durationLabel },
+        {
+          label: "Ocorrência no último ano",
+          value: `${formatBinaryAnswer(scores.lastYear)}.${daysText}`
+        },
+        {
+          label: "Classificação",
+          value:
+            "A classificação por ponto de corte não foi incluída porque o documento fornecido não apresenta, nestas páginas, a regra de interpretação validada."
+        },
+        {
+          label: "Observação clínica curta",
+          value:
+            "Instrumento de rastreio. O resultado não estabelece diagnóstico de transtorno bipolar ou episódio hipomaníaco e deve ser interpretado no contexto clínico."
+        },
+        { label: "Referência", value: this.reference }
+      ];
+    }
+  },
+  {
+    id: "mdq",
+    responseCodeVersion: 1,
+    name: "MDQ — Questionário de Transtornos do Humor",
+    type: "structuredScreener",
+    renderer: "mdq",
+    category: "Transtorno bipolar / Humor",
+    description:
+      "Instrumento de rastreio de sintomas de mania ou hipomania ao longo da vida, sua ocorrência simultânea e o prejuízo associado. Um resultado positivo não estabelece diagnóstico de transtorno bipolar.",
+    reference:
+      "Hirschfeld RMA et al. Development and validation of a screening instrument for bipolar spectrum disorder: the Mood Disorder Questionnaire. American Journal of Psychiatry. 2000;157(11):1873–1875.",
+    questions: mdqQuestions,
+    options: binaryYesNoOptions,
+    calculate: calculateMdq,
+    interpret() {
+      return "O documento fornecido não apresenta nestas páginas a regra de classificação do rastreio. Interpretar em conjunto com a avaliação clínica e a versão validada adotada pelo serviço.";
+    },
+    getResultRows(scores, interpretation) {
+      return [
+        { label: "Sintomas assinalados", value: `${scores.symptomScore} / 13`, className: "result-highlight" },
+        { label: "Ocorrência no mesmo período", value: formatBinaryAnswer(scores.simultaneous) },
+        { label: "Prejuízo associado", value: scores.impairmentLabel },
+        { label: "Interpretação", value: interpretation },
+        {
+          label: "Observação clínica curta",
+          value:
+            "Instrumento de rastreio, sem valor diagnóstico isolado. Considerar história clínica, curso longitudinal, prejuízo funcional, diagnóstico diferencial e uso de substâncias ou medicamentos."
+        },
+        { label: "Referência", value: this.reference }
+      ];
+    }
+  },
+  {
     id: "wurs-25",
+    responseCodeVersion: 1,
     name: "Wender Utah Rating Scale-25 (WURS-25)",
     description:
       "Como eu era quando criança. Avalie retrospectivamente o comportamento na infância, idealmente até os 7-12 anos.",
@@ -2674,6 +3181,7 @@ const scales = [
   },
   {
     id: "wurs-61",
+    responseCodeVersion: 1,
     name: "Wender Utah Rating Scale - versão completa (WURS-61)",
     description:
       "Avalia retrospectivamente características da infância. Responda pensando em como o paciente se comportava quando criança.",
@@ -2726,6 +3234,7 @@ const scales = [
   },
   {
     id: "asrs-18",
+    responseCodeVersion: 1,
     name: "Adult ADHD Self-Report Scale v1.1 (ASRS-18)",
     description:
       "Avalia a frequência de sintomas de TDAH em adultos nos últimos 6 meses.",
@@ -2775,6 +3284,7 @@ const scales = [
   },
   {
     id: "asrs-6",
+    responseCodeVersion: 1,
     name: "Adult ADHD Self-Report Scale Screener v1.1 (ASRS-6)",
     description:
       "Instrumento breve de triagem inicial para identificar probabilidade de TDAH em adultos nos últimos 6 meses.",
@@ -2827,6 +3337,7 @@ const scales = [
   },
   {
     id: "snap-iv-26",
+    responseCodeVersion: 1,
     name: "SNAP-IV - versão de 26 itens",
     description:
       "Responda de acordo com o comportamento da criança nos últimos 6 meses. Se ela iniciou medicação recentemente, responda com base no comportamento anterior ao uso do remédio.",
@@ -2927,15 +3438,625 @@ const questionsArea = document.querySelector("#questions-area");
 const clearButton = document.querySelector("#clear-button");
 const resultArea = document.querySelector("#result-area");
 const resultList = document.querySelector("#result-list");
+const scalesPage = document.querySelector(".scales-page");
+const responseCodeInput = document.querySelector("#response-code-input");
+const importResponseCodeButton = document.querySelector("#import-response-code");
+const clearResponseCodeButton = document.querySelector("#clear-response-code");
+const responseCodeFeedback = document.querySelector("#response-code-feedback");
 
 let answers = {};
 let scaleContext = {};
 let viewMode = "cards";
 let incompleteQuestionIndexes = new Set();
 let diva5IncompleteKeys = new Set();
+let structuredIncompleteKeys = new Set();
+
+const RESPONSE_CODE_FORMAT = "FC1";
+const DIVA_IMPAIRMENT_FIELDS = {
+  adult: [
+    "workEducation",
+    "familyRelationships",
+    "socialContacts",
+    "freeTimeHobbies",
+    "selfConfidenceSelfImage"
+  ],
+  childhood: ["school", "family", "socialContacts", "freeTimeHobbies", "selfConfidenceSelfImage"]
+};
+
+class ResponseCodeError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ResponseCodeError";
+  }
+}
 
 function getSelectedScale() {
   return scales.find((scale) => scale.id === scaleSelect.value);
+}
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function hasOnlyKeys(object, allowedKeys) {
+  return isPlainObject(object) && Object.keys(object).every((key) => allowedKeys.includes(key));
+}
+
+function encodeBase64Url(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return window
+    .btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/u, "");
+}
+
+function decodeBase64Url(value) {
+  if (!/^[A-Za-z0-9_-]+$/u.test(value)) {
+    throw new ResponseCodeError("Código inválido: o conteúdo das respostas não pôde ser lido.");
+  }
+
+  const padding = "=".repeat((4 - (value.length % 4)) % 4);
+
+  try {
+    const binary = window.atob(value.replace(/-/g, "+").replace(/_/g, "/") + padding);
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch (error) {
+    throw new ResponseCodeError("Código inválido: o conteúdo das respostas não pôde ser lido.");
+  }
+}
+
+function calculateChecksum(value) {
+  // FNV-1a detecta alterações acidentais; não oferece segurança, sigilo ou autenticação.
+  let hash = 0x811c9dc5;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+
+  return (hash >>> 0).toString(16).toUpperCase().padStart(8, "0");
+}
+
+function serializeScaleResponses(scale, responseState = answers, contextState = scaleContext) {
+  const responses = scale.questions.map((question, questionIndex) => {
+    return Object.prototype.hasOwnProperty.call(responseState, questionIndex)
+      ? Number(responseState[questionIndex])
+      : null;
+  });
+  const settings = {};
+
+  if (scale.profiles) {
+    settings.profile = contextState.profile || "";
+  }
+
+  return {
+    kind: "scale",
+    responses,
+    settings
+  };
+}
+
+function normalizeDivaExampleIndexes(indexes) {
+  return [...new Set(indexes)].sort((first, second) => first - second);
+}
+
+function normalizeDivaCollateral(value) {
+  return Object.prototype.hasOwnProperty.call(diva5CollateralOptions, value) ? value : "notAvailable";
+}
+
+function serializeDivaResponses(state = getDiva5State()) {
+  // Somente controles fechados entram no payload. Datas, notas e todos os campos de texto livre são excluídos.
+  const rawOnsetAge = /^\d{1,3}$/u.test(String(state.onset.laterOnsetAge))
+    ? Number(state.onset.laterOnsetAge)
+    : null;
+  const onsetAge = rawOnsetAge !== null && rawOnsetAge <= 120 ? rawOnsetAge : null;
+
+  return {
+    kind: "diva5",
+    criteria: diva5Items.map((item) => {
+      const criterion = state.criteria[item.code];
+      return [
+        criterion.adult.present,
+        normalizeDivaExampleIndexes(criterion.adult.checkedExamples),
+        criterion.childhood.present,
+        normalizeDivaExampleIndexes(criterion.childhood.checkedExamples)
+      ];
+    }),
+    onset: [state.onset.severalSymptomsBefore12, onsetAge],
+    impairment: {
+      adult: [
+        state.impairment.adult.evidenceInTwoOrMoreContexts,
+        ...DIVA_IMPAIRMENT_FIELDS.adult.map((field) => Boolean(state.impairment.adult[field]))
+      ],
+      childhood: [
+        state.impairment.childhood.evidenceInTwoOrMoreContexts,
+        ...DIVA_IMPAIRMENT_FIELDS.childhood.map((field) => Boolean(state.impairment.childhood[field]))
+      ]
+    },
+    differential: state.differential.betterExplainedByAnotherDisorder,
+    collateral: [
+      normalizeDivaCollateral(state.collateral.parentsOrFamily),
+      normalizeDivaCollateral(state.collateral.partnerOrFriend),
+      normalizeDivaCollateral(state.collateral.schoolReports)
+    ],
+    severity: ["notDefined", "mild", "moderate", "severe"].includes(state.severity)
+      ? state.severity
+      : "notDefined"
+  };
+}
+
+function serializeHcl32Responses(state = getStructuredScaleState("hcl32")) {
+  const reactionOrder = hclReactionOptions.map(([value]) => value);
+
+  return {
+    kind: "hcl32",
+    currentState: state.currentState,
+    usualPattern: state.usualPattern,
+    items: [...state.items],
+    impacts: [
+      state.impacts.family,
+      state.impacts.social,
+      state.impacts.work,
+      state.impacts.recreation
+    ],
+    reactions: [...state.reactions].sort(
+      (first, second) => reactionOrder.indexOf(first) - reactionOrder.indexOf(second)
+    ),
+    duration: state.duration,
+    lastYear: state.lastYear,
+    days: state.lastYear ? state.days : null
+  };
+}
+
+function serializeBsdsResponses(state = getStructuredScaleState("bsds")) {
+  return {
+    kind: "bsds",
+    narrativeScore: state.narrativeScore,
+    items: [...state.items]
+  };
+}
+
+function serializeMdqResponses(state = getStructuredScaleState("mdq")) {
+  const symptomScore = state.items.reduce((total, value) => total + Number(value === 1), 0);
+
+  return {
+    kind: "mdq",
+    items: [...state.items],
+    simultaneous: symptomScore >= 2 ? state.simultaneous : null,
+    impairment: state.impairment
+  };
+}
+
+function requireResponseCodeCondition(condition, message) {
+  if (!condition) {
+    throw new ResponseCodeError(message);
+  }
+}
+
+function validateBinaryResponseArray(values, expectedLength, scaleLabel) {
+  requireResponseCodeCondition(
+    Array.isArray(values) && values.length === expectedLength,
+    `Código inválido: quantidade incorreta de respostas da ${scaleLabel}.`
+  );
+  requireResponseCodeCondition(
+    values.every((value) => value === 0 || value === 1),
+    `Código inválido: resposta fora do intervalo na ${scaleLabel}.`
+  );
+  return [...values];
+}
+
+function deserializeHcl32Responses(payload) {
+  requireResponseCodeCondition(
+    hasOnlyKeys(payload, [
+      "kind",
+      "currentState",
+      "usualPattern",
+      "items",
+      "impacts",
+      "reactions",
+      "duration",
+      "lastYear",
+      "days"
+    ]) && payload.kind === "hcl32",
+    "Código inválido: estrutura da HCL-32 não reconhecida."
+  );
+
+  const currentValues = hclCurrentStateOptions.map(([value]) => value);
+  const patternValues = hclUsualPatternOptions.map(([value]) => value);
+  const impactValues = hclImpactOptions.map(([value]) => value);
+  const reactionValues = hclReactionOptions.map(([value]) => value);
+  const durationValues = hclDurationOptions.map(([value]) => value);
+
+  requireResponseCodeCondition(
+    currentValues.includes(payload.currentState),
+    "Código inválido: estado atual da HCL-32 não reconhecido."
+  );
+  requireResponseCodeCondition(
+    patternValues.includes(payload.usualPattern),
+    "Código inválido: padrão habitual da HCL-32 não reconhecido."
+  );
+  const items = validateBinaryResponseArray(payload.items, hcl32Questions.length, "HCL-32");
+  requireResponseCodeCondition(
+    Array.isArray(payload.impacts) &&
+      payload.impacts.length === 4 &&
+      payload.impacts.every((value) => impactValues.includes(value)),
+    "Código inválido: impactos da HCL-32 não reconhecidos."
+  );
+  requireResponseCodeCondition(
+    Array.isArray(payload.reactions) &&
+      payload.reactions.length > 0 &&
+      new Set(payload.reactions).size === payload.reactions.length &&
+      payload.reactions.every((value) => reactionValues.includes(value)) &&
+      !(payload.reactions.includes("none") && payload.reactions.length > 1),
+    "Código inválido: reações de outras pessoas na HCL-32 não reconhecidas."
+  );
+  requireResponseCodeCondition(
+    durationValues.includes(payload.duration),
+    "Código inválido: duração da HCL-32 não reconhecida."
+  );
+  requireResponseCodeCondition(
+    typeof payload.lastYear === "boolean",
+    "Código inválido: ocorrência no último ano da HCL-32 não reconhecida."
+  );
+  requireResponseCodeCondition(
+    (payload.lastYear &&
+      Number.isInteger(payload.days) &&
+      payload.days >= 0 &&
+      payload.days <= 366) ||
+      (!payload.lastYear && payload.days === null),
+    "Código inválido: número de dias da HCL-32 fora do intervalo."
+  );
+
+  const state = createHcl32State();
+  state.currentState = payload.currentState;
+  state.usualPattern = payload.usualPattern;
+  state.items = items;
+  [state.impacts.family, state.impacts.social, state.impacts.work, state.impacts.recreation] =
+    payload.impacts;
+  state.reactions = [...payload.reactions];
+  state.duration = payload.duration;
+  state.lastYear = payload.lastYear;
+  state.days = payload.days;
+  return state;
+}
+
+function deserializeBsdsResponses(payload) {
+  requireResponseCodeCondition(
+    hasOnlyKeys(payload, ["kind", "narrativeScore", "items"]) && payload.kind === "bsds",
+    "Código inválido: estrutura da BSDS não reconhecida."
+  );
+  requireResponseCodeCondition(
+    [0, 2, 4, 6].includes(payload.narrativeScore),
+    "Código inválido: pontuação da narrativa da BSDS fora do intervalo."
+  );
+
+  const state = createBsdsState();
+  state.narrativeScore = payload.narrativeScore;
+  state.items = validateBinaryResponseArray(payload.items, bsdsQuestions.length, "BSDS");
+  return state;
+}
+
+function deserializeMdqResponses(payload) {
+  requireResponseCodeCondition(
+    hasOnlyKeys(payload, ["kind", "items", "simultaneous", "impairment"]) && payload.kind === "mdq",
+    "Código inválido: estrutura do MDQ não reconhecida."
+  );
+
+  const items = validateBinaryResponseArray(payload.items, mdqQuestions.length, "MDQ");
+  const symptomScore = items.reduce((total, value) => total + value, 0);
+  requireResponseCodeCondition(
+    (symptomScore >= 2 && typeof payload.simultaneous === "boolean") ||
+      (symptomScore < 2 && payload.simultaneous === null),
+    "Código inválido: simultaneidade do MDQ incompatível com as respostas."
+  );
+  requireResponseCodeCondition(
+    Number.isInteger(payload.impairment) && payload.impairment >= 0 && payload.impairment <= 3,
+    "Código inválido: prejuízo do MDQ fora do intervalo."
+  );
+
+  const state = createMdqState();
+  state.items = items;
+  state.simultaneous = payload.simultaneous;
+  state.impairment = payload.impairment;
+  return state;
+}
+
+function validateDivaChoice(value, allowedValues, fieldLabel) {
+  requireResponseCodeCondition(
+    allowedValues.includes(value),
+    `Código inválido: valor não permitido em ${fieldLabel}.`
+  );
+}
+
+function validateDivaExampleIndexes(indexes, maximum, fieldLabel) {
+  requireResponseCodeCondition(Array.isArray(indexes), `Código inválido: ${fieldLabel} deve ser uma lista.`);
+
+  const uniqueIndexes = new Set(indexes);
+  requireResponseCodeCondition(
+    uniqueIndexes.size === indexes.length &&
+      indexes.every((index) => Number.isInteger(index) && index >= 0 && index < maximum),
+    `Código inválido: há exemplos fora do intervalo em ${fieldLabel}.`
+  );
+
+  return [...indexes].sort((first, second) => first - second);
+}
+
+function deserializeDivaResponses(payload) {
+  requireResponseCodeCondition(
+    hasOnlyKeys(payload, ["kind", "criteria", "onset", "impairment", "differential", "collateral", "severity"]) &&
+      payload.kind === "diva5",
+    "Código inválido: estrutura da DIVA-5 não reconhecida."
+  );
+  requireResponseCodeCondition(
+    Array.isArray(payload.criteria) && payload.criteria.length === diva5Items.length,
+    "Código inválido: quantidade incorreta de critérios da DIVA-5."
+  );
+
+  const state = createDiva5State();
+
+  payload.criteria.forEach((criterionPayload, itemIndex) => {
+    const item = diva5Items[itemIndex];
+    requireResponseCodeCondition(
+      Array.isArray(criterionPayload) && criterionPayload.length === 4,
+      `Código inválido: estrutura incorreta no critério ${item.code}.`
+    );
+
+    const [adultPresent, adultExamples, childhoodPresent, childhoodExamples] = criterionPayload;
+    validateDivaChoice(adultPresent, ["yes", "no"], `${item.code} idade adulta`);
+    validateDivaChoice(childhoodPresent, ["yes", "no"], `${item.code} infância`);
+
+    state.criteria[item.code].adult.present = adultPresent;
+    state.criteria[item.code].adult.checkedExamples = validateDivaExampleIndexes(
+      adultExamples,
+      item.adultExamples.length,
+      `${item.code} idade adulta`
+    );
+    state.criteria[item.code].childhood.present = childhoodPresent;
+    state.criteria[item.code].childhood.checkedExamples = validateDivaExampleIndexes(
+      childhoodExamples,
+      item.childhoodExamples.length,
+      `${item.code} infância`
+    );
+  });
+
+  requireResponseCodeCondition(
+    Array.isArray(payload.onset) && payload.onset.length === 2,
+    "Código inválido: estrutura de início da DIVA-5 incorreta."
+  );
+  validateDivaChoice(payload.onset[0], ["yes", "no"], "início antes dos 12 anos");
+  requireResponseCodeCondition(
+    payload.onset[1] === null ||
+      (Number.isInteger(payload.onset[1]) && payload.onset[1] >= 0 && payload.onset[1] <= 120),
+    "Código inválido: idade de início fora do intervalo."
+  );
+  state.onset.severalSymptomsBefore12 = payload.onset[0];
+  state.onset.laterOnsetAge = payload.onset[1] === null ? "" : String(payload.onset[1]);
+
+  requireResponseCodeCondition(
+    hasOnlyKeys(payload.impairment, ["adult", "childhood"]),
+    "Código inválido: estrutura de prejuízos da DIVA-5 incorreta."
+  );
+
+  ["adult", "childhood"].forEach((period) => {
+    const periodPayload = payload.impairment[period];
+    requireResponseCodeCondition(
+      Array.isArray(periodPayload) && periodPayload.length === DIVA_IMPAIRMENT_FIELDS[period].length + 1,
+      `Código inválido: quantidade incorreta de prejuízos em ${period}.`
+    );
+    validateDivaChoice(periodPayload[0], ["yes", "no"], `prejuízo ${period}`);
+    requireResponseCodeCondition(
+      periodPayload.slice(1).every((value) => typeof value === "boolean"),
+      `Código inválido: valor de prejuízo não permitido em ${period}.`
+    );
+    state.impairment[period].evidenceInTwoOrMoreContexts = periodPayload[0];
+    DIVA_IMPAIRMENT_FIELDS[period].forEach((field, fieldIndex) => {
+      state.impairment[period][field] = periodPayload[fieldIndex + 1];
+    });
+  });
+
+  validateDivaChoice(payload.differential, ["yes", "no"], "diagnóstico diferencial");
+  state.differential.betterExplainedByAnotherDisorder = payload.differential;
+
+  requireResponseCodeCondition(
+    Array.isArray(payload.collateral) && payload.collateral.length === 3,
+    "Código inválido: estrutura de informações colaterais incorreta."
+  );
+  payload.collateral.forEach((value, index) => {
+    validateDivaChoice(value, Object.keys(diva5CollateralOptions), `informação colateral ${index + 1}`);
+  });
+  [state.collateral.parentsOrFamily, state.collateral.partnerOrFriend, state.collateral.schoolReports] =
+    payload.collateral;
+
+  validateDivaChoice(payload.severity, ["notDefined", "mild", "moderate", "severe"], "gravidade");
+  state.severity = payload.severity;
+
+  return state;
+}
+
+function deserializeScaleResponses(scale, payload) {
+  requireResponseCodeCondition(
+    hasOnlyKeys(payload, ["kind", "responses", "settings"]) && payload.kind === "scale",
+    "Código inválido: estrutura de respostas não reconhecida."
+  );
+  requireResponseCodeCondition(
+    Array.isArray(payload.responses) && payload.responses.length === scale.questions.length,
+    "Código inválido: quantidade incorreta de respostas."
+  );
+  requireResponseCodeCondition(
+    isPlainObject(payload.settings),
+    "Código inválido: configurações da escala não reconhecidas."
+  );
+
+  const decodedAnswers = {};
+
+  payload.responses.forEach((value, questionIndex) => {
+    const question = scale.questions[questionIndex];
+
+    if (value === null) {
+      requireResponseCodeCondition(
+        Boolean(question.optional),
+        `Código inválido: resposta obrigatória ausente no item ${getQuestionNumber(question, questionIndex)}.`
+      );
+      return;
+    }
+
+    requireResponseCodeCondition(
+      typeof value === "number" &&
+        Number.isFinite(value) &&
+        getQuestionOptions(scale, question).some((option) => option.value === value),
+      `Código inválido: resposta fora do intervalo no item ${getQuestionNumber(question, questionIndex)}.`
+    );
+    decodedAnswers[questionIndex] = value;
+  });
+
+  const decodedContext = {};
+
+  if (scale.profiles) {
+    requireResponseCodeCondition(
+      hasOnlyKeys(payload.settings, ["profile"]) &&
+        scale.profiles.some((profile) => profile.id === payload.settings.profile),
+      "Código inválido: perfil da escala não reconhecido."
+    );
+    decodedContext.profile = payload.settings.profile;
+  } else {
+    requireResponseCodeCondition(
+      hasOnlyKeys(payload.settings, []) && Object.keys(payload.settings).length === 0,
+      "Código inválido: configurações inesperadas para esta escala."
+    );
+  }
+
+  return { answers: decodedAnswers, context: decodedContext };
+}
+
+function createResponseCode(scale = getSelectedScale()) {
+  requireResponseCodeCondition(Boolean(scale), "Código inválido: escala não encontrada.");
+  let payload;
+
+  if (scale.id === "diva5") {
+    payload = serializeDivaResponses();
+    deserializeDivaResponses(payload);
+  } else if (scale.id === "hcl32") {
+    payload = serializeHcl32Responses();
+    deserializeHcl32Responses(payload);
+  } else if (scale.id === "bsds") {
+    payload = serializeBsdsResponses();
+    deserializeBsdsResponses(payload);
+  } else if (scale.id === "mdq") {
+    payload = serializeMdqResponses();
+    deserializeMdqResponses(payload);
+  } else {
+    payload = serializeScaleResponses(scale, answers, scaleContext);
+    deserializeScaleResponses(scale, payload);
+  }
+
+  const encodedPayload = encodeBase64Url(JSON.stringify(payload));
+  const unsignedCode = `${RESPONSE_CODE_FORMAT}:${scale.id}@${scale.responseCodeVersion}:${encodedPayload}`;
+  return `${unsignedCode}:${calculateChecksum(unsignedCode)}`;
+}
+
+function parseResponseCode(rawCode) {
+  const code = String(rawCode || "").trim();
+
+  requireResponseCodeCondition(Boolean(code), "Cole um código de respostas.");
+
+  const parts = code.split(":");
+  const formatId = parts[0];
+
+  if (formatId !== RESPONSE_CODE_FORMAT) {
+    if (/^FC\d+$/u.test(formatId)) {
+      throw new ResponseCodeError("Código inválido: versão do formato não suportada.");
+    }
+
+    throw new ResponseCodeError("Código inválido: prefixo não reconhecido.");
+  }
+
+  requireResponseCodeCondition(
+    parts.length === 4,
+    "Código incompleto ou alterado: a verificação de integridade falhou."
+  );
+
+  const scaleMatch = /^([a-z0-9-]+)@(\d+)$/u.exec(parts[1]);
+  requireResponseCodeCondition(Boolean(scaleMatch), "Código inválido: identificação da escala não reconhecida.");
+
+  const scale = scales.find((candidate) => candidate.id === scaleMatch[1]);
+  requireResponseCodeCondition(Boolean(scale), "Código inválido: escala não encontrada.");
+  requireResponseCodeCondition(
+    Number(scaleMatch[2]) === scale.responseCodeVersion,
+    "Este código foi gerado para uma versão diferente da escala."
+  );
+
+  const unsignedCode = parts.slice(0, 3).join(":");
+  requireResponseCodeCondition(
+    /^[A-Fa-f0-9]{8}$/u.test(parts[3]) && calculateChecksum(unsignedCode) === parts[3].toUpperCase(),
+    "Código incompleto ou alterado: a verificação de integridade falhou."
+  );
+
+  let payload;
+
+  try {
+    payload = JSON.parse(decodeBase64Url(parts[2]));
+  } catch (error) {
+    if (error instanceof ResponseCodeError) {
+      throw error;
+    }
+
+    throw new ResponseCodeError("Código inválido: o conteúdo das respostas não pôde ser lido.");
+  }
+
+  if (scale.id === "diva5") {
+    return {
+      scale,
+      answers: { diva5: deserializeDivaResponses(payload) },
+      context: {}
+    };
+  }
+
+  if (scale.id === "hcl32") {
+    return {
+      scale,
+      answers: { hcl32: deserializeHcl32Responses(payload) },
+      context: {}
+    };
+  }
+
+  if (scale.id === "bsds") {
+    return {
+      scale,
+      answers: { bsds: deserializeBsdsResponses(payload) },
+      context: {}
+    };
+  }
+
+  if (scale.id === "mdq") {
+    return {
+      scale,
+      answers: { mdq: deserializeMdqResponses(payload) },
+      context: {}
+    };
+  }
+
+  const decoded = deserializeScaleResponses(scale, payload);
+  return { scale, answers: decoded.answers, context: decoded.context };
+}
+
+function validateResponseCode(code) {
+  try {
+    return { valid: true, decoded: parseResponseCode(code), error: "" };
+  } catch (error) {
+    return {
+      valid: false,
+      decoded: null,
+      error: error instanceof ResponseCodeError ? error.message : "Código inválido: não foi possível processá-lo."
+    };
+  }
 }
 
 function getQuestionTitle(question) {
@@ -2951,11 +4072,26 @@ function getQuestionNumber(question, questionIndex) {
 }
 
 function populateScaleSelect() {
+  const groups = new Map();
+
   scales.forEach((scale) => {
     const option = document.createElement("option");
     option.value = scale.id;
     option.textContent = scale.name;
-    scaleSelect.appendChild(option);
+
+    if (!scale.category) {
+      scaleSelect.appendChild(option);
+      return;
+    }
+
+    if (!groups.has(scale.category)) {
+      const group = document.createElement("optgroup");
+      group.label = scale.category;
+      groups.set(scale.category, group);
+      scaleSelect.appendChild(group);
+    }
+
+    groups.get(scale.category).appendChild(option);
   });
 }
 
@@ -3073,7 +4209,7 @@ function renderViewControls(scale) {
   switcher.appendChild(label);
 
   [
-    { id: "cards", label: "Cartoes" },
+    { id: "cards", label: "Cartões" },
     { id: "table", label: "Tabela" }
   ].forEach((mode) => {
     const button = document.createElement("button");
@@ -3081,6 +4217,7 @@ function renderViewControls(scale) {
     button.className = `view-button${viewMode === mode.id ? " active" : ""}`;
     button.dataset.viewMode = mode.id;
     button.textContent = mode.label;
+    button.setAttribute("aria-pressed", String(viewMode === mode.id));
     switcher.appendChild(button);
   });
 
@@ -3341,6 +4478,7 @@ function renderDiva5Onset(state) {
   const ageInput = document.createElement("input");
   ageInput.type = "number";
   ageInput.min = "0";
+  ageInput.max = "120";
   ageInput.value = state.onset.laterOnsetAge;
   ageInput.dataset.divaField = "laterOnsetAge";
   ageWrapper.appendChild(ageInput);
@@ -3642,6 +4780,497 @@ function renderDiva5(scale) {
   questionsArea.appendChild(finalSection);
 }
 
+function isStructuredScreener(scale) {
+  return Boolean(scale && scale.type === "structuredScreener");
+}
+
+function normalizeStructuredOption(option) {
+  return Array.isArray(option) ? { value: option[0], label: option[1] } : option;
+}
+
+function createStructuredChoice({
+  legendText,
+  options,
+  value,
+  field,
+  incompleteKey,
+  description = "",
+  subfield = "",
+  name = field
+}) {
+  const fieldset = document.createElement("fieldset");
+  fieldset.className = `question structured-choice${
+    structuredIncompleteKeys.has(incompleteKey) ? " incomplete" : ""
+  }`;
+  fieldset.dataset.incompleteKey = incompleteKey;
+
+  const legend = document.createElement("legend");
+  legend.textContent = legendText;
+  fieldset.appendChild(legend);
+
+  if (description) {
+    const help = document.createElement("p");
+    help.className = "structured-help";
+    help.textContent = description;
+    fieldset.appendChild(help);
+  }
+
+  const optionsWrapper = document.createElement("div");
+  optionsWrapper.className = `options${field === "narrativeScore" ? " options-long" : ""}`;
+
+  options.map(normalizeStructuredOption).forEach((option) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = name;
+    input.value = String(option.value);
+    input.dataset.structuredField = field;
+    input.dataset.incompleteKey = incompleteKey;
+
+    if (subfield) {
+      input.dataset.structuredSubfield = subfield;
+    }
+
+    input.checked = value === option.value;
+    label.className = `option${input.checked ? " is-selected" : ""}`;
+
+    const text = document.createElement("span");
+    text.className = "option-text";
+    text.textContent = option.label;
+    label.append(input, text);
+    optionsWrapper.appendChild(label);
+  });
+
+  fieldset.appendChild(optionsWrapper);
+  return fieldset;
+}
+
+function renderStructuredPreamble(scale, notice) {
+  const section = document.createElement("section");
+  section.className = "scale-settings structured-preamble";
+
+  const warning = document.createElement("p");
+  warning.className = "structured-warning";
+  warning.textContent = notice;
+
+  const reference = document.createElement("p");
+  reference.className = "scale-reference";
+  reference.textContent = `Referência: ${scale.reference}`;
+
+  section.append(warning, reference);
+  questionsArea.appendChild(section);
+  renderViewControls(scale);
+}
+
+function createStructuredSection(title, description = "") {
+  const section = document.createElement("section");
+  section.className = "structured-scale-section";
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  section.appendChild(heading);
+
+  if (description) {
+    const help = document.createElement("p");
+    help.className = "structured-section-description";
+    help.textContent = description;
+    section.appendChild(help);
+  }
+
+  return section;
+}
+
+function createStructuredItemInput(scale, state, questionIndex, option) {
+  const input = document.createElement("input");
+  input.type = "radio";
+  input.name = `${scale.id}-item-${questionIndex}`;
+  input.value = String(option.value);
+  input.dataset.structuredField = "item";
+  input.dataset.structuredIndex = String(questionIndex);
+  input.dataset.incompleteKey = `item:${questionIndex}`;
+  input.checked = state.items[questionIndex] === option.value;
+  return input;
+}
+
+function createStructuredTableQuestionText(question) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "question-copy";
+  const title = document.createElement("span");
+  title.className = "question-title";
+  title.textContent = getQuestionTitle(question);
+  wrapper.appendChild(title);
+
+  if (typeof question !== "string" && question.en) {
+    const original = document.createElement("span");
+    original.className = "question-original";
+    original.textContent = question.en;
+    wrapper.appendChild(original);
+  }
+
+  return wrapper;
+}
+
+function renderStructuredBinaryCards(scale, state, container) {
+  scale.questions.forEach((question, questionIndex) => {
+    const key = `item:${questionIndex}`;
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = `question${structuredIncompleteKeys.has(key) ? " incomplete" : ""}`;
+    fieldset.dataset.incompleteKey = key;
+    fieldset.dataset.structuredQuestion = String(questionIndex);
+
+    const legend = document.createElement("legend");
+    renderQuestionText(legend, question, questionIndex);
+    fieldset.appendChild(legend);
+
+    const options = document.createElement("div");
+    options.className = "options structured-binary-options";
+
+    binaryYesNoOptions.forEach((option) => {
+      const input = createStructuredItemInput(scale, state, questionIndex, option);
+      const label = document.createElement("label");
+      label.className = `option${input.checked ? " is-selected" : ""}`;
+      const text = document.createElement("span");
+      text.className = "option-text";
+      text.textContent = option.label;
+      label.append(input, text);
+      options.appendChild(label);
+    });
+
+    fieldset.appendChild(options);
+    container.appendChild(fieldset);
+  });
+}
+
+function renderStructuredBinaryTable(scale, state, container) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper structured-table-wrapper";
+  const table = document.createElement("table");
+  table.className = "questions-table structured-binary-table";
+  const colgroup = document.createElement("colgroup");
+
+  [8, 72, 10, 10].forEach((width) => {
+    const column = document.createElement("col");
+    column.style.width = `${width}%`;
+    colgroup.appendChild(column);
+  });
+  table.appendChild(colgroup);
+
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  ["Item", "Afirmação", "Sim", "Não"].forEach((labelText, index) => {
+    const heading = document.createElement("th");
+    heading.scope = "col";
+    heading.className = index === 1 ? "question-column" : "";
+    heading.textContent = labelText;
+    headRow.appendChild(heading);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  scale.questions.forEach((question, questionIndex) => {
+    const key = `item:${questionIndex}`;
+    const row = document.createElement("tr");
+    row.className = structuredIncompleteKeys.has(key) ? "incomplete" : "";
+    row.dataset.incompleteKey = key;
+    row.dataset.structuredQuestion = String(questionIndex);
+
+    const number = document.createElement("td");
+    number.className = "item-cell";
+    number.textContent = String(questionIndex + 1);
+
+    const questionCell = document.createElement("th");
+    questionCell.scope = "row";
+    questionCell.className = "question-cell";
+    questionCell.appendChild(createStructuredTableQuestionText(question));
+    row.append(number, questionCell);
+
+    binaryYesNoOptions.forEach((option) => {
+      const input = createStructuredItemInput(scale, state, questionIndex, option);
+      input.setAttribute(
+        "aria-label",
+        `Item ${questionIndex + 1}: ${option.label}`
+      );
+      const cell = document.createElement("td");
+      cell.className = `radio-cell${input.checked ? " is-selected" : ""}`;
+      cell.dataset.label = option.label;
+      const label = document.createElement("label");
+      label.className = "table-radio";
+      const text = document.createElement("span");
+      text.className = "table-cell-score";
+      text.textContent = option.label;
+      label.append(input, text);
+      cell.appendChild(label);
+      row.appendChild(cell);
+    });
+
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+  wrapper.appendChild(table);
+  container.appendChild(wrapper);
+}
+
+function renderStructuredBinaryItems(scale, state, container) {
+  if (viewMode === "table") {
+    renderStructuredBinaryTable(scale, state, container);
+    return;
+  }
+
+  renderStructuredBinaryCards(scale, state, container);
+}
+
+function renderHcl32(scale) {
+  const state = getStructuredScaleState(scale.id);
+  renderStructuredPreamble(
+    scale,
+    "Instrumento de rastreio. O resultado não estabelece diagnóstico de transtorno bipolar ou episódio hipomaníaco e deve ser interpretado no contexto clínico."
+  );
+
+  const contextSection = createStructuredSection("Partes 1 e 2 — Estado atual e padrão habitual");
+  contextSection.append(
+    createStructuredChoice({
+      legendText: "Antes de tudo, como você está se sentindo hoje comparando com seu estado normal?",
+      options: hclCurrentStateOptions,
+      value: state.currentState,
+      field: "currentState",
+      incompleteKey: "currentState"
+    }),
+    createStructuredChoice({
+      legendText: "Comparando com outras pessoas, meus níveis de atividade, energia e humor...",
+      description:
+        "Independentemente de como você se sente hoje, indique como você é normalmente, comparado com outras pessoas, escolhendo o que melhor o descreve.",
+      options: hclUsualPatternOptions,
+      value: state.usualPattern,
+      field: "usualPattern",
+      incompleteKey: "usualPattern"
+    })
+  );
+  questionsArea.appendChild(contextSection);
+
+  const itemSection = createStructuredSection(
+    "Parte 3 — Características dos períodos “para cima”",
+    "Tente lembrar de um período em que você esteve em um estado “para cima”. Como você se sentia na época? Responda a todos os itens independentemente de seu estado atual."
+  );
+  renderStructuredBinaryItems(scale, state, itemSection);
+  questionsArea.appendChild(itemSection);
+
+  const impactSection = createStructuredSection("Parte 4 — Impacto dos períodos “altos”");
+  [
+    ["family", "Vida familiar"],
+    ["social", "Vida social"],
+    ["work", "Trabalho"],
+    ["recreation", "Recreação"]
+  ].forEach(([field, labelText]) => {
+    impactSection.appendChild(
+      createStructuredChoice({
+        legendText: labelText,
+        options: hclImpactOptions,
+        value: state.impacts[field],
+        field: "impact",
+        subfield: field,
+        incompleteKey: `impact:${field}`,
+        name: `hcl-impact-${field}`
+      })
+    );
+  });
+  questionsArea.appendChild(impactSection);
+
+  const reactionSection = createStructuredSection("Parte 5 — Reação ou comentários de outras pessoas");
+  const reactionFieldset = document.createElement("fieldset");
+  reactionFieldset.className = `question structured-choice${
+    structuredIncompleteKeys.has("reactions") ? " incomplete" : ""
+  }`;
+  reactionFieldset.dataset.incompleteKey = "reactions";
+  const reactionLegend = document.createElement("legend");
+  reactionLegend.textContent = "Como as pessoas próximas a você reagiram ou comentaram seus períodos “altos”?";
+  const reactionOptions = document.createElement("div");
+  reactionOptions.className = "options";
+
+  hclReactionOptions.forEach(([value, labelText]) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = value;
+    input.dataset.structuredField = "reaction";
+    input.dataset.incompleteKey = "reactions";
+    input.checked = state.reactions.includes(value);
+    label.className = `option${input.checked ? " is-selected" : ""}`;
+    const text = document.createElement("span");
+    text.className = "option-text";
+    text.textContent = labelText;
+    label.append(input, text);
+    reactionOptions.appendChild(label);
+  });
+  reactionFieldset.append(reactionLegend, reactionOptions);
+  reactionSection.appendChild(reactionFieldset);
+  questionsArea.appendChild(reactionSection);
+
+  const durationSection = createStructuredSection("Parte 6 — Duração média dos períodos “altos”");
+  durationSection.appendChild(
+    createStructuredChoice({
+      legendText: "Via de regra, qual foi a duração de seus períodos “altos”, em média?",
+      options: hclDurationOptions,
+      value: state.duration,
+      field: "duration",
+      incompleteKey: "duration"
+    })
+  );
+  questionsArea.appendChild(durationSection);
+
+  const lastYearSection = createStructuredSection("Partes 7 e 8 — Ocorrência no último ano");
+  lastYearSection.appendChild(
+    createStructuredChoice({
+      legendText: "Você sentiu tais períodos “altos” durante o último ano?",
+      options: [
+        { value: true, label: "Sim" },
+        { value: false, label: "Não" }
+      ],
+      value: state.lastYear,
+      field: "lastYear",
+      incompleteKey: "lastYear"
+    })
+  );
+
+  const daysWrapper = document.createElement("div");
+  daysWrapper.className = `question structured-number${
+    structuredIncompleteKeys.has("days") ? " incomplete" : ""
+  }`;
+  daysWrapper.dataset.incompleteKey = "days";
+  const daysLabel = document.createElement("label");
+  daysLabel.className = "field-label";
+  daysLabel.setAttribute("for", "hcl32-days");
+  daysLabel.textContent =
+    "Se sim, aproximadamente quantos dias você passou nesses períodos “altos” durante os últimos 12 meses?";
+  const daysInput = document.createElement("input");
+  daysInput.id = "hcl32-days";
+  daysInput.type = "number";
+  daysInput.min = "0";
+  daysInput.max = "366";
+  daysInput.step = "1";
+  daysInput.value = state.days === null ? "" : String(state.days);
+  daysInput.disabled = state.lastYear !== true;
+  daysInput.dataset.structuredField = "days";
+  daysInput.dataset.incompleteKey = "days";
+  const daysHelp = document.createElement("p");
+  daysHelp.className = "structured-help";
+  daysHelp.textContent =
+    state.lastYear === true
+      ? "Informe um número inteiro entre 0 e 366."
+      : "Este campo é habilitado quando a resposta acima é Sim.";
+  daysWrapper.append(daysLabel, daysInput, daysHelp);
+  lastYearSection.appendChild(daysWrapper);
+  questionsArea.appendChild(lastYearSection);
+}
+
+function renderBsds(scale) {
+  const state = getStructuredScaleState(scale.id);
+  renderStructuredPreamble(
+    scale,
+    "Resultado de rastreio. Não confirma nem exclui transtorno bipolar sem avaliação clínica."
+  );
+
+  const narrativeSection = createStructuredSection(
+    "Escala 1 — Quanto a narrativa descreve você",
+    "Leia todo o texto antes de selecionar uma alternativa. Considere sua vida inteira ao responder, incluindo os últimos tempos."
+  );
+  const narrative = document.createElement("p");
+  narrative.className = "bsds-narrative";
+  narrative.textContent = bsdsNarrative;
+  narrativeSection.append(
+    narrative,
+    createStructuredChoice({
+      legendText: "Quanto essa história descreve você?",
+      options: bsdsNarrativeOptions,
+      value: state.narrativeScore,
+      field: "narrativeScore",
+      incompleteKey: "narrativeScore"
+    })
+  );
+  questionsArea.appendChild(narrativeSection);
+
+  const itemsSection = createStructuredSection(
+    "Escala 2 — Dezenove afirmações",
+    "Agora o texto está organizado em afirmações. Indique quais sinais e sintomas estão presentes usando Sim ou Não."
+  );
+  renderStructuredBinaryItems(scale, state, itemsSection);
+  questionsArea.appendChild(itemsSection);
+}
+
+function renderMdq(scale) {
+  const state = getStructuredScaleState(scale.id);
+  const symptomScore = state.items.reduce((total, value) => total + Number(value === 1), 0);
+  renderStructuredPreamble(
+    scale,
+    "Instrumento de rastreio. Um resultado positivo não estabelece diagnóstico de transtorno bipolar."
+  );
+
+  const itemsSection = createStructuredSection(
+    "Parte A — 13 sintomas",
+    "Houve algum período em que você não estava como de costume e..."
+  );
+  renderStructuredBinaryItems(scale, state, itemsSection);
+  questionsArea.appendChild(itemsSection);
+
+  const simultaneousSection = createStructuredSection("Parte B — Simultaneidade");
+  const simultaneous = createStructuredChoice({
+    legendText:
+      "Se você marcou Sim em mais de um item acima, vários deles já aconteceram durante o mesmo período?",
+    options: [
+      { value: true, label: "Sim" },
+      { value: false, label: "Não" }
+    ],
+    value: state.simultaneous,
+    field: "simultaneous",
+    incompleteKey: "simultaneous"
+  });
+  simultaneous.disabled = symptomScore < 2;
+  simultaneous.dataset.conditionalField = "mdq-simultaneous";
+  const simultaneousHelp = document.createElement("p");
+  simultaneousHelp.className = "structured-help";
+  simultaneousHelp.dataset.conditionalHelp = "mdq-simultaneous";
+  simultaneousHelp.textContent =
+    symptomScore < 2
+      ? "Não aplicável: marque Sim em pelo menos dois sintomas para habilitar esta pergunta."
+      : "Pergunta obrigatória porque há dois ou mais sintomas assinalados.";
+  simultaneousSection.append(simultaneous, simultaneousHelp);
+  questionsArea.appendChild(simultaneousSection);
+
+  const impairmentSection = createStructuredSection("Parte C — Prejuízo");
+  impairmentSection.appendChild(
+    createStructuredChoice({
+      legendText:
+        "Quanto problema esses acontecimentos causaram, como incapacidade para trabalhar, problemas familiares, financeiros ou legais, discussões ou brigas?",
+      options: [
+        { value: 0, label: "Nenhum problema" },
+        { value: 1, label: "Problema leve" },
+        { value: 2, label: "Problema moderado" },
+        { value: 3, label: "Problema grave" }
+      ],
+      value: state.impairment,
+      field: "impairment",
+      incompleteKey: "impairment"
+    })
+  );
+  questionsArea.appendChild(impairmentSection);
+}
+
+function renderStructuredScreener(scale) {
+  questionsArea.innerHTML = "";
+
+  if (scale.id === "hcl32") {
+    renderHcl32(scale);
+    return;
+  }
+
+  if (scale.id === "bsds") {
+    renderBsds(scale);
+    return;
+  }
+
+  renderMdq(scale);
+}
+
 function createOptionInput(questionIndex, option) {
   const input = document.createElement("input");
   input.type = "radio";
@@ -3691,13 +5320,12 @@ function renderCardQuestions(scale) {
     fieldset.appendChild(legend);
 
     const optionsWrapper = document.createElement("div");
-    optionsWrapper.className = "options";
+    optionsWrapper.className = `options${question.options ? " options-long" : ""}`;
 
     getQuestionOptions(scale, question).forEach((option) => {
       const optionLabel = document.createElement("label");
-      optionLabel.className = "option";
-
       const input = createOptionInput(questionIndex, option);
+      optionLabel.className = `option${input.checked ? " is-selected" : ""}`;
 
       const labelText = document.createElement("span");
       labelText.className = "option-text";
@@ -3724,21 +5352,47 @@ function renderTableQuestions(scale) {
 
   const table = document.createElement("table");
   table.className = "questions-table";
+  const hasQuestionSpecificOptions = scale.questions.some((question) => {
+    return typeof question !== "string" && Boolean(question.options);
+  });
+  const leadingHeaders = scale.id === "panss" ? ["Código", "Item", "Domínio"] : ["Item", "Pergunta"];
+  const leadingWidths = scale.id === "panss" ? [5, 25, 12] : [6, 34];
+  const responseWidth = (100 - leadingWidths.reduce((total, width) => total + width, 0)) / scale.options.length;
+  const colgroup = document.createElement("colgroup");
+
+  [...leadingWidths, ...scale.options.map(() => responseWidth)].forEach((width) => {
+    const column = document.createElement("col");
+    column.style.width = `${width}%`;
+    colgroup.appendChild(column);
+  });
+  table.appendChild(colgroup);
 
   const thead = document.createElement("thead");
   const headRow = document.createElement("tr");
 
-  const leadingHeaders = scale.id === "panss" ? ["Código", "Item", "Domínio"] : ["Item", "Pergunta"];
-
-  leadingHeaders.forEach((text) => {
+  leadingHeaders.forEach((text, headerIndex) => {
     const th = document.createElement("th");
+    th.scope = "col";
+    th.className = headerIndex === 1 ? "question-column" : "";
     th.textContent = text;
     headRow.appendChild(th);
   });
 
   scale.options.forEach((option) => {
     const th = document.createElement("th");
-    th.textContent = option.label;
+    th.scope = "col";
+    const score = document.createElement("span");
+    score.className = "table-heading-score";
+    score.textContent = String(option.value);
+    th.appendChild(score);
+
+    if (!hasQuestionSpecificOptions) {
+      const optionText = document.createElement("small");
+      optionText.className = "table-heading-text";
+      optionText.textContent = option.label.replace(new RegExp(`^${option.value}\\s*[-–—:]?\\s*`, "u"), "");
+      th.appendChild(optionText);
+    }
+
     headRow.appendChild(th);
   });
 
@@ -3752,7 +5406,8 @@ function renderTableQuestions(scale) {
       const groupRow = document.createElement("tr");
       groupRow.className = "table-group-row";
 
-      const groupCell = document.createElement("td");
+      const groupCell = document.createElement("th");
+      groupCell.scope = "colgroup";
       groupCell.colSpan = leadingHeaders.length + scale.options.length;
       groupCell.textContent = panssDomainLabels[question.domain] || question.domain;
 
@@ -3765,7 +5420,8 @@ function renderTableQuestions(scale) {
     row.dataset.questionIndex = String(questionIndex);
 
     if (scale.id === "panss") {
-      const codeCell = document.createElement("td");
+      const codeCell = document.createElement("th");
+      codeCell.scope = "row";
       codeCell.className = "item-cell";
       codeCell.textContent = question.code;
       row.appendChild(codeCell);
@@ -3785,7 +5441,8 @@ function renderTableQuestions(scale) {
       itemCell.textContent = getQuestionNumber(question, questionIndex);
       row.appendChild(itemCell);
 
-      const questionCell = document.createElement("td");
+      const questionCell = document.createElement("th");
+      questionCell.scope = "row";
       questionCell.className = "question-cell";
       questionCell.appendChild(createQuestionText(question, questionIndex));
       row.appendChild(questionCell);
@@ -3793,16 +5450,31 @@ function renderTableQuestions(scale) {
 
     getQuestionOptions(scale, question).forEach((option) => {
       const optionCell = document.createElement("td");
-      optionCell.className = "radio-cell";
       const label = document.createElement("label");
       label.className = "table-radio";
-      label.appendChild(createOptionInput(questionIndex, option));
+      const input = createOptionInput(questionIndex, option);
+      const compactOptionLabel = option.label.replace(
+        new RegExp(`^${option.value}\\s*[-–—:]?\\s*`, "u"),
+        ""
+      );
+      optionCell.className = `radio-cell${input.checked ? " is-selected" : ""}`;
+      optionCell.dataset.label = `${option.value} — ${compactOptionLabel}`;
+      input.setAttribute(
+        "aria-label",
+        `${getQuestionNumber(question, questionIndex)}: ${option.label} (pontuação ${option.value})`
+      );
+      label.appendChild(input);
 
       if (question.options) {
         const optionText = document.createElement("span");
         optionText.className = "table-option-text";
-        optionText.textContent = option.label;
+        optionText.textContent = compactOptionLabel;
         label.appendChild(optionText);
+      } else {
+        const score = document.createElement("span");
+        score.className = "table-cell-score";
+        score.textContent = String(option.value);
+        label.appendChild(score);
       }
 
       optionCell.appendChild(label);
@@ -3819,9 +5491,15 @@ function renderTableQuestions(scale) {
 
 function renderQuestions(scale) {
   questionsArea.innerHTML = "";
+  scalesPage.classList.toggle("table-active", scale.id !== "diva5" && viewMode === "table");
 
   if (scale.id === "diva5") {
     renderDiva5(scale);
+    return;
+  }
+
+  if (isStructuredScreener(scale)) {
+    renderStructuredScreener(scale);
     return;
   }
 
@@ -3840,6 +5518,46 @@ function updateProgress(scale = getSelectedScale()) {
   const progress = document.querySelector("#progress-counter");
 
   if (!progress || !scale) {
+    return;
+  }
+
+  if (isStructuredScreener(scale)) {
+    const state = getStructuredScaleState(scale.id);
+    let answeredCount = state.items.filter((value) => value === 0 || value === 1).length;
+    let requiredCount = state.items.length;
+
+    if (scale.id === "hcl32") {
+      answeredCount += Number(state.currentState !== null);
+      answeredCount += Number(state.usualPattern !== null);
+      answeredCount += Object.values(state.impacts).filter((value) => value !== null).length;
+      answeredCount += Number(state.reactions.length > 0);
+      answeredCount += Number(state.duration !== null);
+      answeredCount += Number(state.lastYear !== null);
+      requiredCount += 9;
+
+      if (state.lastYear === true) {
+        answeredCount += Number(Number.isInteger(state.days) && state.days >= 0 && state.days <= 366);
+        requiredCount += 1;
+      }
+    }
+
+    if (scale.id === "bsds") {
+      answeredCount += Number(state.narrativeScore !== null);
+      requiredCount += 1;
+    }
+
+    if (scale.id === "mdq") {
+      const symptomScore = state.items.reduce((total, value) => total + Number(value === 1), 0);
+      answeredCount += Number(state.impairment !== null);
+      requiredCount += 1;
+
+      if (symptomScore >= 2) {
+        answeredCount += Number(typeof state.simultaneous === "boolean");
+        requiredCount += 1;
+      }
+    }
+
+    progress.textContent = `Respondidas: ${answeredCount} / ${requiredCount}`;
     return;
   }
 
@@ -3865,12 +5583,271 @@ function updateIncompleteHighlight(questionIndex) {
   currentItem.classList.toggle("incomplete", incompleteQuestionIndexes.has(questionIndex));
 }
 
-function resetResult() {
-  const prontuarioLine = resultArea.querySelector(".prontuario-line-box");
+function updateSelectionHighlights(questionIndex) {
+  const currentItem = questionsArea.querySelector(`[data-question-index="${questionIndex}"]`);
 
-  if (prontuarioLine) {
-    prontuarioLine.remove();
+  if (!currentItem) {
+    return;
   }
+
+  currentItem.querySelectorAll(".option, .radio-cell").forEach((selectable) => {
+    const input = selectable.querySelector('input[type="radio"]');
+    selectable.classList.toggle("is-selected", Boolean(input && input.checked));
+  });
+}
+
+function updateStructuredSelectionHighlights() {
+  questionsArea.querySelectorAll(".option, .radio-cell").forEach((selectable) => {
+    const input = selectable.querySelector('input[type="radio"], input[type="checkbox"]');
+    selectable.classList.toggle("is-selected", Boolean(input && input.checked));
+  });
+}
+
+function updateStructuredIncompleteHighlight(key) {
+  const element = questionsArea.querySelector(`[data-incomplete-key="${key}"]`);
+
+  if (element) {
+    element.classList.toggle("incomplete", structuredIncompleteKeys.has(key));
+  }
+}
+
+function updateHclReactionControls(state) {
+  questionsArea.querySelectorAll('input[data-structured-field="reaction"]').forEach((input) => {
+    input.checked = state.reactions.includes(input.value);
+  });
+}
+
+function updateHclDaysControl(state) {
+  const input = questionsArea.querySelector('input[data-structured-field="days"]');
+  const help = input ? input.parentElement.querySelector(".structured-help") : null;
+
+  if (!input) {
+    return;
+  }
+
+  input.disabled = state.lastYear !== true;
+
+  if (state.lastYear !== true) {
+    input.value = "";
+  }
+
+  if (help) {
+    help.textContent =
+      state.lastYear === true
+        ? "Informe um número inteiro entre 0 e 366."
+        : "Este campo é habilitado quando a resposta acima é Sim.";
+  }
+}
+
+function updateMdqSimultaneousControl(state) {
+  const symptomScore = state.items.reduce((total, value) => total + Number(value === 1), 0);
+  const fieldset = questionsArea.querySelector('[data-conditional-field="mdq-simultaneous"]');
+  const help = questionsArea.querySelector('[data-conditional-help="mdq-simultaneous"]');
+
+  if (symptomScore < 2) {
+    state.simultaneous = null;
+    structuredIncompleteKeys.delete("simultaneous");
+  }
+
+  if (fieldset) {
+    fieldset.disabled = symptomScore < 2;
+    fieldset.querySelectorAll('input[type="radio"]').forEach((input) => {
+      input.checked =
+        typeof state.simultaneous === "boolean" && input.value === String(state.simultaneous);
+    });
+    fieldset.classList.toggle("incomplete", structuredIncompleteKeys.has("simultaneous"));
+  }
+
+  if (help) {
+    help.textContent =
+      symptomScore < 2
+        ? "Não aplicável: marque Sim em pelo menos dois sintomas para habilitar esta pergunta."
+        : "Pergunta obrigatória porque há dois ou mais sintomas assinalados.";
+  }
+}
+
+function updateStructuredStateFromInput(target, scale) {
+  const field = target.dataset.structuredField;
+
+  if (!field) {
+    return false;
+  }
+
+  const state = getStructuredScaleState(scale.id);
+  const incompleteKey = target.dataset.incompleteKey;
+
+  if (field === "item") {
+    state.items[Number(target.dataset.structuredIndex)] = Number(target.value);
+  }
+
+  if (field === "currentState" || field === "usualPattern" || field === "duration") {
+    state[field] = target.value;
+  }
+
+  if (field === "impact") {
+    state.impacts[target.dataset.structuredSubfield] = target.value;
+  }
+
+  if (field === "reaction") {
+    if (target.checked && target.value === "none") {
+      state.reactions = ["none"];
+    } else if (target.checked) {
+      state.reactions = [...state.reactions.filter((value) => value !== "none"), target.value];
+    } else {
+      state.reactions = state.reactions.filter((value) => value !== target.value);
+    }
+
+    updateHclReactionControls(state);
+  }
+
+  if (field === "lastYear") {
+    state.lastYear = target.value === "true";
+
+    if (!state.lastYear) {
+      state.days = null;
+      structuredIncompleteKeys.delete("days");
+    }
+
+    updateHclDaysControl(state);
+  }
+
+  if (field === "days") {
+    const rawValue = target.value.trim();
+    state.days =
+      /^\d+$/u.test(rawValue) && Number(rawValue) >= 0 && Number(rawValue) <= 366
+        ? Number(rawValue)
+        : null;
+  }
+
+  if (field === "narrativeScore" || field === "impairment") {
+    state[field] = Number(target.value);
+  }
+
+  if (field === "simultaneous") {
+    state.simultaneous = target.value === "true";
+  }
+
+  if (
+    incompleteKey &&
+    !(
+      (field === "reaction" && state.reactions.length === 0) ||
+      (field === "days" && state.days === null)
+    )
+  ) {
+    structuredIncompleteKeys.delete(incompleteKey);
+    updateStructuredIncompleteHighlight(incompleteKey);
+  }
+
+  if (scale.id === "mdq" && field === "item") {
+    updateMdqSimultaneousControl(state);
+  }
+
+  updateStructuredSelectionHighlights();
+  updateProgress(scale);
+  return true;
+}
+
+function collectStructuredIncompleteItems(scale, state) {
+  const incompleteItems = [];
+  const incompleteKeys = new Set();
+  const add = (key, label) => {
+    incompleteKeys.add(key);
+    incompleteItems.push(label);
+  };
+
+  state.items.forEach((value, index) => {
+    if (value !== 0 && value !== 1) {
+      add(`item:${index}`, `item ${index + 1}`);
+    }
+  });
+
+  if (scale.id === "hcl32") {
+    if (state.currentState === null) {
+      add("currentState", "estado atual");
+    }
+    if (state.usualPattern === null) {
+      add("usualPattern", "padrão habitual");
+    }
+    Object.keys(state.impacts).forEach((field) => {
+      if (state.impacts[field] === null) {
+        const label = {
+          family: "impacto na vida familiar",
+          social: "impacto na vida social",
+          work: "impacto no trabalho",
+          recreation: "impacto na recreação"
+        }[field];
+        add(`impact:${field}`, label);
+      }
+    });
+    if (!state.reactions.length) {
+      add("reactions", "reação de outras pessoas");
+    }
+    if (state.duration === null) {
+      add("duration", "duração média");
+    }
+    if (state.lastYear === null) {
+      add("lastYear", "ocorrência no último ano");
+    }
+    if (
+      state.lastYear === true &&
+      !(Number.isInteger(state.days) && state.days >= 0 && state.days <= 366)
+    ) {
+      add("days", "número de dias no último ano");
+    }
+  }
+
+  if (scale.id === "bsds" && ![0, 2, 4, 6].includes(state.narrativeScore)) {
+    add("narrativeScore", "identificação com a narrativa");
+  }
+
+  if (scale.id === "mdq") {
+    const symptomScore = state.items.reduce((total, value) => total + Number(value === 1), 0);
+    if (symptomScore >= 2 && typeof state.simultaneous !== "boolean") {
+      add("simultaneous", "ocorrência dos sintomas no mesmo período");
+    }
+    if (![0, 1, 2, 3].includes(state.impairment)) {
+      add("impairment", "prejuízo associado");
+    }
+  }
+
+  return { incompleteItems, incompleteKeys };
+}
+
+function handleStructuredScaleSubmit(scale) {
+  const state = getStructuredScaleState(scale.id);
+  const { incompleteItems, incompleteKeys } = collectStructuredIncompleteItems(scale, state);
+
+  if (incompleteItems.length) {
+    structuredIncompleteKeys = incompleteKeys;
+    renderQuestions(scale);
+    showIncompleteResult(incompleteItems);
+    const firstIncomplete = questionsArea.querySelector(".incomplete");
+
+    if (firstIncomplete) {
+      firstIncomplete.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return;
+  }
+
+  structuredIncompleteKeys.clear();
+  renderQuestions(scale);
+  const scores = scale.calculate(state);
+  const interpretation = scale.interpret(scores);
+
+  if (scale.id === "hcl32") {
+    scores.fullSummary = buildHcl32FullSummary(scores);
+  } else if (scale.id === "bsds") {
+    scores.fullSummary = buildBsdsFullSummary(scores, interpretation);
+  } else {
+    scores.fullSummary = buildMdqFullSummary(scores);
+  }
+
+  addResponseCodeToResult(scale, scores, interpretation, {});
+  showResult(scale, scores, interpretation, [], {});
+}
+
+function resetResult() {
+  resultArea.querySelectorAll(".prontuario-line-box, .response-code-box").forEach((element) => element.remove());
 
   resultList.innerHTML = "";
   resultArea.classList.add("hidden");
@@ -3881,6 +5858,7 @@ function clearAnswers() {
   scaleContext = {};
   incompleteQuestionIndexes.clear();
   diva5IncompleteKeys.clear();
+  structuredIncompleteKeys.clear();
   scaleForm.reset();
   resetResult();
 
@@ -3888,6 +5866,8 @@ function clearAnswers() {
 
   if (selectedScale) {
     renderQuestions(selectedScale);
+  } else {
+    scalesPage.classList.remove("table-active");
   }
 }
 
@@ -3908,11 +5888,7 @@ function appendResultRow(label, value, className = "") {
 }
 
 function showIncompleteResult(incompleteQuestions) {
-  const prontuarioLine = resultArea.querySelector(".prontuario-line-box");
-
-  if (prontuarioLine) {
-    prontuarioLine.remove();
-  }
+  resultArea.querySelectorAll(".prontuario-line-box, .response-code-box").forEach((element) => element.remove());
 
   resultList.innerHTML = "";
   appendResultRow("Pendências", `Complete: ${incompleteQuestions.join(", ")}.`);
@@ -3920,19 +5896,49 @@ function showIncompleteResult(incompleteQuestions) {
   resultArea.classList.remove("hidden");
 }
 
-function showResult(scale, scores, interpretation, incompleteQuestions, context) {
-  const existingProntuarioLine = resultArea.querySelector(".prontuario-line-box");
+function renderResponseCode(code) {
+  const section = document.createElement("section");
+  section.className = "response-code-box";
+  section.setAttribute("aria-labelledby", "response-code-title");
 
-  if (existingProntuarioLine) {
-    existingProntuarioLine.remove();
-  }
+  const title = document.createElement("h3");
+  title.id = "response-code-title";
+  title.textContent = "Código de respostas";
+
+  const value = document.createElement("code");
+  value.className = "response-code-value";
+  value.tabIndex = 0;
+  value.textContent = code;
+
+  const actions = document.createElement("div");
+  actions.className = "response-code-actions";
+  const copyButton = document.createElement("button");
+  copyButton.type = "button";
+  copyButton.dataset.copyResponseCode = "true";
+  copyButton.textContent = "Copiar código";
+  const feedback = document.createElement("span");
+  feedback.className = "copy-feedback";
+  feedback.setAttribute("aria-live", "polite");
+  actions.append(copyButton, feedback);
+
+  section.append(title, value, actions);
+  return section;
+}
+
+function showResult(scale, scores, interpretation, incompleteQuestions, context) {
+  resultArea.querySelectorAll(".prontuario-line-box, .response-code-box").forEach((element) => element.remove());
 
   resultList.innerHTML = "";
 
   const prontuarioLine = renderProntuarioLine(scores.prontuarioLine, scores.fullSummary || "");
+  const responseCodeBox = scores.responseCode ? renderResponseCode(scores.responseCode) : null;
 
   if (prontuarioLine) {
     resultArea.insertBefore(prontuarioLine, resultList);
+  }
+
+  if (responseCodeBox) {
+    resultArea.insertBefore(responseCodeBox, resultList);
   }
 
   scale.getResultRows(scores, interpretation, incompleteQuestions, context).forEach((row) => {
@@ -3940,6 +5946,116 @@ function showResult(scale, scores, interpretation, incompleteQuestions, context)
   });
 
   resultArea.classList.remove("hidden");
+}
+
+function addResponseCodeToResult(scale, scores, interpretation, context) {
+  const responseCode = createResponseCode(scale);
+  const clinicalLine = buildProntuarioLine(scale, scores, interpretation, context);
+  scores.responseCode = responseCode;
+  scores.prontuarioLine = clinicalLine
+    ? `${clinicalLine} Código de respostas: ${responseCode}`
+    : `Código de respostas: ${responseCode}`;
+}
+
+function hasCurrentResponses() {
+  const selectedScale = getSelectedScale();
+
+  if (!selectedScale) {
+    return false;
+  }
+
+  if (isStructuredScreener(selectedScale)) {
+    const state = answers[selectedScale.id];
+    return (
+      Boolean(state) &&
+      JSON.stringify(state) !== JSON.stringify(createStructuredScaleState(selectedScale.id))
+    );
+  }
+
+  if (selectedScale.id !== "diva5") {
+    return Object.keys(answers).some((key) => /^\d+$/u.test(key));
+  }
+
+  const state = answers.diva5;
+
+  if (!state) {
+    return false;
+  }
+
+  const hasCriterionData = diva5Items.some((item) => {
+    return ["adult", "childhood"].some((period) => {
+      const periodState = state.criteria[item.code][period];
+      return (
+        periodState.present !== null ||
+        periodState.checkedExamples.length > 0 ||
+        Boolean(periodState.other.trim()) ||
+        Boolean(periodState.note.trim())
+      );
+    });
+  });
+  const hasImpairmentData = ["adult", "childhood"].some((period) => {
+    const impairment = state.impairment[period];
+    return (
+      impairment.evidenceInTwoOrMoreContexts !== null ||
+      DIVA_IMPAIRMENT_FIELDS[period].some((field) => impairment[field]) ||
+      Boolean(impairment.other.trim())
+    );
+  });
+  const hasCollateralData =
+    ["parentsOrFamily", "partnerOrFriend", "schoolReports"].some((field) => {
+      return !["notAvailable", "ND"].includes(state.collateral[field]);
+    }) || Boolean(state.collateral.notes.trim());
+
+  return (
+    hasCriterionData ||
+    hasImpairmentData ||
+    state.onset.severalSymptomsBefore12 !== null ||
+    Boolean(state.onset.laterOnsetAge) ||
+    state.differential.betterExplainedByAnotherDisorder !== null ||
+    Boolean(state.differential.explanation.trim()) ||
+    hasCollateralData ||
+    (state.severity !== null && state.severity !== "notDefined")
+  );
+}
+
+function setResponseCodeFeedback(message, type = "") {
+  responseCodeFeedback.textContent = message;
+  responseCodeFeedback.className = `response-code-feedback${type ? ` ${type}` : ""}`;
+}
+
+function applyDecodedResponses(decoded) {
+  scaleSelect.value = decoded.scale.id;
+  answers = decoded.answers;
+  scaleContext = decoded.context;
+  incompleteQuestionIndexes.clear();
+  diva5IncompleteKeys.clear();
+  structuredIncompleteKeys.clear();
+  resetResult();
+  scaleDescription.textContent = decoded.scale.description;
+  scaleForm.classList.remove("hidden");
+  renderQuestions(decoded.scale);
+}
+
+function importResponseCode() {
+  const validation = validateResponseCode(responseCodeInput.value);
+
+  if (!validation.valid) {
+    setResponseCodeFeedback(validation.error, "error");
+    return;
+  }
+
+  if (
+    hasCurrentResponses() &&
+    !window.confirm("O formulário atual já possui respostas. Deseja substituí-las pelas respostas do código?")
+  ) {
+    setResponseCodeFeedback("Importação cancelada. As respostas atuais foram mantidas.");
+    return;
+  }
+
+  applyDecodedResponses(validation.decoded);
+  responseCodeInput.value = responseCodeInput.value.trim();
+  setResponseCodeFeedback("Formulário preenchido com sucesso.", "success");
+  scaleForm.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function collectAnswers(scale) {
@@ -4175,8 +6291,8 @@ function handleDiva5Submit(selectedScale) {
   renderQuestions(selectedScale);
   const scores = selectedScale.calculate();
   const interpretation = selectedScale.interpret(scores);
-  scores.prontuarioLine = buildProntuarioLine(selectedScale, scores, interpretation, {});
   scores.fullSummary = buildDivaFullSummary(scores);
+  addResponseCodeToResult(selectedScale, scores, interpretation, {});
 
   showResult(selectedScale, scores, interpretation, [], {});
 }
@@ -4187,12 +6303,14 @@ scaleSelect.addEventListener("change", () => {
   scaleContext = {};
   incompleteQuestionIndexes.clear();
   diva5IncompleteKeys.clear();
+  structuredIncompleteKeys.clear();
   clearAnswers();
 
   if (!selectedScale) {
     scaleDescription.textContent = "";
     questionsArea.innerHTML = "";
     scaleForm.classList.add("hidden");
+    scalesPage.classList.remove("table-active");
     return;
   }
 
@@ -4215,6 +6333,11 @@ scaleForm.addEventListener("submit", (event) => {
     return;
   }
 
+  if (isStructuredScreener(selectedScale)) {
+    handleStructuredScaleSubmit(selectedScale);
+    return;
+  }
+
   const { answers, incompleteQuestions, incompleteIndexes } = collectAnswers(selectedScale);
   const { context, incompleteSettings } = collectContext(selectedScale);
   const incompleteItems = [
@@ -4233,7 +6356,7 @@ scaleForm.addEventListener("submit", (event) => {
   renderQuestions(selectedScale);
   const scores = selectedScale.calculate(answers, context);
   const interpretation = selectedScale.interpret(scores, context);
-  scores.prontuarioLine = buildProntuarioLine(selectedScale, scores, interpretation, context);
+  addResponseCodeToResult(selectedScale, scores, interpretation, context);
 
   showResult(selectedScale, scores, interpretation, incompleteQuestions, context);
 });
@@ -4246,8 +6369,16 @@ questionsArea.addEventListener("change", (event) => {
     return;
   }
 
+  if (isStructuredScreener(selectedScale)) {
+    if (updateStructuredStateFromInput(target, selectedScale)) {
+      resetResult();
+    }
+    return;
+  }
+
   if (selectedScale.id === "diva5") {
     updateDiva5StateFromInput(target);
+    resetResult();
     return;
   }
 
@@ -4257,6 +6388,8 @@ questionsArea.addEventListener("change", (event) => {
     incompleteQuestionIndexes.delete(questionIndex);
     updateProgress(selectedScale);
     updateIncompleteHighlight(questionIndex);
+    updateSelectionHighlights(questionIndex);
+    resetResult();
     return;
   }
 
@@ -4269,27 +6402,92 @@ questionsArea.addEventListener("change", (event) => {
 questionsArea.addEventListener("input", (event) => {
   const selectedScale = getSelectedScale();
 
-  if (!selectedScale || selectedScale.id !== "diva5") {
+  if (!selectedScale) {
+    return;
+  }
+
+  if (isStructuredScreener(selectedScale)) {
+    if (event.target.dataset.structuredField === "days") {
+      updateStructuredStateFromInput(event.target, selectedScale);
+      resetResult();
+    }
+    return;
+  }
+
+  if (selectedScale.id !== "diva5") {
     return;
   }
 
   updateDiva5StateFromInput(event.target);
+  resetResult();
 });
 
 questionsArea.addEventListener("click", (event) => {
   const button = event.target.closest("[data-view-mode]");
 
-  if (!button) {
+  if (button) {
+    viewMode = button.dataset.viewMode;
+    renderQuestions(getSelectedScale());
     return;
   }
 
-  viewMode = button.dataset.viewMode;
-  renderQuestions(getSelectedScale());
+  const responseCell = event.target.closest(".radio-cell");
+
+  if (responseCell && !event.target.closest(".table-radio")) {
+    const input = responseCell.querySelector('input[type="radio"]');
+
+    if (input) {
+      input.click();
+    }
+  }
 });
 
 clearButton.addEventListener("click", clearAnswers);
+importResponseCodeButton.addEventListener("click", importResponseCode);
+clearResponseCodeButton.addEventListener("click", () => {
+  responseCodeInput.value = "";
+  setResponseCodeFeedback("");
+  responseCodeInput.focus();
+});
+responseCodeInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    importResponseCode();
+  }
+});
 
 resultArea.addEventListener("click", async (event) => {
+  const responseCodeButton = event.target.closest("[data-copy-response-code]");
+
+  if (responseCodeButton) {
+    const box = responseCodeButton.closest(".response-code-box");
+    const code = box ? box.querySelector(".response-code-value") : null;
+    const feedback = box ? box.querySelector(".copy-feedback") : null;
+
+    if (!code) {
+      return;
+    }
+
+    try {
+      await copyTextToClipboard(code.textContent);
+
+      if (feedback) {
+        feedback.textContent = "Código copiado.";
+        window.setTimeout(() => {
+          feedback.textContent = "";
+        }, 2000);
+      }
+    } catch (error) {
+      if (feedback) {
+        feedback.textContent =
+          error.message === "Texto selecionado para cópia manual."
+            ? "Código selecionado para cópia manual."
+            : "Não foi possível copiar o código.";
+      }
+    }
+    return;
+  }
+
   const button = event.target.closest("[data-copy-prontuario]");
 
   if (!button) {

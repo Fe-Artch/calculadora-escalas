@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <nav class="top-nav" aria-label="Navegacao principal">
+    <nav class="top-nav" aria-label="Navegação principal">
       <a href="index.html">Início</a>
       <a href="escalas.html">Escalas</a>
       <a href="frases.html">Frases</a>
@@ -19,10 +19,10 @@
     <main class="app-shell contacts-page">
       <header class="app-header">
         <h1>Contatos</h1>
-        <p>Cadastre contatos profissionais e serviços para indicação. Não armazene dados de pacientes nesta área.</p>
+        <p>Selecione profissionais e serviços para montar uma lista simples para o paciente.</p>
       </header>
 
-      <section class="panel" aria-labelledby="login-title">
+      <section class="panel contacts-auth-panel" aria-labelledby="login-title">
         <h2 id="login-title">Acesso</h2>
         <form id="login-form" class="auth-form">
           <label class="field-label" for="email-input">E-mail</label>
@@ -43,182 +43,149 @@
         </div>
       </section>
 
-      <section id="contact-editor" class="panel hidden" aria-labelledby="contact-editor-title">
-        <div class="section-heading">
-          <h2 id="contact-editor-title">Novo contato</h2>
-          <button type="button" id="cancel-edit-button" class="secondary hidden">Cancelar edição</button>
+      <section id="contacts-workspace" class="hidden" aria-label="Gerenciador de contatos">
+        <div class="contacts-mode-tabs" role="tablist" aria-label="Modo da área de contatos">
+          <button
+            type="button"
+            id="contacts-select-tab"
+            class="contacts-mode-tab active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="contacts-select-panel"
+            data-contacts-mode="select"
+          >
+            Selecionar contatos
+          </button>
+          <button
+            type="button"
+            id="contacts-add-tab"
+            class="contacts-mode-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="contact-editor"
+            data-contacts-mode="add"
+          >
+            Adicionar contato
+          </button>
         </div>
 
-        <form id="contact-form">
-          <div class="form-grid contacts-main-grid">
-            <div>
-              <label class="field-label" for="contact-name">Nome do profissional/serviço</label>
-              <input id="contact-name" type="text" required>
+        <section
+          id="contacts-select-panel"
+          class="panel contacts-mode-panel"
+          role="tabpanel"
+          aria-labelledby="contacts-select-tab"
+        >
+          <div id="contacts-selection-view" class="contacts-selection-view">
+            <div class="contacts-panel-heading">
+              <div>
+                <h2>Selecionar contatos</h2>
+                <p>Escolha os profissionais ou serviços que deseja incluir na lista para o paciente.</p>
+              </div>
+              <button type="button" id="add-first-contact-button" class="secondary">Adicionar contato</button>
             </div>
-            <div>
-              <label class="field-label" for="contact-group">Grupo principal</label>
-              <select id="contact-group" required></select>
+
+            <div class="contacts-simple-filters">
+              <div>
+                <label class="field-label" for="contact-search">Buscar por nome, telefone, grupo ou detalhes</label>
+                <input
+                  id="contact-search"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="Digite para buscar"
+                >
+              </div>
+              <label class="contacts-checkbox-line contacts-selected-filter" for="show-selected-only">
+                <input id="show-selected-only" type="checkbox">
+                Mostrar somente selecionados
+              </label>
+            </div>
+
+            <div id="contacts-list" class="contacts-list" aria-live="polite"></div>
+
+            <div class="contacts-selection-bar" aria-label="Ações da seleção">
+              <p id="selected-count" class="progress-counter">Selecionados: 0</p>
+              <div class="contacts-selection-actions">
+                <button type="button" id="clear-selection-button" class="secondary" disabled>Limpar seleção</button>
+                <button type="button" id="generate-selected-button" disabled>Gerar lista para o paciente</button>
+              </div>
             </div>
           </div>
 
-          <label class="field-label contacts-spaced" for="contact-group-custom">Grupo personalizado opcional</label>
-          <input id="contact-group-custom" type="text" placeholder="Ex.: Educadores parentais, psicopedagogos">
+          <section
+            id="patient-list-preview"
+            class="patient-list-preview hidden"
+            aria-labelledby="patient-list-preview-title"
+          >
+            <h2 id="patient-list-preview-title">Lista para o paciente</h2>
+            <pre id="patient-list-text" class="patient-list-text" tabindex="0"></pre>
+            <div class="actions patient-list-actions">
+              <button type="button" id="copy-patient-list-button">Copiar texto</button>
+              <button type="button" id="print-patient-list-button" class="secondary">Imprimir</button>
+              <button type="button" id="back-to-selection-button" class="secondary">Voltar à seleção</button>
+              <span id="patient-list-feedback" class="copy-feedback" aria-live="polite"></span>
+            </div>
+            <div id="patient-print-content" class="patient-print-content" aria-hidden="true"></div>
+          </section>
+        </section>
 
-          <div class="form-grid contacts-three-grid">
-            <div>
-              <label class="field-label" for="contact-phone">Telefone/WhatsApp</label>
-              <input id="contact-phone" type="text" required placeholder="(00) 00000-0000">
-            </div>
-            <div>
-              <label class="field-label" for="contact-email">E-mail</label>
-              <input id="contact-email" type="email">
-            </div>
-            <div>
-              <label class="field-label" for="contact-location">Bairro/cidade/região</label>
-              <input id="contact-location" type="text">
-            </div>
-          </div>
+        <section
+          id="contact-editor"
+          class="panel contacts-mode-panel hidden"
+          role="tabpanel"
+          aria-labelledby="contacts-add-tab"
+        >
+          <h2 id="contact-editor-title">Adicionar contato</h2>
+          <p id="contact-editor-description" class="contacts-editor-description">
+            Cadastre somente dados do profissional ou serviço. Não inclua informações de pacientes.
+          </p>
 
-          <div class="form-grid contacts-three-grid">
-            <div>
-              <label class="field-label" for="contact-instagram">Instagram</label>
-              <input id="contact-instagram" type="text" placeholder="@perfil">
-            </div>
-            <div>
-              <label class="field-label" for="contact-site">Site</label>
-              <input id="contact-site" type="url" placeholder="https://...">
-            </div>
-            <div>
-              <label class="field-label" for="contact-status">Status</label>
-              <select id="contact-status">
-                <option value="active">active</option>
-                <option value="inactive">inactive</option>
-                <option value="check">check</option>
-                <option value="do_not_recommend">do_not_recommend</option>
+          <form id="contact-form" novalidate>
+            <label class="field-label" for="contact-name">Nome</label>
+            <input id="contact-name" type="text" maxlength="150" required autocomplete="organization">
+
+            <label class="field-label contacts-spaced" for="contact-phone">Telefone</label>
+            <input
+              id="contact-phone"
+              type="tel"
+              maxlength="80"
+              required
+              autocomplete="tel"
+              placeholder="Fixo, celular, WhatsApp ou número internacional"
+            >
+
+            <label class="field-label contacts-spaced" for="contact-group">Grupo</label>
+            <div class="contact-group-picker">
+              <select id="contact-group" required>
+                <option value="">Selecione um grupo</option>
               </select>
+              <button type="button" id="new-group-button" class="secondary">+ Novo grupo</button>
             </div>
-          </div>
 
-          <fieldset class="contacts-choice-group">
-            <legend>Modalidade</legend>
-            <label><input type="checkbox" name="contact-modality" value="online"> online</label>
-            <label><input type="checkbox" name="contact-modality" value="presencial"> presencial</label>
-            <label><input type="checkbox" name="contact-modality" value="híbrido"> híbrido</label>
-            <label><input type="checkbox" name="contact-modality" value="domicílio"> domicílio</label>
-          </fieldset>
-
-          <fieldset class="contacts-choice-group">
-            <legend>Público</legend>
-            <label><input type="checkbox" name="contact-audience" value="adulto"> adulto</label>
-            <label><input type="checkbox" name="contact-audience" value="criança"> criança</label>
-            <label><input type="checkbox" name="contact-audience" value="adolescente"> adolescente</label>
-            <label><input type="checkbox" name="contact-audience" value="idoso"> idoso</label>
-            <label><input type="checkbox" name="contact-audience" value="casal"> casal</label>
-            <label><input type="checkbox" name="contact-audience" value="família"> família</label>
-          </fieldset>
-
-          <div class="form-grid">
-            <div>
-              <label class="field-label" for="contact-specialties">Especialidades separadas por vírgula</label>
-              <input id="contact-specialties" type="text" placeholder="TDAH, TEA, neuropsicologia">
+            <div id="new-group-controls" class="new-group-controls hidden">
+              <label class="field-label" for="new-group-name">Nome do novo grupo</label>
+              <div class="inline-form">
+                <input id="new-group-name" type="text" maxlength="100" autocomplete="off">
+                <button type="button" id="add-group-button">Adicionar grupo</button>
+                <button type="button" id="cancel-group-button" class="secondary">Cancelar</button>
+              </div>
+              <p id="new-group-feedback" class="contacts-inline-feedback" aria-live="polite"></p>
             </div>
-            <div>
-              <label class="field-label" for="contact-tags">Tags livres separadas por vírgula</label>
-              <input id="contact-tags" type="text" placeholder="zona sul, aceita convênio">
+
+            <label class="field-label contacts-spaced" for="contact-details">Detalhes opcionais</label>
+            <textarea id="contact-details" rows="6" maxlength="2000"></textarea>
+            <p class="contacts-field-help">
+              Uso interno. Este conteúdo não será incluído automaticamente na lista para o paciente.
+            </p>
+
+            <div class="actions">
+              <button type="button" id="cancel-contact-button" class="secondary">Cancelar</button>
+              <button type="submit" id="save-contact-button">Salvar contato</button>
             </div>
-          </div>
-
-          <label class="field-label contacts-spaced" for="contact-price-note">Preço, valor social, convênio e pagamento</label>
-          <input id="contact-price-note" type="text">
-
-          <label class="field-label contacts-spaced" for="contact-description">Descrição curta objetiva</label>
-          <textarea id="contact-description" rows="3"></textarea>
-
-          <label class="field-label contacts-spaced" for="contact-private-notes">Observações internas</label>
-          <textarea id="contact-private-notes" rows="5"></textarea>
-
-          <label class="field-label contacts-spaced" for="contact-indication-text">Texto opcional para enviar ao paciente</label>
-          <textarea id="contact-indication-text" rows="4"></textarea>
-
-          <div class="form-grid">
-            <label class="contacts-checkbox-line" for="contact-favorite">
-              <input id="contact-favorite" type="checkbox">
-              Favorito
-            </label>
-            <div>
-              <label class="field-label" for="contact-last-verified">Última confirmação de preço/disponibilidade</label>
-              <input id="contact-last-verified" type="date">
-            </div>
-          </div>
-
-          <div class="actions">
-            <button type="submit" id="save-contact-button">Salvar contato</button>
-            <button type="button" id="clear-contact-button" class="secondary">Limpar formulário</button>
-          </div>
-        </form>
-      </section>
-
-      <section id="contacts-panel" class="panel hidden" aria-labelledby="contacts-title">
-        <div class="section-heading">
-          <h2 id="contacts-title">Contatos salvos</h2>
-          <div class="actions compact-actions contacts-export-actions">
-            <button type="button" id="export-json-button" class="secondary">Exportar JSON</button>
-            <button type="button" id="export-jsonl-button" class="secondary">Exportar JSONL</button>
-          </div>
-        </div>
-
-        <div class="contacts-filters">
-          <div>
-            <label class="field-label" for="contact-search">Busca geral</label>
-            <input id="contact-search" type="search" placeholder="Nome, telefone, tags, especialidades, local...">
-          </div>
-          <div>
-            <label class="field-label" for="group-filter">Grupo</label>
-            <select id="group-filter"></select>
-          </div>
-          <div>
-            <label class="field-label" for="status-filter">Status</label>
-            <select id="status-filter">
-              <option value="all">todos</option>
-              <option value="active">active</option>
-              <option value="inactive">inactive</option>
-              <option value="check">check</option>
-              <option value="do_not_recommend">do_not_recommend</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label" for="tag-filter">Tag</label>
-            <select id="tag-filter">
-              <option value="all">todas</option>
-            </select>
-          </div>
-          <label class="contacts-checkbox-line contacts-filter-checkbox" for="favorites-filter">
-            <input id="favorites-filter" type="checkbox">
-            Apenas favoritos
-          </label>
-        </div>
-
-        <div class="contacts-selection-bar" aria-label="Seleção de contatos">
-          <p id="selected-count" class="progress-counter">0 contatos selecionados</p>
-          <div class="actions compact-actions contacts-selection-actions">
-            <button type="button" id="select-visible-button" class="secondary">Selecionar todos visíveis</button>
-            <button type="button" id="clear-selection-button" class="secondary">Limpar seleção</button>
-            <button type="button" id="generate-selected-button">Gerar contatos selecionados</button>
-          </div>
-        </div>
-
-        <div id="contacts-list" class="contacts-list" aria-live="polite"></div>
-
-        <section id="selected-contacts-result" class="contacts-selected-result hidden" aria-labelledby="selected-contacts-title">
-          <div class="section-heading">
-            <h3 id="selected-contacts-title">Contatos selecionados</h3>
-            <button type="button" id="copy-selected-button" class="secondary">Copiar lista</button>
-          </div>
-          <pre id="selected-contacts-output"></pre>
+          </form>
         </section>
       </section>
 
-      <p id="message-area" class="message-area" aria-live="polite"></p>
+      <p id="message-area" class="message-area" role="status" aria-live="polite"></p>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

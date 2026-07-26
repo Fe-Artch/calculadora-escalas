@@ -16,7 +16,7 @@
       <a href="diagnostic-criteria.html">Critérios Diagnósticos</a>
     </nav>
 
-    <main class="app-shell">
+    <main class="app-shell scales-page">
       <header class="app-header">
         <h1>Calculadora de Escalas</h1>
         <p>Ferramenta local para cálculo de escalas clínicas durante consulta.</p>
@@ -29,6 +29,24 @@
           <option value="">Selecione uma escala</option>
         </select>
         <p id="scale-description" class="scale-description" aria-live="polite"></p>
+
+        <section class="response-code-import" aria-labelledby="response-code-import-title">
+          <h3 id="response-code-import-title">Preencher por código de respostas</h3>
+          <label class="field-label" for="response-code-input">Cole aqui um código gerado anteriormente</label>
+          <input
+            id="response-code-input"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="FC1:escala@1:..."
+          >
+          <div class="response-code-import-actions">
+            <button type="button" id="import-response-code">Preencher formulário</button>
+            <button type="button" id="clear-response-code" class="secondary">Limpar código</button>
+          </div>
+          <p id="response-code-feedback" class="response-code-feedback" role="status" aria-live="polite"></p>
+        </section>
       </section>
 
       <form id="scale-form" class="panel hidden" novalidate>
