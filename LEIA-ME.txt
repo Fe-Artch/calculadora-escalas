@@ -1,0 +1,23 @@
+CORREÇÃO DA AGENDA NO GITHUB PAGES
+
+Substitua, na mesma pasta do site publicada pelo GitHub Pages, estes três arquivos:
+
+- agenda.html
+- agenda.js
+- styles.css
+
+Não envie os arquivos com nomes como "agenda(4).html" ou "styles(8).css".
+Os nomes no repositório precisam permanecer exatamente como estão acima.
+
+O agenda.html deste pacote usa uma identificação de versão no CSS e no
+JavaScript para impedir que o navegador continue mostrando cópias antigas.
+
+Depois do commit:
+
+1. Aguarde o GitHub Pages concluir a publicação.
+2. Abra a agenda.
+3. Pressione Ctrl+F5 para recarregar tudo.
+
+Se o site continuar antigo, confira em Settings > Pages qual branch e qual
+pasta estão configuradas como origem. Os três arquivos precisam ser
+substituídos exatamente nessa origem publicada.
