@@ -537,3 +537,23 @@ Versão funcional com cinco áreas principais, além da Home:
 - Contatos / contatos profissionais para indicação.
 
 As ferramentas clínicas principais funcionam localmente, em páginas separadas, com estado em memória e saída copiável para prontuário quando aplicável.
+
+
+Área Fila de Implementação - implementacoes.html + implementacoes.js:
+Objetivo:
+Organizar projetos, versões, grupos e implementações com prompts para execução no Codex.
+
+Persistência:
+- Usa autenticação Supabase.
+- Os itens são armazenados na tabela implementation_items.
+- A hierarquia usa parent_id e permite profundidade livre.
+- As políticas RLS restringem cada usuário aos próprios itens.
+
+Recursos da V1:
+- Captura rápida de ideias.
+- Outliner expansível e recolhível.
+- Tipos Projeto, Versão/grupo e Implementação.
+- Prompt em Markdown com edição e visualização.
+- Status, prioridade, checkbox de implementado e observações.
+- Busca, filtros e cópia individual ou em lote dos prompts prontos.
+- Criação de filhos, edição, duplicação e exclusão em cascata.

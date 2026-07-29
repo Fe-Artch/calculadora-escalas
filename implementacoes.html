@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fila de Implementação</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="escalas.html">Escalas</a>
+      <a href="frases.html">Frases</a>
+      <a href="contatos.html">Contatos</a>
+      <a href="agenda.html">Agenda</a>
+      <a href="implementacoes.html" aria-current="page">Fila de Implementação</a>
+      <a href="eem.html">EEM</a>
+      <a href="diagnostic-criteria.html">Critérios Diagnósticos</a>
+    </nav>
+
+    <main class="app-shell implementation-page">
+      <header class="app-header">
+        <h1>Fila de Implementação</h1>
+        <p>Organize projetos, versões e prompts prontos para executar no Codex.</p>
+      </header>
+
+      <section class="panel implementation-auth-panel" aria-labelledby="implementation-login-title">
+        <h2 id="implementation-login-title">Acesso</h2>
+        <form id="login-form" class="auth-form">
+          <label class="field-label" for="email-input">E-mail</label>
+          <input id="email-input" type="email" autocomplete="email" required placeholder="seu@email.com">
+          <label class="field-label" for="password-input">Senha</label>
+          <input id="password-input" type="password" autocomplete="current-password" required>
+          <div class="actions compact-actions">
+            <button type="submit">Entrar</button>
+            <button type="button" id="signup-button" class="secondary">Criar conta</button>
+          </div>
+        </form>
+        <div id="user-panel" class="user-panel hidden">
+          <p id="user-email"></p>
+          <button type="button" id="logout-button" class="secondary">Sair</button>
+        </div>
+      </section>
+
+      <section id="implementation-workspace" class="hidden">
+        <section class="panel implementation-capture" aria-labelledby="capture-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="capture-title">Captura rápida</h2>
+              <p class="muted-text">Registre uma ideia agora e organize os detalhes depois.</p>
+            </div>
+          </div>
+          <form id="quick-capture-form" class="implementation-quick-form">
+            <input id="quick-title" type="text" required placeholder="Ex.: AutoTactics 0.1.5 — mostrar duração do status">
+            <button type="submit">Adicionar ideia</button>
+          </form>
+        </section>
+
+        <section class="implementation-layout">
+          <section class="panel implementation-tree-panel" aria-labelledby="tree-title">
+            <div class="implementation-toolbar">
+              <div>
+                <h2 id="tree-title">Outliner</h2>
+                <p id="implementation-count" class="muted-text"></p>
+              </div>
+              <button type="button" id="new-item-button">+ Novo item</button>
+            </div>
+
+            <div class="implementation-filters">
+              <label>
+                <span class="field-label">Buscar</span>
+                <input id="implementation-search" type="search" placeholder="Nome, prompt ou observações">
+              </label>
+              <label>
+                <span class="field-label">Status</span>
+                <select id="implementation-status-filter">
+                  <option value="all">Todos</option>
+                  <option value="idea">Ideia</option>
+                  <option value="preparing">A preparar</option>
+                  <option value="ready">Prompt pronto</option>
+                  <option value="sent">Enviado ao Codex</option>
+                  <option value="testing">Em teste</option>
+                  <option value="implemented">Implementado</option>
+                  <option value="discarded">Descartado</option>
+                </select>
+              </label>
+              <label class="implementation-checkbox-filter">
+                <input id="implementation-pending-only" type="checkbox">
+                <span>Somente pendentes</span>
+              </label>
+            </div>
+
+            <div class="implementation-bulk-actions">
+              <button type="button" id="expand-all-button" class="secondary">Expandir tudo</button>
+              <button type="button" id="collapse-all-button" class="secondary">Recolher tudo</button>
+              <button type="button" id="copy-ready-button" class="secondary">Copiar prompts prontos</button>
+            </div>
+
+            <div id="implementation-tree" class="implementation-tree" aria-live="polite"></div>
+            <p id="implementation-empty" class="empty-state hidden">Nenhum item encontrado.</p>
+          </section>
+
+          <aside id="implementation-editor" class="panel implementation-editor" aria-labelledby="editor-title">
+            <div class="implementation-editor-heading">
+              <div>
+                <h2 id="editor-title">Novo item</h2>
+                <p class="muted-text">Projetos e grupos organizam; implementações guardam prompts.</p>
+              </div>
+              <button type="button" id="close-editor-button" class="secondary">Fechar</button>
+            </div>
+
+            <form id="implementation-form">
+              <input id="implementation-id" type="hidden">
+              <div class="implementation-editor-grid">
+                <label>
+                  <span class="field-label">Tipo</span>
+                  <select id="implementation-type" required>
+                    <option value="project">Projeto</option>
+                    <option value="group">Versão / grupo</option>
+                    <option value="implementation">Implementação</option>
+                  </select>
+                </label>
+                <label>
+                  <span class="field-label">Item pai</span>
+                  <select id="implementation-parent">
+                    <option value="">Sem item pai</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                <span class="field-label">Nome</span>
+                <input id="implementation-title" type="text" required placeholder="Nome do projeto, versão ou implementação">
+              </label>
+
+              <div class="implementation-editor-grid">
+                <label>
+                  <span class="field-label">Status</span>
+                  <select id="implementation-status">
+                    <option value="idea">Ideia</option>
+                    <option value="preparing">A preparar</option>
+                    <option value="ready">Prompt pronto</option>
+                    <option value="sent">Enviado ao Codex</option>
+                    <option value="testing">Em teste</option>
+                    <option value="implemented">Implementado</option>
+                    <option value="discarded">Descartado</option>
+                  </select>
+                </label>
+                <label>
+                  <span class="field-label">Prioridade</span>
+                  <select id="implementation-priority">
+                    <option value="normal">Normal</option>
+                    <option value="high">Alta</option>
+                    <option value="low">Baixa</option>
+                  </select>
+                </label>
+              </div>
+
+              <label class="implementation-complete-line">
+                <input id="implementation-completed" type="checkbox">
+                <span>Implementado</span>
+              </label>
+
+              <div id="prompt-fields">
+                <div class="implementation-prompt-tabs" role="tablist" aria-label="Editor do prompt">
+                  <button type="button" id="prompt-edit-tab" class="secondary active" role="tab" aria-selected="true">Editar</button>
+                  <button type="button" id="prompt-preview-tab" class="secondary" role="tab" aria-selected="false">Visualizar</button>
+                </div>
+                <label id="prompt-editor-panel">
+                  <span class="field-label">Prompt em Markdown</span>
+                  <textarea id="implementation-prompt" rows="14" placeholder="## Objetivo\n\nImplemente..."></textarea>
+                </label>
+                <section id="prompt-preview-panel" class="implementation-markdown-preview hidden" aria-label="Prévia do prompt"></section>
+                <label>
+                  <span class="field-label">Observações</span>
+                  <textarea id="implementation-notes" rows="4" placeholder="Dependências, decisões ou resultados dos testes"></textarea>
+                </label>
+              </div>
+
+              <p id="implementation-form-feedback" class="message-area" aria-live="polite"></p>
+              <div class="actions implementation-form-actions">
+                <button type="button" id="delete-item-button" class="danger hidden">Excluir</button>
+                <button type="button" id="duplicate-item-button" class="secondary hidden">Duplicar</button>
+                <button type="button" id="copy-prompt-button" class="secondary hidden">Copiar prompt</button>
+                <button type="submit">Salvar</button>
+              </div>
+            </form>
+          </aside>
+        </section>
+      </section>
+
+      <p id="message-area" class="message-area" aria-live="polite"></p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="implementacoes.js"></script>
+  </body>
+</html>

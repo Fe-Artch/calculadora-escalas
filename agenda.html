@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agenda</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="escalas.html">Escalas</a>
+      <a href="frases.html">Frases</a>
+      <a href="contatos.html">Contatos</a>
+      <a href="agenda.html" aria-current="page">Agenda</a>
+      <a href="implementacoes.html">Fila de Implementação</a>
+      <a href="eem.html">EEM</a>
+      <a href="diagnostic-criteria.html">Critérios Diagnósticos</a>
+    </nav>
+
+    <main class="app-shell agenda-page">
+      <header class="app-header">
+        <h1>Agenda</h1>
+        <p>Organize consultas, compromissos e rotinas semanais.</p>
+      </header>
+
+      <section class="panel agenda-auth-panel" aria-labelledby="agenda-login-title">
+        <h2 id="agenda-login-title">Acesso</h2>
+        <form id="login-form" class="auth-form">
+          <label class="field-label" for="email-input">E-mail</label>
+          <input id="email-input" type="email" autocomplete="email" required placeholder="seu@email.com">
+
+          <label class="field-label" for="password-input">Senha</label>
+          <input id="password-input" type="password" autocomplete="current-password" required>
+
+          <div class="actions compact-actions">
+            <button type="submit">Entrar</button>
+            <button type="button" id="signup-button" class="secondary">Criar conta</button>
+          </div>
+        </form>
+
+        <div id="user-panel" class="user-panel hidden">
+          <p id="user-email"></p>
+          <button type="button" id="logout-button" class="secondary">Sair</button>
+        </div>
+      </section>
+
+      <section id="agenda-workspace" class="hidden" aria-label="Agenda">
+        <section class="panel agenda-calendar-panel" aria-labelledby="calendar-title">
+          <div class="agenda-main-heading">
+            <div>
+              <h2 id="calendar-title">Calendário mensal</h2>
+              <p>Selecione um dia ou um item para abrir a agenda diária.</p>
+            </div>
+            <div class="agenda-create-actions">
+              <button type="button" id="new-event-button">+ Novo evento</button>
+              <button type="button" id="new-routine-button" class="secondary">+ Nova rotina</button>
+            </div>
+          </div>
+
+          <div class="agenda-month-toolbar">
+            <button type="button" id="previous-month-button" class="secondary agenda-icon-button" aria-label="Mês anterior">‹</button>
+            <button type="button" id="today-button" class="secondary">Hoje</button>
+            <h3 id="month-title" aria-live="polite"></h3>
+            <button type="button" id="next-month-button" class="secondary agenda-icon-button" aria-label="Próximo mês">›</button>
+          </div>
+
+          <div class="agenda-calendar-scroll">
+            <div class="agenda-weekdays" aria-hidden="true">
+              <span>Dom</span>
+              <span>Seg</span>
+              <span>Ter</span>
+              <span>Qua</span>
+              <span>Qui</span>
+              <span>Sex</span>
+              <span>Sáb</span>
+            </div>
+            <div id="calendar-grid" class="agenda-calendar-grid" role="grid" aria-labelledby="month-title"></div>
+          </div>
+        </section>
+
+        <section id="day-panel" class="panel agenda-day-panel" aria-labelledby="selected-day-title">
+          <div class="agenda-day-heading">
+            <div>
+              <h2 id="selected-day-title">Agenda do dia</h2>
+              <p id="selected-day-summary"></p>
+            </div>
+            <button type="button" id="add-event-to-day-button" class="secondary">+ Adicionar neste dia</button>
+          </div>
+
+          <div id="day-empty-message" class="agenda-day-empty hidden">
+            Nenhum evento ou rotina ativa neste dia.
+          </div>
+
+          <div id="day-timeline" class="agenda-day-timeline" aria-label="Horários do dia">
+            <div id="day-hour-labels" class="agenda-hour-labels" aria-hidden="true"></div>
+            <div class="agenda-time-grid">
+              <div id="day-hour-lines" class="agenda-hour-lines" aria-hidden="true"></div>
+              <div id="day-event-layer" class="agenda-event-layer"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel agenda-routines-panel" aria-labelledby="routines-title">
+          <div class="section-heading">
+            <div>
+              <h2 id="routines-title">Rotinas semanais</h2>
+              <p class="agenda-section-description">Ative, desative ou edite o que se repete toda semana.</p>
+            </div>
+            <button type="button" id="add-routine-button" class="secondary">+ Nova rotina</button>
+          </div>
+          <div id="routines-list" class="agenda-routines-list" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <p id="message-area" class="message-area" role="status" aria-live="polite"></p>
+    </main>
+
+    <dialog id="event-dialog" class="agenda-dialog">
+      <form id="event-form" method="dialog" novalidate>
+        <div class="agenda-dialog-heading">
+          <h2 id="event-dialog-title">Novo evento</h2>
+          <button type="button" class="secondary agenda-close-button" data-close-dialog="event-dialog" aria-label="Fechar">×</button>
+        </div>
+
+        <fieldset class="agenda-type-picker">
+          <legend>Tipo</legend>
+          <label>
+            <input type="radio" name="event-type" value="consultation" checked>
+            <span>Consulta</span>
+          </label>
+          <label>
+            <input type="radio" name="event-type" value="commitment">
+            <span>Compromisso</span>
+          </label>
+        </fieldset>
+
+        <label id="event-title-label" class="field-label" for="event-title">Nome</label>
+        <input id="event-title" type="text" maxlength="150" required autocomplete="off">
+
+        <div id="event-phone-field" class="agenda-spaced-field">
+          <label class="field-label" for="event-phone">Telefone</label>
+          <input id="event-phone" type="tel" maxlength="80" autocomplete="tel">
+        </div>
+
+        <div class="agenda-form-grid agenda-spaced-field">
+          <div>
+            <label class="field-label" for="event-date">Data</label>
+            <input id="event-date" type="date" required>
+          </div>
+          <div>
+            <label class="field-label" for="event-color">Cor</label>
+            <div class="agenda-color-field">
+              <input id="event-color" type="color" value="#2e7d32" aria-label="Cor do evento">
+              <span id="event-color-name">Verde de consulta</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="agenda-form-grid agenda-spaced-field">
+          <div>
+            <label class="field-label" for="event-start-time">Início</label>
+            <div class="agenda-time-picker">
+              <button type="button" class="secondary agenda-time-step" data-time-target="event-start-time" data-time-delta="-60" aria-label="Diminuir início em uma hora">−</button>
+              <input id="event-start-time" type="time" step="300" required>
+              <button type="button" class="secondary agenda-time-step" data-time-target="event-start-time" data-time-delta="60" aria-label="Aumentar início em uma hora">+</button>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="event-end-time">Final</label>
+            <div class="agenda-time-picker">
+              <button type="button" class="secondary agenda-time-step" data-time-target="event-end-time" data-time-delta="-60" aria-label="Diminuir final em uma hora">−</button>
+              <input id="event-end-time" type="time" step="300" required>
+              <button type="button" class="secondary agenda-time-step" data-time-target="event-end-time" data-time-delta="60" aria-label="Aumentar final em uma hora">+</button>
+            </div>
+          </div>
+        </div>
+        <p class="agenda-field-help">Ao preencher o início, o final é colocado automaticamente uma hora depois.</p>
+
+        <div class="agenda-form-grid agenda-spaced-field">
+          <div>
+            <label class="field-label" for="event-location">Local</label>
+            <input id="event-location" type="text" maxlength="180" autocomplete="off">
+          </div>
+          <div>
+            <label class="field-label" for="event-notes">Observação opcional</label>
+            <input id="event-notes" type="text" maxlength="500" autocomplete="off">
+          </div>
+        </div>
+
+        <p id="event-form-feedback" class="agenda-form-feedback" aria-live="polite"></p>
+        <div class="actions agenda-dialog-actions">
+          <button type="button" data-close-dialog="event-dialog" class="secondary">Cancelar</button>
+          <button type="button" id="delete-event-button" class="danger hidden">Excluir</button>
+          <button type="submit" id="save-event-button">Salvar evento</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="routine-dialog" class="agenda-dialog">
+      <form id="routine-form" method="dialog" novalidate>
+        <div class="agenda-dialog-heading">
+          <h2 id="routine-dialog-title">Nova rotina</h2>
+          <button type="button" class="secondary agenda-close-button" data-close-dialog="routine-dialog" aria-label="Fechar">×</button>
+        </div>
+
+        <label class="field-label" for="routine-title">Nome da rotina</label>
+        <input id="routine-title" type="text" maxlength="150" required autocomplete="off">
+
+        <div class="agenda-form-grid agenda-spaced-field">
+          <div>
+            <label class="field-label" for="routine-weekday">Dia da semana</label>
+            <select id="routine-weekday" required>
+              <option value="0">Domingo</option>
+              <option value="1">Segunda-feira</option>
+              <option value="2">Terça-feira</option>
+              <option value="3">Quarta-feira</option>
+              <option value="4">Quinta-feira</option>
+              <option value="5">Sexta-feira</option>
+              <option value="6">Sábado</option>
+            </select>
+          </div>
+          <div>
+            <span class="field-label">Cor da rotina</span>
+            <div id="routine-color-palette" class="agenda-color-palette" aria-label="Escolha a cor da rotina">
+              <button type="button" data-color="#2563eb" style="--swatch: #2563eb" aria-label="Azul"></button>
+              <button type="button" data-color="#0891b2" style="--swatch: #0891b2" aria-label="Ciano"></button>
+              <button type="button" data-color="#0f766e" style="--swatch: #0f766e" aria-label="Verde-petróleo"></button>
+              <button type="button" data-color="#65a30d" style="--swatch: #65a30d" aria-label="Verde-limão"></button>
+              <button type="button" data-color="#d97706" style="--swatch: #d97706" aria-label="Laranja"></button>
+              <button type="button" data-color="#dc2626" style="--swatch: #dc2626" aria-label="Vermelho"></button>
+              <button type="button" data-color="#db2777" style="--swatch: #db2777" aria-label="Rosa"></button>
+              <button type="button" data-color="#7c3aed" style="--swatch: #7c3aed" aria-label="Roxo"></button>
+              <label class="agenda-custom-color" title="Escolher outra cor">
+                <input id="routine-color" type="color" value="#2563eb" aria-label="Escolher outra cor">
+                <span>Outra</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="agenda-form-grid agenda-spaced-field">
+          <div>
+            <label class="field-label" for="routine-start-time">Início</label>
+            <div class="agenda-time-picker">
+              <button type="button" class="secondary agenda-time-step" data-time-target="routine-start-time" data-time-delta="-60" aria-label="Diminuir início em uma hora">−</button>
+              <input id="routine-start-time" type="time" step="300" required>
+              <button type="button" class="secondary agenda-time-step" data-time-target="routine-start-time" data-time-delta="60" aria-label="Aumentar início em uma hora">+</button>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="routine-end-time">Final</label>
+            <div class="agenda-time-picker">
+              <button type="button" class="secondary agenda-time-step" data-time-target="routine-end-time" data-time-delta="-60" aria-label="Diminuir final em uma hora">−</button>
+              <input id="routine-end-time" type="time" step="300" required>
+              <button type="button" class="secondary agenda-time-step" data-time-target="routine-end-time" data-time-delta="60" aria-label="Aumentar final em uma hora">+</button>
+            </div>
+          </div>
+        </div>
+        <p class="agenda-field-help">Ao preencher o início, o final é colocado automaticamente uma hora depois.</p>
+
+        <div class="agenda-form-grid agenda-spaced-field">
+          <div>
+            <label class="field-label" for="routine-location">Local</label>
+            <input id="routine-location" type="text" maxlength="180" autocomplete="off">
+          </div>
+          <div>
+            <label class="field-label" for="routine-notes">Observação opcional</label>
+            <input id="routine-notes" type="text" maxlength="500" autocomplete="off">
+          </div>
+        </div>
+
+        <label class="agenda-active-field agenda-spaced-field">
+          <input id="routine-active" type="checkbox" checked>
+          <span>Rotina ativa e visível no calendário</span>
+        </label>
+
+        <p id="routine-form-feedback" class="agenda-form-feedback" aria-live="polite"></p>
+        <div class="actions agenda-dialog-actions">
+          <button type="button" data-close-dialog="routine-dialog" class="secondary">Cancelar</button>
+          <button type="button" id="delete-routine-button" class="danger hidden">Excluir</button>
+          <button type="submit" id="save-routine-button">Salvar rotina</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="agenda.js"></script>
+  </body>
+</html>
