@@ -1,23 +1,17 @@
-CORREÇÃO DA AGENDA NO GITHUB PAGES
+FERRAMENTAS CLÍNICAS — VERSÃO 0.2
 
-Substitua, na mesma pasta do site publicada pelo GitHub Pages, estes três arquivos:
+Novidade desta versão:
+- Página Medicações com biblioteca de medicamentos e classes.
+- Atributos e valores personalizados.
+- Mapas farmacológicos salvos.
+- Ligações ortogonais automáticas e herança de relações das classes.
+- Modo de apresentação e impressão/PDF.
 
-- agenda.html
-- agenda.js
-- styles.css
+INSTALAÇÃO / ATUALIZAÇÃO
 
-Não envie os arquivos com nomes como "agenda(4).html" ou "styles(8).css".
-Os nomes no repositório precisam permanecer exatamente como estão acima.
+1. No Supabase, abra SQL Editor e execute supabase-medications.sql uma vez.
+2. Envie todos os arquivos desta pasta para a mesma pasta publicada pelo GitHub Pages.
+3. Preserve exatamente os nomes dos arquivos, sem sufixos como “(2)” ou “(8)”.
+4. Aguarde a publicação do GitHub Pages e pressione Ctrl+F5 no navegador.
 
-O agenda.html deste pacote usa uma identificação de versão no CSS e no
-JavaScript para impedir que o navegador continue mostrando cópias antigas.
-
-Depois do commit:
-
-1. Aguarde o GitHub Pages concluir a publicação.
-2. Abra a agenda.
-3. Pressione Ctrl+F5 para recarregar tudo.
-
-Se o site continuar antigo, confira em Settings > Pages qual branch e qual
-pasta estão configuradas como origem. Os três arquivos precisam ser
-substituídos exatamente nessa origem publicada.
+O novo módulo usa a mesma conta e o mesmo projeto Supabase das outras áreas.

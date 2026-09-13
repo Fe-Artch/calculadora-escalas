@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medicações</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="Navegação principal">
+      <a href="index.html">Início</a><a href="escalas.html">Escalas</a><a href="frases.html">Frases</a>
+      <a href="contatos.html">Contatos</a><a href="agenda.html">Agenda</a><a href="implementacoes.html">Fila de Implementação</a>
+      <a href="eem.html">EEM</a><a href="diagnostic-criteria.html">Critérios Diagnósticos</a><a href="medicacoes.html" aria-current="page">Medicações</a>
+    </nav>
+
+    <main class="app-shell medication-page">
+      <header class="app-header medication-header">
+        <div><p class="eyebrow">Versão 0.2</p><h1>Mapas farmacológicos</h1><p>Monte relações visuais entre medicamentos, classes e seus atributos.</p></div>
+        <div id="user-panel" class="med-user-panel" hidden><span id="user-email"></span><button id="logout-button" type="button" class="secondary-button">Sair</button></div>
+      </header>
+
+      <section id="auth-panel" class="panel med-auth-panel">
+        <div><h2>Entrar</h2><p class="muted-text">Use a mesma conta das outras áreas do site.</p></div>
+        <form id="login-form" class="med-auth-form">
+          <label>E-mail<input id="email-input" type="email" autocomplete="email" required></label>
+          <label>Senha<input id="password-input" type="password" autocomplete="current-password" required></label>
+          <div class="form-actions"><button type="submit">Entrar</button><button id="signup-button" type="button" class="secondary-button">Criar conta</button></div>
+        </form>
+      </section>
+
+      <div id="message-area" class="message-area" role="status" aria-live="polite"></div>
+
+      <section id="medication-workspace" hidden>
+        <div class="med-toolbar panel">
+          <label>Mapa
+            <select id="map-select"></select>
+          </label>
+          <button id="new-map-button" type="button" class="secondary-button">+ Novo mapa</button>
+          <label>Atributo exibido
+            <select id="attribute-select"></select>
+          </label>
+          <button id="new-attribute-button" type="button" class="secondary-button">+ Atributo</button>
+          <button id="edit-attribute-button" type="button" class="secondary-button">Editar atributo</button>
+          <button id="save-map-button" type="button">Salvar mapa</button>
+          <button id="presentation-button" type="button" class="secondary-button">Apresentação</button>
+          <button id="print-map-button" type="button" class="secondary-button">Imprimir / PDF</button>
+        </div>
+
+        <div class="med-layout">
+          <aside class="panel med-library">
+            <div class="section-heading"><div><h2>Biblioteca</h2><p class="muted-text">Clique em + para levar ao mapa.</p></div><button id="new-entity-button" type="button">+ Novo</button></div>
+            <input id="entity-search" type="search" placeholder="Buscar medicamento ou classe">
+            <div class="med-filter-tabs" role="group" aria-label="Filtrar biblioteca">
+              <button type="button" class="active" data-filter="all">Todos</button><button type="button" data-filter="medication">Medicamentos</button><button type="button" data-filter="class">Classes</button>
+            </div>
+            <div id="entity-library" class="entity-library"></div>
+          </aside>
+
+          <section id="map-panel" class="panel med-map-panel">
+            <div class="map-title-row"><div><h2 id="map-title">Novo mapa</h2><p id="map-subtitle" class="muted-text">Selecione um atributo e adicione itens.</p></div><span class="map-hint">Clique em um item da esquerda e depois em um valor para ligar.</span></div>
+            <div id="map-empty" class="empty-state">Adicione medicamentos ou classes usando a biblioteca.</div>
+            <div id="relation-board" class="relation-board" hidden>
+              <div class="board-column"><h3>Medicamentos e classes</h3><div id="selected-entities" class="board-list"></div></div>
+              <svg id="relation-svg" class="relation-svg" aria-hidden="true"><defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="context-stroke"></path></marker></defs><g id="relation-lines"></g></svg>
+              <div class="board-column"><div class="value-column-heading"><h3 id="value-heading">Valores</h3><button id="new-value-button" type="button" class="secondary-button compact-button">+ Valor</button></div><div id="attribute-values" class="board-list"></div></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div id="entity-dialog" class="med-dialog" hidden>
+      <form id="entity-form" class="med-dialog-card">
+        <div class="section-heading"><h2 id="entity-dialog-title">Novo item</h2><button type="button" class="icon-button dialog-close" aria-label="Fechar">×</button></div>
+        <input id="entity-id" type="hidden">
+        <label>Nome<input id="entity-name" required maxlength="120"></label>
+        <label>Tipo<select id="entity-type"><option value="medication">Medicamento</option><option value="class">Classe farmacológica</option></select></label>
+        <label>Cor<input id="entity-color" type="color" value="#4568dc"></label>
+        <label id="parent-class-field">Classes <select id="entity-parents" multiple size="5"></select><small>Ctrl/Cmd + clique para selecionar mais de uma.</small></label>
+        <div class="form-actions"><button type="submit">Salvar</button><button id="delete-entity-button" type="button" class="danger-button" hidden>Excluir</button><button type="button" class="secondary-button dialog-close">Cancelar</button></div>
+      </form>
+    </div>
+
+    <div id="attribute-dialog" class="med-dialog" hidden>
+      <form id="attribute-form" class="med-dialog-card">
+        <div class="section-heading"><h2 id="attribute-dialog-title">Novo atributo</h2><button type="button" class="icon-button dialog-close" aria-label="Fechar">×</button></div>
+        <input id="attribute-id" type="hidden">
+        <label>Nome<input id="attribute-name" required maxlength="100" placeholder="Ex.: Efeito farmacológico"></label>
+        <label>Tipo de valor<select id="attribute-type"><option value="term">Lista de termos</option><option value="text">Texto livre</option><option value="number">Número</option><option value="duration">Duração</option><option value="boolean">Sim / não</option></select></label>
+        <div class="form-actions"><button type="submit">Salvar</button><button id="delete-attribute-button" type="button" class="danger-button" hidden>Excluir</button><button type="button" class="secondary-button dialog-close">Cancelar</button></div>
+      </form>
+    </div>
+
+    <div id="value-dialog" class="med-dialog" hidden>
+      <form id="value-form" class="med-dialog-card">
+        <div class="section-heading"><h2 id="value-dialog-title">Novo valor</h2><button type="button" class="icon-button dialog-close" aria-label="Fechar">×</button></div>
+        <input id="value-id" type="hidden">
+        <label>Valor<input id="value-label" required maxlength="180" placeholder="Ex.: Recaptação de serotonina"></label>
+        <label>Observação opcional<textarea id="value-note" rows="3"></textarea></label>
+        <div class="form-actions"><button type="submit">Salvar</button><button id="delete-value-button" type="button" class="danger-button" hidden>Excluir</button><button type="button" class="secondary-button dialog-close">Cancelar</button></div>
+      </form>
+    </div>
+
+    <div id="map-dialog" class="med-dialog" hidden>
+      <form id="map-form" class="med-dialog-card">
+        <div class="section-heading"><h2>Novo mapa</h2><button type="button" class="icon-button dialog-close" aria-label="Fechar">×</button></div>
+        <label>Nome<input id="map-name" required maxlength="120" placeholder="Ex.: Antidepressivos e mecanismos"></label>
+        <div class="form-actions"><button type="submit">Criar</button><button type="button" class="secondary-button dialog-close">Cancelar</button></div>
+      </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="medicacoes.js"></script>
+  </body>
+</html>
