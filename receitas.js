@@ -4,7 +4,10 @@ const HEADER_STORAGE_KEY = "receita_cabecalho";
 const INITIAL_FONT_SIZE = 11;
 const MINIMUM_FONT_SIZE = 9;
 const FONT_SIZE_STEP = 0.5;
-const COPY_LABELS = ["1ª VIA — FARMÁCIA", "2ª VIA — PACIENTE"];
+const COPY_LABELS = [
+  "1ª VIA — FARMÁCIA",
+  "2ª VIA — PACIENTE (Não fornecer medicação com essa via)"
+];
 
 const form = document.querySelector("#prescription-form");
 const headerField = document.querySelector("#prescription-header");

@@ -48,12 +48,24 @@
 .copy-header { margin-bottom: 6mm; font-weight: 700; }
 .copy-header:empty { margin-bottom: 0; }
 .copy-body { flex: 1 1 auto; min-height: 0; }
-.buyer-identification { flex: 0 0 auto; margin-top: 5mm; font-size: 8.5pt; }
-.buyer-identification h3 { margin: 0 0 2.5mm; font-size: 8.5pt; }
-.buyer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.dispensing-identification {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  flex: 0 0 auto;
+  margin-top: 5mm;
+  font-size: 7.5pt;
+}
+.buyer-identification, .supplier-identification { min-width: 0; padding: 2.5mm; border: .25mm solid #777; }
+.buyer-identification h3, .supplier-identification h3 { margin: 0 0 2.5mm; font-size: 7.5pt; }
 .buyer-row { display: flex; gap: 2mm; align-items: flex-end; margin: 0 0 2.2mm; }
 .buyer-row span { white-space: nowrap; }
 .buyer-row i { flex: 1; height: 1em; border-bottom: .25mm solid #555; }
+.supplier-space { height: 10mm; margin-bottom: 2mm; border: .25mm solid #999; }
+.supplier-row { display: flex; gap: 1.5mm; align-items: flex-end; margin-top: 2.2mm; }
+.supplier-row span { white-space: nowrap; }
+.supplier-row i { flex: 1; height: 1em; border-bottom: .25mm solid #555; }
+.supplier-date { width: 65%; }
 .copy-footer { display: grid; grid-template-columns: minmax(0, 1fr) 45mm; gap: 6mm; align-items: end; flex: 0 0 24mm; margin-top: 4mm; }
 .prescription-date { align-self: start; white-space: nowrap; }
 .signature-space { align-self: end; padding-top: 15mm; border-top: .25mm solid #555; color: #555; font-size: 8pt; text-align: center; }
